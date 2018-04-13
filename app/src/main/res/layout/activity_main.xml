@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/main_back"
+    tools:context=".MainActivity">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="?android:attr/actionBarSize"
+        app:titleTextColor="@android:color/white">
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/toolbar_title"
+            style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:drawableLeft="@drawable/ic_wallet"
+            android:drawablePadding="8dp"
+            android:gravity="center_vertical"
+            android:text="0.0000000 CPT"
+            android:textColor="@android:color/white"
+            android:textSize="16sp" />
+
+    </android.support.v7.widget.Toolbar>
+
+    <TextView
+        android:id="@+id/prizePoolLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="@string/prize_pool"
+        android:textColor="#fff"
+        android:textSize="12sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+
+    <TextView
+        android:id="@+id/prizePool"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="18dp"
+        android:text="21,300,300.000 CPT"
+        android:textColor="#fff"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="@+id/leavesLeft"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+
+    <android.support.v7.widget.AppCompatImageView
+        android:id="@+id/leavesLeft"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintRight_toLeftOf="@+id/prizePool"
+        app:layout_constraintTop_toTopOf="@+id/prizePoolLabel"
+        app:srcCompat="@drawable/ic_leaves_normal" />
+
+    <android.support.v7.widget.AppCompatImageView
+        android:id="@+id/leavesRight"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toRightOf="@+id/prizePool"
+        app:layout_constraintTop_toTopOf="@+id/prizePoolLabel"
+        app:srcCompat="@drawable/ic_leaves_flipped" />
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/lotteryPager"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="24dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/leavesLeft"
+        android:clipToPadding="false"
+        android:layout_marginBottom="16dp"
+        android:paddingLeft="32dp"
+        android:paddingRight="32dp"
+        />
+
+</android.support.constraint.ConstraintLayout>

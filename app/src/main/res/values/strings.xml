@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Cryptaur Lottery</string>
+    <string name="action_settings">Settings</string>
+    <string name="prize_pool">PRIZE POOL</string>
+    <string name="jackpot">JACKPOT</string>
+    <string name="draw_number">DRAW #%d</string>
+    <string name="buy_ticket_for">Buy ticket for %s CPT</string>
+    <string name="time_left_">TIME LEFT %s</string>
+
+
+</resources>
