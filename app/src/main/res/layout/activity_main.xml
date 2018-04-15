@@ -12,7 +12,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:minHeight="?android:attr/actionBarSize"
-        app:titleTextColor="@android:color/white">
+        app:titleTextColor="@android:color/white"
+        app:layout_constraintTop_toTopOf="parent">
 
         <android.support.v7.widget.AppCompatTextView
             android:id="@+id/toolbar_title"
@@ -46,7 +47,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="18dp"
-        android:text="21,300,300.000 CPT"
+        android:text="0.0 CPT"
         android:textColor="#fff"
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="@+id/leavesLeft"

@@ -1,5 +1,7 @@
 package com.cryptaur.lottery.transport.model;
 
+import java.math.BigInteger;
+
 public class CurrentDraws {
     public final Draw[] draws;
     public final long timestamp;
@@ -24,5 +26,14 @@ public class CurrentDraws {
             lotteries[i] = draws[i].lottery;
         }
         return lotteries;
+    }
+
+    public BigInteger getTotalJackpot(){
+        BigInteger jackpot = BigInteger.ZERO;
+
+        for (Draw draw : draws) {
+            jackpot = jackpot.add(draw.jackpot);
+        }
+        return jackpot;
     }
 }

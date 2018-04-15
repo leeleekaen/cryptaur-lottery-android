@@ -16,7 +16,6 @@ public class Ticket {
     public final BigInteger winAmount;
     public final BigInteger price;
     public final int[] numbers;
-    public final int[] drawNumbers;
 
     public Ticket(Lottery lottery, JSONObject source) throws JSONException {
         this.lottery = lottery;
@@ -28,6 +27,53 @@ public class Ticket {
         winAmount = helper.getUnsignedBigInteger("winAmount");
         price = helper.getUnsignedBigInteger("price");
         numbers = helper.getIntArray("numbers");
-        drawNumbers = helper.getIntArray("drawNumbers");
+    }
+
+    public Ticket(Lottery lottery, int drawIndex, Instant drawDate, int index, int winLevel, BigInteger winAmount, BigInteger price, int[] numbers) {
+        this.lottery = lottery;
+        this.drawIndex = drawIndex;
+        this.drawDate = drawDate;
+        this.index = index;
+        this.winLevel = winLevel;
+        this.winAmount = winAmount;
+        this.price = price;
+        this.numbers = numbers;
+    }
+
+    public static Ticket createTemp(int index) {
+        Lottery lottery = Lottery.values()[(int) (Math.random() * 3)];
+        int[] numbers = new int[lottery.getNumbersAmount()];
+        int maxVal = lottery.getMaxValue();
+        for (int i = 0; i < numbers.length; i++) {
+            numbers[i] = (int) (Math.random() * maxVal) + 1;
+            if (Math.random() > 0.8) {
+                numbers[i] = -numbers[i];
+            }
+        }
+
+        boolean isPlayed = Math.random() > 0.5;
+        long timestamp = (long) (isPlayed ?
+                        - Math.random() * 86400_000 *3 :
+                        Math.random() * 68400_000);
+        timestamp+= System.currentTimeMillis();
+
+        return new Ticket(
+                lottery,
+                (int) (Math.random() * 10),
+                Instant.ofEpochMilli(timestamp),
+                index,
+                isPlayed ? 2 : -1,
+                BigInteger.TEN,
+                BigInteger.TEN,
+                numbers
+        );
+    }
+
+    public boolean isWinNumber(int number) {
+        return number < 0;
+    }
+
+    public boolean isPlayed() {
+        return winLevel >= 0;
     }
 }

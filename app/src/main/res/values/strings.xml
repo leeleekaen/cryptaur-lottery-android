@@ -6,6 +6,13 @@
     <string name="draw_number">DRAW #%d</string>
     <string name="buy_ticket_for">Buy ticket for %s CPT</string>
     <string name="time_left_">TIME LEFT %s</string>
-
-
+    <string name="_CPT" translatable="false">%s CPT</string>
+    <string name="title_activity_my_tickets">MyTicketsActivity</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+    <string name="active">Active</string>
+    <string name="played">Played</string>
+    <string name="won_cpt">WON %s CPT</string>
+    <string name="draw_in_progress">draw is in progress</string>
+    <string name="your_total_win">Your total win</string>
+    <string name="get_the_win">Get the win</string>
 </resources>

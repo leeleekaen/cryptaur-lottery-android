@@ -3,24 +3,26 @@ package com.cryptaur.lottery.model;
 import android.support.annotation.UiThread;
 
 import com.cryptaur.lottery.transport.base.NetworkRequest;
+import com.cryptaur.lottery.transport.model.TicketsList;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @UiThread
-public class RequestJoiner<T> implements NetworkRequest.NetworkRequestListener<T> {
+public class TicketsRequestJoiner implements NetworkRequest.NetworkRequestListener<TicketsList> {
 
-    private final List<GetObjectCallback<T>> getObjectCallbacks = new ArrayList<>();
-    private T value;
+    private final List<GetObjectCallback<ITicketStorageRead>> getObjectCallbacks = new ArrayList<>();
+    private final TicketsStorage ticketsStorage = new TicketsStorage();
     private boolean executingRequest;
     private long responceTimestamp;
 
 
-    public RequestJoiner() {
+    public TicketsRequestJoiner() {
+
     }
 
-    public void addCallback(GetObjectCallback<T> callback) {
-        if (getObjectCallbacks.contains(callback))
+    public void addCallback(GetObjectCallback<ITicketStorageRead> callback) {
+        if (!getObjectCallbacks.contains(callback))
             getObjectCallbacks.add(callback);
     }
 
@@ -29,12 +31,12 @@ public class RequestJoiner<T> implements NetworkRequest.NetworkRequestListener<T
     }
 
     @Override
-    public void onNetworkRequestDone(NetworkRequest request, T responce) {
-        value = responce;
+    public void onNetworkRequestDone(NetworkRequest request, TicketsList responce) {
+        ticketsStorage.addTickets(responce);
         responceTimestamp = System.currentTimeMillis();
         executingRequest = false;
         for (int i = 0; i < getObjectCallbacks.size(); i++) {
-            getObjectCallbacks.get(i).onRequestResult(responce);
+            getObjectCallbacks.get(i).onRequestResult(ticketsStorage);
         }
         getObjectCallbacks.clear();
     }
@@ -69,11 +71,7 @@ public class RequestJoiner<T> implements NetworkRequest.NetworkRequestListener<T
         return responceTimestamp;
     }
 
-    public boolean isResultOutdated(long timeout) {
-        return value == null || System.currentTimeMillis() - responceTimestamp > timeout;
-    }
-
-    public T getValue() {
-        return value;
+    public TicketsStorage getTicketsStorage() {
+        return ticketsStorage;
     }
 }

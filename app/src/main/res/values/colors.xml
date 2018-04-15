@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimary">@color/lotteryBlue</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="lightBlue">#61AAF2</color>
@@ -9,4 +9,5 @@
     <color name="heather">#A38FBB</color>
     <color name="twilight">#634285</color>
     <color name="hotPink">#FF0089</color>
+    <color name="lotteryBlue">#6E95F2</color>
 </resources>
