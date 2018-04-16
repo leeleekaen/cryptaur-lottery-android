@@ -1,5 +1,6 @@
 package com.cryptaur.lottery.view;
 
+import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -10,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.cryptaur.lottery.R;
+import com.cryptaur.lottery.buytickets.BuyTicketActivity;
 import com.cryptaur.lottery.model.GetObjectCallback;
 import com.cryptaur.lottery.model.Keeper;
 import com.cryptaur.lottery.transport.model.CurrentDraws;
@@ -22,7 +24,7 @@ import org.threeten.bp.temporal.ChronoUnit;
 
 import java.util.Locale;
 
-public class LotteryViewMainViewHolder implements GetObjectCallback<CurrentDraws>, View.OnAttachStateChangeListener {
+public class LotteryViewMainViewHolder implements GetObjectCallback<CurrentDraws>, View.OnAttachStateChangeListener, View.OnClickListener {
     public final ViewGroup view;
     public final Lottery lottery;
 
@@ -70,6 +72,7 @@ public class LotteryViewMainViewHolder implements GetObjectCallback<CurrentDraws
         update();
 
         view.addOnAttachStateChangeListener(this);
+        buyButtonView.setOnClickListener(this);
     }
 
     public static LotteryViewMainViewHolder create(ViewGroup parent, Lottery lottery) {
@@ -126,5 +129,12 @@ public class LotteryViewMainViewHolder implements GetObjectCallback<CurrentDraws
 
     @Override
     public void onViewDetachedFromWindow(View v) {
+    }
+
+    @Override
+    public void onClick(View v) {
+        Intent intent = new Intent(view.getContext(), BuyTicketActivity.class);
+        intent.putExtra(BuyTicketActivity.ARG_LOTTERY, lottery);
+        view.getContext().startActivity(intent);
     }
 }

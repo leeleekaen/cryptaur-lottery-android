@@ -20,7 +20,7 @@ public class RequestJoiner<T> implements NetworkRequest.NetworkRequestListener<T
     }
 
     public void addCallback(GetObjectCallback<T> callback) {
-        if (getObjectCallbacks.contains(callback))
+        if (!getObjectCallbacks.contains(callback))
             getObjectCallbacks.add(callback);
     }
 

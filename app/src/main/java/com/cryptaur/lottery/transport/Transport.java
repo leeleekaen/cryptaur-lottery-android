@@ -5,9 +5,12 @@ import android.os.Looper;
 import android.support.annotation.Nullable;
 
 import com.cryptaur.lottery.transport.base.NetworkRequest;
+import com.cryptaur.lottery.transport.model.BuyTicketResponce;
 import com.cryptaur.lottery.transport.model.Login;
 import com.cryptaur.lottery.transport.model.Session;
+import com.cryptaur.lottery.transport.model.Ticket;
 import com.cryptaur.lottery.transport.request.BaseLotteryRequest;
+import com.cryptaur.lottery.transport.request.BuyTicketRequest;
 import com.cryptaur.lottery.transport.request.GetCurrentLotteriesRequest;
 import com.cryptaur.lottery.transport.request.LoginRequest;
 import com.cryptaur.lottery.transport.request.RefreshSessionRequest;
@@ -48,6 +51,11 @@ public class Transport {
             BaseLotteryRequest request = new RefreshSessionRequest(client, currentSession, new NetworkSessionRequestWrapper(listener));
             sessionRequestQueue.doRequest(request);
         }
+    }
+
+    public void buyTicket(Ticket ticket, NetworkRequest.NetworkRequestListener<BuyTicketResponce> listener) {
+        currentSession = new Session("asdf", "qwer");
+        new BuyTicketRequest(client, ticket, currentSession, listener).execute();
     }
 
     /**

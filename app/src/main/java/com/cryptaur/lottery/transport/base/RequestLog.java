@@ -31,6 +31,7 @@ public class RequestLog {
     private HashMap<String, String> headers;
     private HashMap<String, String> fields;
     private String responce;
+    int responceCode;
 
     public RequestLog(RequestType requestType) {
         this.requestType = requestType;
@@ -79,10 +80,11 @@ public class RequestLog {
         requestStartTime = System.currentTimeMillis();
     }
 
-    public void onGotResponse(String result) {
+    public void onGotResponse(String result, int code) {
         requestEndTime = System.currentTimeMillis();
         if (storeDebug) {
             responce = result;
+            responceCode = code;
         }
     }
 
@@ -134,7 +136,8 @@ public class RequestLog {
             builder.append("request: ").append(requestBody).append("\n");
         if (requestEndTime != 0) {
             builder.append("response time: ").append(requestEndTime - requestStartTime)
-                    .append("; response: ").append(responce).append("\n");
+                    .append("; code: ").append(responceCode).append(";\n")
+                    .append("response: ").append(responce).append("\n");
         }
         return builder;
     }

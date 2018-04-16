@@ -9,14 +9,11 @@ import com.cryptaur.lottery.Const;
 
 import org.json.JSONException;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
-import java.net.URL;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -38,6 +35,7 @@ public abstract class NetworkRequest<Result> implements Runnable {
     protected String charset = "UTF-8";
     protected volatile boolean cancelled;
     protected volatile boolean finished;
+    private int status;
 
     public NetworkRequest(OkHttpClient client, NetworkRequestListener<Result> listener) {
         this.client = client;
@@ -83,14 +81,14 @@ public abstract class NetworkRequest<Result> implements Runnable {
     protected String postRequest(String method, RequestType requestType, @Nullable String requestBody) throws IOException, JSONException {
         Request request = createRequest(method, requestType, requestBody);
 
-
         if (debugData != null) {
             Log.d(TAG, "sending " + debugData.toString());
         }
-        try (Response response = client.newCall(request).execute();){
+        try (Response response = client.newCall(request).execute()) {
+            status = response.code();
             String result = response.body().string();
             if (debugData != null)
-                debugData.onGotResponse(result);
+                debugData.onGotResponse(result, response.code());
             return result;
         }
     }
@@ -98,11 +96,20 @@ public abstract class NetworkRequest<Result> implements Runnable {
     protected void execSimpleRequest(String method, RequestType requestType, @Nullable String requestBody) {
         try {
             String responceStr = postRequest(method, requestType, requestBody);
-            Result responce = parse(responceStr);
+            if (status != 200) {
+                handleException(new Exception("status: " + status));
+                return;
+            }
+
+            Result responce = parse(responceStr, status);
+
+            if (debugData != null)
+                debugData.log();
 
             if (finish() && listener != null) {
                 listener.onNetworkRequestDone(this, responce);
             }
+
         } catch (Exception ex) {
             handleException(ex);
         }
@@ -117,7 +124,7 @@ public abstract class NetworkRequest<Result> implements Runnable {
         }
     }
 
-    protected abstract Result parse(String source) throws IOException, JSONException;
+    protected abstract Result parse(String source, int status) throws IOException, JSONException;
 
     public void cancel() {
         cancelled = true;

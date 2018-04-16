@@ -2,7 +2,11 @@
 <resources>
     <color name="colorPrimary">@color/lotteryBlue</color>
     <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorAccent">@color/hotPink</color>
+
+
+    <color name="accentColor_40p">#66FF0089</color>
+    <color name="accentColor_12p">#1fFF0089</color>
     <color name="lightBlue">#61AAF2</color>
     <color name="lighterPurple">#9949F3</color>
     <color name="paleLavander">#F5F0FF</color>
@@ -10,4 +14,6 @@
     <color name="twilight">#634285</color>
     <color name="hotPink">#FF0089</color>
     <color name="lotteryBlue">#6E95F2</color>
+    <color name="paleGray">#E4DDF1</color>
+    <color name="electricPurple">#8941FF</color>
 </resources>

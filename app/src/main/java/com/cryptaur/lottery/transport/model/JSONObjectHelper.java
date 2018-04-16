@@ -29,7 +29,6 @@ public class JSONObjectHelper {
      */
     @Nullable
     public BigInteger getUnsignedBigInteger(String name) throws JSONException {
-        name = name.toLowerCase();
         if (source.isNull(name))
             return null;
 
@@ -78,7 +77,7 @@ public class JSONObjectHelper {
     }
 
     public Instant getInstant(String name) throws JSONException {
-        String instantStr = source.getString(name) + "Z";
+        String instantStr = source.getString(name);
         return Instant.parse(instantStr);
     }
 }

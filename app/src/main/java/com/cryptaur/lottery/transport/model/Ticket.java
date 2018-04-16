@@ -5,6 +5,7 @@ import org.json.JSONObject;
 import org.threeten.bp.Instant;
 
 import java.math.BigInteger;
+import java.util.List;
 
 public class Ticket {
 
@@ -53,9 +54,9 @@ public class Ticket {
 
         boolean isPlayed = Math.random() > 0.5;
         long timestamp = (long) (isPlayed ?
-                        - Math.random() * 86400_000 *3 :
-                        Math.random() * 68400_000);
-        timestamp+= System.currentTimeMillis();
+                -Math.random() * 86400_000 * 3 :
+                Math.random() * 68400_000);
+        timestamp += System.currentTimeMillis();
 
         return new Ticket(
                 lottery,
@@ -67,6 +68,14 @@ public class Ticket {
                 BigInteger.TEN,
                 numbers
         );
+    }
+
+    public static Ticket buyTicket(Draw currentDraw, List<Integer> numbers) {
+        int[] numbersArray = new int[numbers.size()];
+        for (int i = 0; i < numbersArray.length; i++) {
+            numbersArray[i] = numbers.get(i);
+        }
+        return new Ticket(currentDraw.lottery, currentDraw.number, currentDraw.startTime, -1, -1, null, currentDraw.ticketPrice, numbersArray);
     }
 
     public boolean isWinNumber(int number) {

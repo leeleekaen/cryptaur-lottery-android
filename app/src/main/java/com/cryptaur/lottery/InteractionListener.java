@@ -4,6 +4,6 @@ public interface InteractionListener {
     void onDoAction(Action action);
 
     enum Action{
-        GetTheWin,
+        GetTheWin, CloseThisFragment,
     }
 }

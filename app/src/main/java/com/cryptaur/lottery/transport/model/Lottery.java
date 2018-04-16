@@ -3,7 +3,7 @@ package com.cryptaur.lottery.transport.model;
 public enum Lottery {
     _4of20, _5of36, _6of42;
 
-    public static Lottery ofId(int id) {
+    public static Lottery ofServerId(int id) {
         return values()[id - 1];
     }
 
@@ -23,7 +23,7 @@ public enum Lottery {
         }
     }
 
-    public int getMaxValue(){
+    public int getMaxValue() {
         switch (this) {
             case _4of20:
                 return 20;
@@ -37,5 +37,9 @@ public enum Lottery {
             default:
                 throw new IllegalArgumentException("not implemented for: " + name());
         }
+    }
+
+    public int getServerId() {
+        return ordinal() + 1;
     }
 }

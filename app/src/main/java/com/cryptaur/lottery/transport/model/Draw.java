@@ -28,19 +28,19 @@ public class Draw {
         startTime = helper.getInstant("date");
         lotteryState = LotteryState.valueOfCaseInsensitive(helper.getStringNullable("state"));
 
-        drawState = DrawState.valueOfCaseInsensitive(source.getString("drawState".toLowerCase()));
+        drawState = DrawState.valueOfCaseInsensitive(source.getString("drawState"));
         jackpot = helper.getUnsignedBigInteger("jackpot");
         reserve = helper.getUnsignedBigInteger("reserve");
         jackpotAdded = helper.getUnsignedBigInteger("jackpotAdded");
         reserveAdded = helper.getUnsignedBigInteger("reserveAdded");
         ticketPrice = helper.getUnsignedBigInteger("ticketPrice");
         ticketsBought = helper.getUnsignedBigInteger("ticketPrice").intValue();
-        //ticketsBought = source.getInt("ticketsBought".toLowerCase());
+        //ticketsBought = source.getInt("ticketsBought");
 
         numbers = helper.getIntArray("numbers");
     }
 
     public Draw(JSONObject source) throws JSONException {
-        this(Lottery.ofId(source.getInt("lotteryId".toLowerCase())), source);
+        this(Lottery.ofServerId(source.getInt("lotteryId")), source);
     }
 }

@@ -5,12 +5,12 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
+        android:name=".TheApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:name=".TheApplication"
         android:theme="@style/AppTheme">
         <activity android:name=".MainActivity">
             <intent-filter>
@@ -22,7 +22,11 @@
         <activity
             android:name=".MyTicketsActivity"
             android:label="@string/title_activity_my_tickets"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".buytickets.BuyTicketActivity"
+            android:label="@string/title_activity_buy_ticket"
+            android:theme="@style/AppTheme.Light" />
     </application>
 
 </manifest>

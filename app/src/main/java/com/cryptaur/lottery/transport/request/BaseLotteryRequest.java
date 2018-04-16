@@ -30,10 +30,10 @@ public abstract class BaseLotteryRequest<Result> extends NetworkRequest<Result> 
     }
 
     @Override
-    protected Result parse(String source) throws IOException, JSONException {
+    protected Result parse(String source, int status) throws IOException, JSONException {
         JSONObject res;
 
-        res = new JSONObject(source.toLowerCase());
+        res = new JSONObject(source);
 
         if (res.has("errorCode")) {
             int code = res.getInt("errorCode");
