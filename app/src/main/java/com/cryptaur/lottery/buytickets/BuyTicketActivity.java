@@ -6,25 +6,21 @@ import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.cryptaur.lottery.InteractionListener;
-import com.cryptaur.lottery.MenuHelper;
+import com.cryptaur.lottery.ActivityBase;
 import com.cryptaur.lottery.MyTicketsActivity;
 import com.cryptaur.lottery.R;
 import com.cryptaur.lottery.transport.model.Lottery;
 
-public class BuyTicketActivity extends AppCompatActivity implements InteractionListener {
+public class BuyTicketActivity extends ActivityBase {
 
     public static final String ARG_LOTTERY = "lottery";
-    private final MenuHelper helper = new MenuHelper(this);
     private BuyTicketsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
     private Lottery lottery;
@@ -59,18 +55,6 @@ public class BuyTicketActivity extends AppCompatActivity implements InteractionL
         setSupportActionBar(toolbar);
     }
 
-
-    public boolean onCreateOptionsMenu(Menu menu) {
-        helper.onCreateOptionsMenu(menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        helper.onPrepareOptionsMenu(menu);
-        return super.onPrepareOptionsMenu(menu);
-    }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -83,14 +67,6 @@ public class BuyTicketActivity extends AppCompatActivity implements InteractionL
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onDoAction(Action action) {
-        switch (action) {
-            case CloseThisFragment:
-                finish();
-                break;
-        }
-    }
 
     /**
      * A placeholder fragment containing a simple view.

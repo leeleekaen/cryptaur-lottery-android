@@ -72,7 +72,7 @@ public class TicketFragment extends Fragment implements InteractionListener {
     }
 
     @Override
-    public void onDoAction(Action action) {
+    public void doAction(IAction action, Fragment fragment) {
 
     }
 }

@@ -14,7 +14,9 @@
 -->
 
 <ripple xmlns:android="http://schemas.android.com/apk/res/android"
-    android:color="@color/accentColor_40p">
+    android:color="@color/accentColor_40p"
+    android:exitFadeDuration="@android:integer/config_shortAnimTime">
+    <!-- Use this to define the shape of the ripple effect (rectangle, oval, ring or line). The color specified here isn't used anyway -->
     <item android:id="@android:id/mask">
         <inset
             android:insetBottom="@dimen/abc_button_inset_vertical_material"
@@ -22,14 +24,18 @@
             android:insetRight="@dimen/abc_button_inset_horizontal_material"
             android:insetTop="@dimen/abc_button_inset_vertical_material">
             <shape android:shape="rectangle">
-                <corners android:radius="@dimen/abc_control_corner_material" />
-                <solid android:color="@color/paleLavander" />
-                <padding
-                    android:bottom="@dimen/abc_button_padding_vertical_material"
-                    android:left="@dimen/abc_button_padding_horizontal_material"
-                    android:right="@dimen/abc_button_padding_horizontal_material"
-                    android:top="@dimen/abc_button_padding_vertical_material" />
+                <corners android:radius="3dp" />
+                <!-- This color is needed to be set - doesn't affect anything -->
+                <solid android:color="@android:color/white" />
             </shape>
         </inset>
+    </item>
+    <!-- This is the background for your button -->
+    <item>
+        <!-- Use the shape you want here -->
+        <shape android:shape="rectangle">
+            <!-- Use the solid tag to define the background color you want -->
+            <solid android:color="@android:color/transparent" />
+        </shape>
     </item>
 </ripple>

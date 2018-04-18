@@ -40,7 +40,7 @@ public class GetTheWinViewHolder extends RecyclerView.ViewHolder implements View
 
     @Override
     public void onClick(View v) {
-        listener.onDoAction(InteractionListener.Action.GetTheWin);
+        listener.doAction(InteractionListener.Action.GetTheWin, null);
     }
 
     @Override

@@ -1,8 +1,10 @@
 package com.cryptaur.lottery.transport;
 
+import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.cryptaur.lottery.transport.base.NetworkRequest;
 import com.cryptaur.lottery.transport.model.BuyTicketResponce;
@@ -14,48 +16,66 @@ import com.cryptaur.lottery.transport.request.BuyTicketRequest;
 import com.cryptaur.lottery.transport.request.GetCurrentLotteriesRequest;
 import com.cryptaur.lottery.transport.request.LoginRequest;
 import com.cryptaur.lottery.transport.request.RefreshSessionRequest;
-import com.cryptaur.lottery.transport.request.SessionRequestQueue;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
 import okhttp3.OkHttpClient;
 
-public class Transport {
+import static com.cryptaur.lottery.transport.base.NetworkRequest.TAG;
+
+public class Transport implements SessionRefresher.RefresherListener {
 
     public static final Transport INSTANCE = new Transport();
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final AtomicInteger requestCounter = new AtomicInteger();
-    private final SessionRequestQueue sessionRequestQueue = new SessionRequestQueue();
+    private final SessionTransport sessionTransport = new SessionTransport();
     private final OkHttpClient client = new OkHttpClient();
-
-    @Nullable
-    private Session currentSession;
+    private final SessionRefresher sessionRefresher = new SessionRefresher(handler, this);
 
     public void getLotteries(@Nullable NetworkRequest.NetworkRequestListener listener) {
         new GetCurrentLotteriesRequest(client, new NetworkRequestWrapper(listener)).execute();
     }
 
-    public void login(Login login, @Nullable NetworkRequest.NetworkRequestListener listener) {
+    public void login(Context context, Login login, @Nullable NetworkRequest.NetworkRequestListener listener) {
         synchronized (this) {
-            sessionRequestQueue.clear();
-            BaseLotteryRequest request = new LoginRequest(client, login, new NetworkSessionRequestWrapper(listener));
-            sessionRequestQueue.doRequest(request);
+            sessionTransport.clear();
+            String deviceId = sessionTransport.getDeviceId(context);
+            BaseLotteryRequest request = new LoginRequest(context, client, login, deviceId, new NetworkSessionRequestWrapper(listener));
+            sessionTransport.doRequest(request);
         }
     }
 
     public void refreshSession(@Nullable NetworkRequest.NetworkRequestListener listener) {
+        Log.d(TAG, "refresh session1");
         synchronized (this) {
-            if (currentSession == null)
+            if (sessionTransport.getCurrentSession() == null)
                 return;
 
-            BaseLotteryRequest request = new RefreshSessionRequest(client, currentSession, new NetworkSessionRequestWrapper(listener));
-            sessionRequestQueue.doRequest(request);
+            Log.d(TAG, "refresh session2");
+            BaseLotteryRequest request = new RefreshSessionRequest(client, sessionTransport.getCurrentSession(), new NetworkSessionRequestWrapper(listener));
+            sessionTransport.doRequest(request);
         }
     }
 
     public void buyTicket(Ticket ticket, NetworkRequest.NetworkRequestListener<BuyTicketResponce> listener) {
-        currentSession = new Session("asdf", "qwer");
-        new BuyTicketRequest(client, ticket, currentSession, listener).execute();
+        new BuyTicketRequest(client, ticket, sessionTransport.getCurrentSession(), listener).execute();
+    }
+
+    public boolean isLoggedIn() {
+        return sessionTransport.isLoggedIn();
+    }
+
+    @Override
+    public void refreshSession() {
+        refreshSession(null);
+    }
+
+    public void onResumeActivity() {
+        sessionRefresher.onResumeActivity();
+    }
+
+    public void onPauseActivity() {
+        sessionRefresher.onPauseActivity();
     }
 
     /**
@@ -119,24 +139,25 @@ public class Transport {
         public void onNetworkRequestDone(NetworkRequest request, T responce) {
             synchronized (Transport.this) {
                 if (responce instanceof Session) {
-                    currentSession = (Session) responce;
-                    sessionRequestQueue.setCurrentSession(currentSession);
+                    sessionTransport.onSessionRequestFinishedOk(request, (Session) responce);
+                    sessionRefresher.postponeRefresh((Session) responce);
                 }
             }
+            sessionTransport.onNetworkRequestDone();
             if (callback != null)
                 handler.post(() -> callback.onNetworkRequestDone(request, responce));
         }
 
         @Override
         public void onNetworkRequestError(NetworkRequest request, Exception e) {
-            sessionRequestQueue.onNetworkRequestDone();
+            sessionTransport.onNetworkRequestDone();
             if (callback != null)
                 handler.post(() -> callback.onNetworkRequestError(request, e));
         }
 
         @Override
         public void onCancel(NetworkRequest request) {
-            sessionRequestQueue.onNetworkRequestDone();
+            sessionTransport.onNetworkRequestDone();
             if (callback != null)
                 handler.post(() -> callback.onCancel(request));
         }

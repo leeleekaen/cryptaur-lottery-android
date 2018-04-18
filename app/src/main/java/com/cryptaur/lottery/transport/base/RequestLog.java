@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import okhttp3.Request;
+import okio.Buffer;
 
 import static com.cryptaur.lottery.transport.base.NetworkRequest.TAG;
 
@@ -61,6 +62,16 @@ public class RequestLog {
 
     public void onStart(Request request) {
         if (storeDebug) {
+            Buffer sink = new Buffer();
+            if (request.body() != null) {
+                try {
+                    request.body().writeTo(sink);
+                    requestBody = sink.readUtf8();
+                } catch (IOException e) {
+                    Log.e(TAG, e.getMessage(), e);
+                }
+            }
+
             url = request.url().toString();
             Map<String, List<String>> props  = request.headers().toMultimap();
             headers = new HashMap<>();

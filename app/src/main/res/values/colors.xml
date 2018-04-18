@@ -15,5 +15,10 @@
     <color name="hotPink">#FF0089</color>
     <color name="lotteryBlue">#6E95F2</color>
     <color name="paleGray">#E4DDF1</color>
+    <color name="blueGrey">#8388AF</color>
+    <color name="blueGreyLight">#bfc6ff</color>
+    <color name="blueGrayAlpha">#808388AF</color>
     <color name="electricPurple">#8941FF</color>
+    <color name="dark">#2B2D3B</color>
+
 </resources>

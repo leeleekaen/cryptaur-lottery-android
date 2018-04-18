@@ -195,7 +195,7 @@ public class BuyTicketFragment extends Fragment implements BuyTicketRecyclerView
     @Override
     public void onNetworkRequestStart(NetworkRequest request) {
         new Handler(Looper.getMainLooper()).post(() -> Toast.makeText(getActivity(), "start request", Toast.LENGTH_SHORT).show());
-        mListener.onDoAction(InteractionListener.Action.CloseThisFragment);
+        mListener.doAction(InteractionListener.Action.CloseThisFragment, this);
     }
 
     @Override

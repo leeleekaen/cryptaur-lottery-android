@@ -9,6 +9,8 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="actionBarSize">42dp</item>
+        <item name="colorControlNormal">@android:color/white</item>
+        <item name="android:textColor">@android:color/white</item>
     </style>
 
     <style name="AppTheme.Light" parent="Theme.AppCompat.Light">
@@ -19,9 +21,27 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="actionBarSize">42dp</item>
+        <item name="colorControlNormal">@color/heather</item>
         <item name="android:textColor">@color/heather</item>
+
     </style>
 
+    <style name="AppTheme.Dialog" parent="AlertDialog.AppCompat">
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowBackground">@color/dark</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>
+        <item name="android:windowSoftInputMode">stateUnspecified|adjustPan</item>
+        <item name="android:backgroundDimEnabled">false</item>
+        <!--        <item name="android:background">@color/dark</item> -->
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:textColorHint">@color/blueGrey</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="colorControlNormal">@color/blueGrey</item>
+
+        <item name="colorControlActivated">@color/blueGreyLight</item>
+
+    </style>
 
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
