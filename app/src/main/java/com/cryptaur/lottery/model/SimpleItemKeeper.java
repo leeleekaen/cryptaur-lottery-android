@@ -8,18 +8,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 @UiThread
-public class RequestJoiner<T> implements NetworkRequest.NetworkRequestListener<T> {
+class SimpleItemKeeper<T> implements NetworkRequest.NetworkRequestListener<T> {
 
     private final List<GetObjectCallback<T>> getObjectCallbacks = new ArrayList<>();
+    private final long valueTimeout;
     private T value;
     private boolean executingRequest;
     private long responceTimestamp;
+    private final Executor<T> executor;
 
-
-    public RequestJoiner() {
+    SimpleItemKeeper(long valueTimeout, Executor<T> executor) {
+        this.valueTimeout = valueTimeout;
+        this.executor = executor;
     }
 
-    public void addCallback(GetObjectCallback<T> callback) {
+    private void addCallback(GetObjectCallback<T> callback) {
         if (!getObjectCallbacks.contains(callback))
             getObjectCallbacks.add(callback);
     }
@@ -57,23 +60,36 @@ public class RequestJoiner<T> implements NetworkRequest.NetworkRequestListener<T
         getObjectCallbacks.clear();
     }
 
-    public boolean isExecutingRequest() {
-        return executingRequest;
-    }
-
-    public void setExecutingRequest(boolean executingRequest) {
-        this.executingRequest = executingRequest;
-    }
-
     public long getResponceTimestamp() {
         return responceTimestamp;
     }
 
-    public boolean isResultOutdated(long timeout) {
+    private boolean isResultOutdated(long timeout) {
         return value == null || System.currentTimeMillis() - responceTimestamp > timeout;
     }
 
     public T getValue() {
         return value;
+    }
+
+    @UiThread
+    public void requestValue(final GetObjectCallback<T> listener, boolean force) {
+        if (executingRequest) {
+            addCallback(listener);
+        } else {
+            if (force || isResultOutdated(valueTimeout)) {
+                executingRequest = true;
+                addCallback(listener);
+                executor.executeRequest(this);
+            }
+        }
+
+        if (value != null) {
+            listener.onRequestResult(value);
+        }
+    }
+
+    public interface Executor<T> {
+        void executeRequest(NetworkRequest.NetworkRequestListener<T> listener);
     }
 }

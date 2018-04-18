@@ -49,7 +49,7 @@ public class LotteryViewMainViewHolder implements GetObjectCallback<CurrentDraws
         }
     };
 
-    public LotteryViewMainViewHolder(ViewGroup view, Lottery lottery) {
+    private LotteryViewMainViewHolder(ViewGroup view, Lottery lottery) {
         this.view = view;
         this.lottery = lottery;
         ImageView ballsView = view.findViewById(R.id.balls);
@@ -81,7 +81,7 @@ public class LotteryViewMainViewHolder implements GetObjectCallback<CurrentDraws
         return new LotteryViewMainViewHolder(view, lottery);
     }
 
-    public void update() {
+    private void update() {
         Keeper.getInstance(view.getContext()).getCurrentDraws(this);
     }
 
@@ -95,7 +95,7 @@ public class LotteryViewMainViewHolder implements GetObjectCallback<CurrentDraws
         Resources res = view.getResources();
         drawNumberView.setText(res.getString(R.string.draw_number, draw.number));
 
-        jackpotAmountView.setText(jackPotSize + " CPT");
+        jackpotAmountView.setText(view.getResources().getString(R.string._CPT, jackPotSize));
         buyButtonView.setText(res.getString(R.string.buy_ticket_for, ticketPrice));
         updateTimer();
     }
@@ -103,11 +103,12 @@ public class LotteryViewMainViewHolder implements GetObjectCallback<CurrentDraws
     private void updateTimer() {
         if (draw != null) {
             long secondsToDraw = Instant.now().until(draw.startTime, ChronoUnit.SECONDS);
-            int hourstoDraw = (int) (secondsToDraw / 60 / 60);
+            int hourstoDraw = (int) Math.abs(secondsToDraw / 60 / 60);
             int minutesToDraw = (int) ((Math.abs(secondsToDraw) / 60) % 60);
             int secstoDraw = (int) (Math.abs(secondsToDraw) % 60);
 
-            String time = String.format(Locale.US, "%02d:%02d:%02d", hourstoDraw, minutesToDraw, secstoDraw);
+            String sign = secondsToDraw < 0 ? "-" : "";
+            String time = String.format(Locale.US, "%s%02d:%02d:%02d", sign, hourstoDraw, minutesToDraw, secstoDraw);
             timeLeftView.setText(view.getResources().getString(R.string.time_left_, time));
         }
     }

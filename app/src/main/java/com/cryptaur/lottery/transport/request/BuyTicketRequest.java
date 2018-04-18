@@ -38,16 +38,6 @@ public class BuyTicketRequest extends BaseLotteryRequest<BuyTicketResponce> {
         execSimpleRequest(METHOD, RequestType.Post, requestObj.toString());
     }
 
-    /*
-
-    {
-   "authKey" : "sadskfskfhuifgwufdsfjskfh", // token аутентификации (эта часть будет меняться)
-   "lotteryId" : 1,                         // тип лотереи
-   "numbers" : [7,11,18,22,31,41],          // номера билета содержит номера, которые выбрал пользователь в билете
-   "drawIndex" : 7                         // номер тиража
-}
-     */
-
     @Override
     protected BuyTicketResponce parseJson(JSONObject source) throws JSONException {
         return new BuyTicketResponce();

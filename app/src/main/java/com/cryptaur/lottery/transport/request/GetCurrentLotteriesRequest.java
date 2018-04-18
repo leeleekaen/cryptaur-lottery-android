@@ -8,15 +8,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import okhttp3.OkHttpClient;
 
 public class GetCurrentLotteriesRequest extends BaseLotteryRequest<CurrentDraws> {
     private static final String METHOD = "api/getCurrentLotteries";
 
-    public GetCurrentLotteriesRequest(OkHttpClient client, NetworkRequestListener listener) {
+    public GetCurrentLotteriesRequest(OkHttpClient client, NetworkRequestListener<CurrentDraws> listener) {
         super(client, listener);
     }
 

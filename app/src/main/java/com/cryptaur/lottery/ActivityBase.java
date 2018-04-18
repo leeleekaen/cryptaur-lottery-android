@@ -1,20 +1,33 @@
 package com.cryptaur.lottery;
 
 import android.content.Intent;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import com.cryptaur.lottery.controller.WorkflowController;
 import com.cryptaur.lottery.login.InitialLoginController;
 import com.cryptaur.lottery.login.MenuDialogFragmentFragment;
 import com.cryptaur.lottery.transport.Transport;
+import com.cryptaur.lottery.view.WalletViewHolder;
 
-public class ActivityBase extends AppCompatActivity implements InteractionListener {
+public abstract class ActivityBase extends AppCompatActivity implements InteractionListener {
 
     private final MenuHelper helper = new MenuHelper(this);
     WorkflowController workflowController;
+    private WalletViewHolder walletView;
+
+    @Override
+    public void setContentView(int layoutResID) {
+        super.setContentView(layoutResID);
+        TextView walletView = findViewById(R.id.wallet);
+        if (walletView != null) {
+            this.walletView = new WalletViewHolder(walletView, this);
+        }
+    }
 
     public boolean onCreateOptionsMenu(Menu menu) {
         helper.onCreateOptionsMenu(menu);
@@ -44,7 +57,7 @@ public class ActivityBase extends AppCompatActivity implements InteractionListen
     }
 
     @Override
-    public void doAction(IAction action, Fragment fragment) {
+    public void doAction(IAction action, @Nullable Fragment fragment) {
         if (workflowController != null && workflowController.onAction(action, fragment))
             return;
 
@@ -64,15 +77,16 @@ public class ActivityBase extends AppCompatActivity implements InteractionListen
                     break;
 
                 case RefreshWallet:
-                    //TODO: implement
+                    if (walletView != null)
+                        walletView.refresh(true);
+                    break;
+
+                case Login:
+                    workflowController = new InitialLoginController(this);
+                    workflowController.start();
                     break;
             }
         }
-    }
-
-    protected void doLogin() {
-        workflowController = new InitialLoginController(this);
-        workflowController.start();
     }
 
     @Override

@@ -2,6 +2,8 @@ package com.cryptaur.lottery.mytickets;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -50,7 +52,7 @@ public class TicketFragment extends Fragment implements InteractionListener {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_ticket_list, container, false);
 
@@ -72,7 +74,7 @@ public class TicketFragment extends Fragment implements InteractionListener {
     }
 
     @Override
-    public void doAction(IAction action, Fragment fragment) {
+    public void doAction(IAction action, @Nullable Fragment fragment) {
 
     }
 }

@@ -8,7 +8,6 @@ import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyProperties;
 import android.util.Log;
 
-import com.cryptaur.lottery.Const;
 import com.cryptaur.lottery.transport.base.NetworkRequest;
 import com.cryptaur.lottery.transport.model.Login;
 import com.cryptaur.lottery.transport.model.Session;
@@ -26,15 +25,16 @@ import java.util.List;
 import java.util.Queue;
 import java.util.UUID;
 
+import static com.cryptaur.lottery.Const.KEY_ADDRESS;
 import static com.cryptaur.lottery.transport.base.NetworkRequest.TAG;
 
 public class SessionTransport {
     private static final String KEY_ALIAS = "lotteryKeyAlias";
 
     private static final String KEY = "name";
-    NetworkRequest currentRequest;
-    Queue<NetworkRequest> requestQueue = new LinkedList<>();
-    Session currentSession;
+    private final Queue<NetworkRequest> requestQueue = new LinkedList<>();
+    private NetworkRequest currentRequest;
+    private Session currentSession;
 
     public String getDeviceId(Context context) {
         SharedPreferences preferences = context.getSharedPreferences("device", Context.MODE_PRIVATE);
@@ -120,7 +120,7 @@ public class SessionTransport {
             if (login != null && login.password != null && login.password.length() > 0) {
                 PreferenceManager.getDefaultSharedPreferences(loginRequest.getContext())
                         .edit().putString(KEY, login.login.toString())
-                        .putString(Const.KEY_ADDRESS, session.address)
+                        .putString(KEY_ADDRESS, session.address)
                         .apply();
             }
         }
@@ -131,7 +131,7 @@ public class SessionTransport {
         return currentSession;
     }
 
-    public void setCurrentSession(Session currentSession) {
+    private void setCurrentSession(Session currentSession) {
         synchronized (this) {
             this.currentSession = currentSession;
         }
@@ -139,5 +139,11 @@ public class SessionTransport {
 
     public boolean isLoggedIn() {
         return currentSession != null && currentSession.isAlive();
+    }
+
+    public String getAddress(Context context) {
+        if (currentSession != null)
+            return currentSession.address;
+        return PreferenceManager.getDefaultSharedPreferences(context).getString(KEY_ADDRESS, null);
     }
 }

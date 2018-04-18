@@ -13,14 +13,19 @@ import java.math.BigInteger;
 
 public class Keeper {
     private static final long DRAWS_UPDATE_TIMEOUT = 600_000; // 10 mins
+    private static final long BALANCE_UPDATE_TIMEOUT = 600_000; // 10 mins
 
     private static volatile Keeper keeper;
 
-    private final RequestJoiner<CurrentDraws> currentDraws = new RequestJoiner<>();
+    private final SimpleItemKeeper<CurrentDraws> currentDrawsKeeper
+            = new SimpleItemKeeper<>(DRAWS_UPDATE_TIMEOUT, Transport.INSTANCE::getLotteries);
+    private final SimpleItemKeeper<BigInteger> balanceKeeper;
+
     private final TicketsRequestJoiner ticketRequestJoiner = new TicketsRequestJoiner();
 
-    public Keeper(Context context) {
-
+    private Keeper(Context context) {
+        final Context ctx = context.getApplicationContext();
+        balanceKeeper = new SimpleItemKeeper<>(BALANCE_UPDATE_TIMEOUT, listener -> Transport.INSTANCE.getBalance(ctx, listener));
     }
 
     public static Keeper getInstance(Context context) {
@@ -42,19 +47,16 @@ public class Keeper {
 
     @UiThread
     public void getCurrentDraws(final GetObjectCallback<CurrentDraws> listener) {
-        if (!currentDraws.isExecutingRequest() && currentDraws.isResultOutdated(DRAWS_UPDATE_TIMEOUT)) {
-            currentDraws.setExecutingRequest(true);
-            Transport.INSTANCE.getLotteries(currentDraws);
-        }
+        currentDrawsKeeper.requestValue(listener, false);
 
-        if (currentDraws.isExecutingRequest()) {
-            currentDraws.addCallback(listener);
-        }
-
-        CurrentDraws draws = currentDraws.getValue();
+        CurrentDraws draws = currentDrawsKeeper.getValue();
         if (draws != null) {
             listener.onRequestResult(draws);
         }
+    }
+
+    public void getBalance(GetObjectCallback<BigInteger> listener, boolean force) {
+        balanceKeeper.requestValue(listener, force);
     }
 
     public ITicketStorageRead getTicketsStorage() {
@@ -84,5 +86,6 @@ public class Keeper {
     public void getUnusedWin(final GetObjectCallback<BigInteger> listener) {
         listener.onRequestResult(BigInteger.valueOf(100_0000_0000L));
     }
+
 
 }

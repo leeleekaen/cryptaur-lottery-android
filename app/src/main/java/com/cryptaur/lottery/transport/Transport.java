@@ -8,15 +8,18 @@ import android.util.Log;
 
 import com.cryptaur.lottery.transport.base.NetworkRequest;
 import com.cryptaur.lottery.transport.model.BuyTicketResponce;
+import com.cryptaur.lottery.transport.model.CurrentDraws;
 import com.cryptaur.lottery.transport.model.Login;
 import com.cryptaur.lottery.transport.model.Session;
 import com.cryptaur.lottery.transport.model.Ticket;
 import com.cryptaur.lottery.transport.request.BaseLotteryRequest;
 import com.cryptaur.lottery.transport.request.BuyTicketRequest;
+import com.cryptaur.lottery.transport.request.GetBalanceRequest;
 import com.cryptaur.lottery.transport.request.GetCurrentLotteriesRequest;
 import com.cryptaur.lottery.transport.request.LoginRequest;
 import com.cryptaur.lottery.transport.request.RefreshSessionRequest;
 
+import java.math.BigInteger;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import okhttp3.OkHttpClient;
@@ -32,42 +35,39 @@ public class Transport implements SessionRefresher.RefresherListener {
     private final OkHttpClient client = new OkHttpClient();
     private final SessionRefresher sessionRefresher = new SessionRefresher(handler, this);
 
-    public void getLotteries(@Nullable NetworkRequest.NetworkRequestListener listener) {
-        new GetCurrentLotteriesRequest(client, new NetworkRequestWrapper(listener)).execute();
+    public void getLotteries(@Nullable NetworkRequest.NetworkRequestListener<CurrentDraws> listener) {
+        new GetCurrentLotteriesRequest(client, new NetworkRequestWrapper<>(listener)).execute();
     }
 
     public void login(Context context, Login login, @Nullable NetworkRequest.NetworkRequestListener listener) {
         synchronized (this) {
             sessionTransport.clear();
             String deviceId = sessionTransport.getDeviceId(context);
-            BaseLotteryRequest request = new LoginRequest(context, client, login, deviceId, new NetworkSessionRequestWrapper(listener));
+            BaseLotteryRequest request = new LoginRequest(context, client, login, deviceId, new NetworkSessionRequestWrapper<>(listener));
             sessionTransport.doRequest(request);
         }
     }
 
-    public void refreshSession(@Nullable NetworkRequest.NetworkRequestListener listener) {
+    @Override
+    public void refreshSession() {
         Log.d(TAG, "refresh session1");
         synchronized (this) {
             if (sessionTransport.getCurrentSession() == null)
                 return;
 
             Log.d(TAG, "refresh session2");
-            BaseLotteryRequest request = new RefreshSessionRequest(client, sessionTransport.getCurrentSession(), new NetworkSessionRequestWrapper(listener));
+            BaseLotteryRequest request = new RefreshSessionRequest(client, sessionTransport.getCurrentSession(),
+                    new NetworkSessionRequestWrapper<>(null));
             sessionTransport.doRequest(request);
         }
     }
 
     public void buyTicket(Ticket ticket, NetworkRequest.NetworkRequestListener<BuyTicketResponce> listener) {
-        new BuyTicketRequest(client, ticket, sessionTransport.getCurrentSession(), listener).execute();
+        new BuyTicketRequest(client, ticket, sessionTransport.getCurrentSession(), new NetworkRequestWrapper<>(listener)).execute();
     }
 
     public boolean isLoggedIn() {
         return sessionTransport.isLoggedIn();
-    }
-
-    @Override
-    public void refreshSession() {
-        refreshSession(null);
     }
 
     public void onResumeActivity() {
@@ -78,6 +78,14 @@ public class Transport implements SessionRefresher.RefresherListener {
         sessionRefresher.onPauseActivity();
     }
 
+    public void getBalance(Context context, NetworkRequest.NetworkRequestListener<BigInteger> listener) {
+        String address = sessionTransport.getAddress(context);
+        if (address == null)
+            listener.onCancel(null);
+        else
+            new GetBalanceRequest(address, client, new NetworkRequestWrapper<>(listener)).execute();
+    }
+
     /**
      * wraps normal requests
      */
@@ -85,7 +93,7 @@ public class Transport implements SessionRefresher.RefresherListener {
         @Nullable
         private final NetworkRequest.NetworkRequestListener<T> callback;
 
-        public NetworkRequestWrapper(@Nullable NetworkRequest.NetworkRequestListener<T> callback) {
+        NetworkRequestWrapper(@Nullable NetworkRequest.NetworkRequestListener<T> callback) {
             this.callback = callback;
         }
 
@@ -125,7 +133,7 @@ public class Transport implements SessionRefresher.RefresherListener {
         @Nullable
         private final NetworkRequest.NetworkRequestListener<T> callback;
 
-        public NetworkSessionRequestWrapper(@Nullable NetworkRequest.NetworkRequestListener<T> callback) {
+        NetworkSessionRequestWrapper(@Nullable NetworkRequest.NetworkRequestListener<T> callback) {
             this.callback = callback;
         }
 
