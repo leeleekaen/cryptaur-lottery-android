@@ -39,10 +39,21 @@ public class Transport implements SessionRefresher.RefresherListener {
         new GetCurrentLotteriesRequest(client, new NetworkRequestWrapper<>(listener)).execute();
     }
 
-    public void login(Context context, Login login, @Nullable NetworkRequest.NetworkRequestListener listener) {
+    public void login(Context context, Login login, @Nullable NetworkRequest.NetworkRequestListener<Session> listener) {
         synchronized (this) {
             sessionTransport.clear();
             String deviceId = sessionTransport.getDeviceId(context);
+            BaseLotteryRequest request = new LoginRequest(context, client, login, deviceId, new NetworkSessionRequestWrapper<>(listener));
+            sessionTransport.doRequest(request);
+        }
+    }
+
+    public void login(Context context, String pin, @Nullable NetworkRequest.NetworkRequestListener<Session> listener) {
+        synchronized (this) {
+            sessionTransport.clear();
+            String deviceId = sessionTransport.getDeviceId(context);
+            String username = sessionTransport.getUsername(context);
+            Login login = new Login(username, "", pin);
             BaseLotteryRequest request = new LoginRequest(context, client, login, deviceId, new NetworkSessionRequestWrapper<>(listener));
             sessionTransport.doRequest(request);
         }
@@ -84,6 +95,10 @@ public class Transport implements SessionRefresher.RefresherListener {
             listener.onCancel(null);
         else
             new GetBalanceRequest(address, client, new NetworkRequestWrapper<>(listener)).execute();
+    }
+
+    public boolean canAuthorizeWithPin(Context context) {
+        return sessionTransport.canAuthorizeWithPin(context);
     }
 
     /**

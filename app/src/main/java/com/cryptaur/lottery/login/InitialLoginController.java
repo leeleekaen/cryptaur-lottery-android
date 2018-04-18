@@ -10,14 +10,15 @@ import com.cryptaur.lottery.controller.WorkflowController;
 import com.cryptaur.lottery.transport.Transport;
 import com.cryptaur.lottery.transport.base.NetworkRequest;
 import com.cryptaur.lottery.transport.model.Login;
+import com.cryptaur.lottery.transport.model.Session;
 import com.cryptaur.lottery.util.FixCloseDialogFragment;
 
-public class InitialLoginController implements WorkflowController, NetworkRequest.NetworkRequestListener {
+public class InitialLoginController implements WorkflowController, NetworkRequest.NetworkRequestListener<Session> {
 
     private final ActivityBase activity;
-    LoginFragment.LoginAction login;
-    EnterPinCodeDialogFragment.OnDonePinUnput pin1;
-    EnterPinCodeDialogFragment.OnDonePinUnput pin2;
+    private LoginFragment.LoginAction login;
+    private EnterPinCodeDialogFragment.OnDonePinInput pin1;
+    private EnterPinCodeDialogFragment.OnDonePinInput pin2;
 
     public InitialLoginController(ActivityBase activity) {
         this.activity = activity;
@@ -34,12 +35,12 @@ public class InitialLoginController implements WorkflowController, NetworkReques
             this.login = (LoginFragment.LoginAction) action;
             EnterPinCodeDialogFragment.showDialog(activity.getSupportFragmentManager(), R.string.createPinCode, false);
             return true;
-        } else if (action instanceof EnterPinCodeDialogFragment.OnDonePinUnput) {
+        } else if (action instanceof EnterPinCodeDialogFragment.OnDonePinInput) {
             if (pin1 == null) {
-                pin1 = (EnterPinCodeDialogFragment.OnDonePinUnput) action;
+                pin1 = (EnterPinCodeDialogFragment.OnDonePinInput) action;
                 EnterPinCodeDialogFragment.showDialog(activity.getSupportFragmentManager(), R.string.repeatPinCode, false);
             } else {
-                pin2 = (EnterPinCodeDialogFragment.OnDonePinUnput) action;
+                pin2 = (EnterPinCodeDialogFragment.OnDonePinInput) action;
                 if (pin1.equals(pin2)) {
                     Transport.INSTANCE.login(activity, new Login(login.login, login.password, pin1.toCharSequence()), this);
                     if (fragment instanceof EnterPinCodeDialogFragment) {
@@ -63,7 +64,7 @@ public class InitialLoginController implements WorkflowController, NetworkReques
     }
 
     @Override
-    public void onNetworkRequestDone(NetworkRequest request, Object responce) {
+    public void onNetworkRequestDone(NetworkRequest request, Session responce) {
         Toast.makeText(activity, "Login OK", Toast.LENGTH_SHORT).show();
         FixCloseDialogFragment.closeDialogFragment(activity.getSupportFragmentManager());
         activity.doAction(InteractionListener.Action.RefreshWallet, null);

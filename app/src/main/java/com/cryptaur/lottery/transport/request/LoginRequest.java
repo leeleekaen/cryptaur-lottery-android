@@ -26,7 +26,7 @@ public class LoginRequest extends BaseLotteryRequest<Session> {
     private final String deviceId;
     private final Context context;
 
-    public LoginRequest(Context context, OkHttpClient client, Login login, String deviceId, NetworkRequestListener listener) {
+    public LoginRequest(Context context, OkHttpClient client, Login login, String deviceId, NetworkRequestListener<Session> listener) {
         super(client, listener);
         this.context = context.getApplicationContext();
         this.login = login;

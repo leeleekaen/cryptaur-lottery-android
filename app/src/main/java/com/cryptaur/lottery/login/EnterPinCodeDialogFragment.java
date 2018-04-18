@@ -2,6 +2,7 @@ package com.cryptaur.lottery.login;
 
 import android.app.Fragment;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
@@ -54,7 +55,7 @@ public class EnterPinCodeDialogFragment extends FixCloseDialogFragment implement
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mRoot = (ViewGroup) inflater.inflate(R.layout.fragment_enter_pin_code_dialog, container, false);
         messageView = mRoot.findViewById(R.id.enterAccountLabel);
         progress = mRoot.findViewById(R.id.progressLayout);
@@ -174,14 +175,22 @@ public class EnterPinCodeDialogFragment extends FixCloseDialogFragment implement
         progress.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
-    private void onDonePinInput() {
-        mListener.doAction(new OnDonePinUnput(digits), this);
+    public void resetPinInput() {
+        Arrays.fill(digits, -1);
+        for (CheckableImageButton digitImageButton : digitImageButtons) {
+            digitImageButton.setChecked(false);
+            digitImageButton.setSelected(false);
+        }
     }
 
-    public static class OnDonePinUnput implements InteractionListener.IAction {
-        public final int[] digits;
+    private void onDonePinInput() {
+        mListener.doAction(new OnDonePinInput(digits), this);
+    }
 
-        public OnDonePinUnput(int[] digits) {
+    public static class OnDonePinInput implements InteractionListener.IAction {
+        final int[] digits;
+
+        OnDonePinInput(int[] digits) {
             this.digits = digits;
         }
 
@@ -189,7 +198,7 @@ public class EnterPinCodeDialogFragment extends FixCloseDialogFragment implement
         public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
-            OnDonePinUnput that = (OnDonePinUnput) o;
+            OnDonePinInput that = (OnDonePinInput) o;
             return Arrays.equals(digits, that.digits);
         }
 

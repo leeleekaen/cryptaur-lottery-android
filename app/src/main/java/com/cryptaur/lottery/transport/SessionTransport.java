@@ -31,18 +31,19 @@ import static com.cryptaur.lottery.transport.base.NetworkRequest.TAG;
 public class SessionTransport {
     private static final String KEY_ALIAS = "lotteryKeyAlias";
 
-    private static final String KEY = "name";
+    private static final String KEY_DEVICE_ID = "name";
+    private static final String KEY_USER_NAME = "name";
     private final Queue<NetworkRequest> requestQueue = new LinkedList<>();
     private NetworkRequest currentRequest;
     private Session currentSession;
 
     public String getDeviceId(Context context) {
         SharedPreferences preferences = context.getSharedPreferences("device", Context.MODE_PRIVATE);
-        if (preferences.contains(KEY)) {
-            return preferences.getString(KEY, null);
+        if (preferences.contains(KEY_DEVICE_ID)) {
+            return preferences.getString(KEY_DEVICE_ID, null);
         } else {
             String value = UUID.randomUUID().toString();
-            preferences.edit().putString(KEY, value).apply();
+            preferences.edit().putString(KEY_DEVICE_ID, value).apply();
             return value;
         }
     }
@@ -119,7 +120,7 @@ public class SessionTransport {
             Login login = loginRequest.getLogin();
             if (login != null && login.password != null && login.password.length() > 0) {
                 PreferenceManager.getDefaultSharedPreferences(loginRequest.getContext())
-                        .edit().putString(KEY, login.login.toString())
+                        .edit().putString(KEY_USER_NAME, login.login.toString())
                         .putString(KEY_ADDRESS, session.address)
                         .apply();
             }
@@ -145,5 +146,14 @@ public class SessionTransport {
         if (currentSession != null)
             return currentSession.address;
         return PreferenceManager.getDefaultSharedPreferences(context).getString(KEY_ADDRESS, null);
+    }
+
+    public boolean canAuthorizeWithPin(Context context) {
+        return context.getSharedPreferences("device", Context.MODE_PRIVATE).contains(KEY_DEVICE_ID)
+                && PreferenceManager.getDefaultSharedPreferences(context).contains(KEY_USER_NAME);
+    }
+
+    public String getUsername(Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context).getString(KEY_USER_NAME, null);
     }
 }

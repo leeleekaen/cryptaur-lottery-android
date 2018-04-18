@@ -31,4 +31,5 @@
     <string name="inputPassword">Input password</string>
     <string name="createPinCode">Please, create PIN-code</string>
     <string name="repeatPinCode">Please, repeat PIN-code</string>
+    <string name="enter_your_pin_code_to_login">Enter your PIN-code\nto login</string>
 </resources>

@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.cryptaur.lottery.controller.WorkflowController;
 import com.cryptaur.lottery.login.InitialLoginController;
 import com.cryptaur.lottery.login.MenuDialogFragmentFragment;
+import com.cryptaur.lottery.login.PinLoginController;
 import com.cryptaur.lottery.transport.Transport;
 import com.cryptaur.lottery.view.WalletViewHolder;
 
@@ -82,9 +83,19 @@ public abstract class ActivityBase extends AppCompatActivity implements Interact
                     break;
 
                 case Login:
+                    if (Transport.INSTANCE.canAuthorizeWithPin(this)) {
+                        workflowController = new PinLoginController(this);
+                    } else {
+                        workflowController = new InitialLoginController(this);
+                    }
+                    workflowController.start();
+                    break;
+
+                case UseLoginAndPassword:
                     workflowController = new InitialLoginController(this);
                     workflowController.start();
                     break;
+
             }
         }
     }
