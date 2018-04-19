@@ -38,9 +38,8 @@
         <item name="android:textColorHint">@color/blueGrey</item>
         <item name="android:textColor">@android:color/white</item>
         <item name="colorControlNormal">@color/blueGrey</item>
-
         <item name="colorControlActivated">@color/blueGreyLight</item>
-
+        <item name="android:editTextColor">@android:color/white</item>
     </style>
 
     <style name="AppTheme.NoActionBar">

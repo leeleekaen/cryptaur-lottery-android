@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -40,10 +41,10 @@ import java.util.Locale;
 public class BuyTicketFragment extends Fragment implements BuyTicketRecyclerViewAdapter.NumbersListener, GetObjectCallback, View.OnClickListener, NetworkRequest.NetworkRequestListener<BuyTicketResponce> {
 
     private static final String ARG_LOTTERY = "lottery";
-    ViewGroup root;
-    RecyclerView recyclerView;
-    TextView availableView;
-    Button buyButton;
+    private ViewGroup root;
+    private RecyclerView recyclerView;
+    private AvailableViewHolder availableView;
+    private Button buyButton;
     private InteractionListener mListener;
     private Lottery lottery;
     private Draw currentDraw;
@@ -72,7 +73,7 @@ public class BuyTicketFragment extends Fragment implements BuyTicketRecyclerView
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         root = (ViewGroup) inflater.inflate(R.layout.fragment_buy_ticket, container, false);
         Context context = root.getContext();
@@ -80,7 +81,7 @@ public class BuyTicketFragment extends Fragment implements BuyTicketRecyclerView
         Keeper.getInstance(root.getContext()).getCurrentDraws(this);
 
         recyclerView = root.findViewById(R.id.list);
-        availableView = root.findViewById(R.id.availableText);
+        availableView = new AvailableViewHolder(root.findViewById(R.id.availableText));
         buyButton = root.findViewById(R.id.buyButton);
         selectNumbersLabel = root.findViewById(R.id.selectNumbers);
         clearButton = root.findViewById(R.id.buttonClear);
@@ -167,27 +168,31 @@ public class BuyTicketFragment extends Fragment implements BuyTicketRecyclerView
                 break;
 
             case R.id.buyButton:
+                if (!Transport.INSTANCE.isLoggedIn()) {
+                    mListener.doAction(InteractionListener.Action.Login, this);
+                } else {
 
-                List<Integer> numbers = adapter.getCheckedNumbers();
-                StringBuilder strBuilder = new StringBuilder();
-                strBuilder.append("Buy ticket with numbers ");
-                for (int i = 0; i < numbers.size(); i++) {
-                    strBuilder.append(String.format(Locale.getDefault(), "%d", numbers.get(i)));
-                    if (i < numbers.size() - 1)
-                        strBuilder.append(", ");
+                    List<Integer> numbers = adapter.getCheckedNumbers();
+                    StringBuilder strBuilder = new StringBuilder();
+                    strBuilder.append("Buy ticket with numbers ");
+                    for (int i = 0; i < numbers.size(); i++) {
+                        strBuilder.append(String.format(Locale.getDefault(), "%d", numbers.get(i)));
+                        if (i < numbers.size() - 1)
+                            strBuilder.append(", ");
+                    }
+                    strBuilder.append(" for ")
+                            .append(Strings.toDecimalString(currentDraw.ticketPrice, 8, 0, ".", ","))
+                            .append("?");
+
+                    new AlertDialog.Builder(getActivity())
+                            .setTitle("Buy ticket?")
+                            .setMessage(strBuilder)
+                            .setPositiveButton(android.R.string.yes, (dialog, which) -> {
+                                doBuyTicket();
+                                dialog.dismiss();
+                            }).setNegativeButton(android.R.string.no, (dialog, which) -> dialog.dismiss())
+                            .show();
                 }
-                strBuilder.append(" for ")
-                        .append(Strings.toDecimalString(currentDraw.ticketPrice, 8, 0, ".", ","))
-                        .append("?");
-
-                new AlertDialog.Builder(getActivity())
-                        .setTitle("Buy ticket?")
-                        .setMessage(strBuilder)
-                        .setPositiveButton(android.R.string.yes, (dialog, which) -> {
-                            doBuyTicket();
-                            dialog.dismiss();
-                        }).setNegativeButton(android.R.string.no, (dialog, which) -> dialog.dismiss())
-                        .show();
                 break;
         }
     }

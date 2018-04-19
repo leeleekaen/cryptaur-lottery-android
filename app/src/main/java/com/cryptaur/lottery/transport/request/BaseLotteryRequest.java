@@ -1,6 +1,10 @@
 package com.cryptaur.lottery.transport.request;
 
+import com.cryptaur.lottery.BuildConfig;
+import com.cryptaur.lottery.Const;
 import com.cryptaur.lottery.transport.base.NetworkRequest;
+import com.cryptaur.lottery.transport.base.RequestLog;
+import com.cryptaur.lottery.transport.base.RequestType;
 import com.cryptaur.lottery.transport.exception.ServerException;
 
 import org.json.JSONException;
@@ -8,12 +12,41 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 
 public abstract class BaseLotteryRequest<Result> extends NetworkRequest<Result> {
 
+    private String authString;
+
     public BaseLotteryRequest(OkHttpClient client, NetworkRequestListener<Result> listener) {
         super(client, listener);
+    }
+
+    protected Request createRequest(String method, RequestType requestType, String requestBody) throws IOException {
+        Request.Builder builder = new Request.Builder().url(Const.SERVER_URL + method);
+        if (requestType.isEnclosing() && requestBody != null) {
+            RequestBody body = RequestBody.create(MediaType.parse("application/x-www-form-urlencoded"), requestBody);
+            builder.method(requestType.requestTypeString(), body);
+        } else {
+            builder.method(requestType.requestTypeString(), null);
+        }
+        if (authString != null) {
+            builder.addHeader("Cache-Control", "no-cache")
+                    .addHeader("Authorization", "Bearer " + authString);
+        }
+        //builder.addHeader("Accept", "application/json");
+
+        Request request = builder.build();
+
+        if (BuildConfig.DEBUG) {
+            debugData = new RequestLog(requestType);
+            debugData.onStart(request);
+        }
+
+        return request;
     }
 
     @Override
@@ -41,6 +74,10 @@ public abstract class BaseLotteryRequest<Result> extends NetworkRequest<Result> 
             throw new ServerException(code, message);
         }
         return parseJson(res);
+    }
+
+    public void setAuthString(String authString) {
+        this.authString = authString;
     }
 
     protected abstract void execRequest() throws JSONException;

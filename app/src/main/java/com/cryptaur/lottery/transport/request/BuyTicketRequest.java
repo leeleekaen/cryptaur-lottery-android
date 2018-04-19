@@ -22,12 +22,13 @@ public class BuyTicketRequest extends BaseLotteryRequest<BuyTicketResponce> {
         super(client, listener);
         this.ticket = ticket;
         this.session = session;
+        setAuthString(session.key);
     }
 
     @Override
     protected void execRequest() throws JSONException {
         JSONObject requestObj = new JSONObject();
-        requestObj.put("authKey", session.key);
+        //requestObj.put("authKey", session.key);
         requestObj.put("lotteryId", ticket.lottery.getServerId());
         requestObj.put("drawIndex", ticket.drawIndex);
         JSONArray numbersArr = new JSONArray();

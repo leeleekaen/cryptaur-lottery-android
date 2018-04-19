@@ -6,6 +6,7 @@
 
 
     <color name="accentColor_40p">#66FF0089</color>
+    <color name="primaryColor_40p">#66FF0089</color>
     <color name="accentColor_12p">#1fFF0089</color>
     <color name="lightBlue">#61AAF2</color>
     <color name="lighterPurple">#9949F3</color>
