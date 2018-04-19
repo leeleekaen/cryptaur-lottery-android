@@ -25,7 +25,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:drawableLeft="@drawable/ic_wallet"
             android:drawablePadding="8dp"
             android:gravity="center_vertical"
             android:text="0.0000000 CPT"

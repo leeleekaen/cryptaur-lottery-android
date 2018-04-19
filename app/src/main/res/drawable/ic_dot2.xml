@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/ic_dot_checked_selected" android:state_checked="true" android:state_selected="true">
+
+    </item>
+
+    <item android:drawable="@drawable/ic_dot_checked" android:state_checked="true" android:state_selected="false">
+
+    </item>
+
+    <item android:drawable="@drawable/ic_dot1" android:state_checked="false" android:state_selected="false">
+
+    </item>
+
+    <item android:drawable="@drawable/ic_dot_selected" android:state_checked="false" android:state_selected="true">
+
+    </item>
+</selector>

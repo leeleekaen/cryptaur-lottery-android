@@ -1,10 +1,15 @@
 package com.cryptaur.lottery.login;
 
 import android.app.Fragment;
+import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.StateListDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.app.FragmentManager;
+import android.util.StateSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -86,7 +91,29 @@ public class EnterPinCodeDialogFragment extends FixCloseDialogFragment implement
 
         messageView.setText(messageId);
 
+        Drawable dr = createPinDrawable(mRoot.getResources());
+        digitImageButtons[0].setImageDrawable(dr.getConstantState().newDrawable());
+        digitImageButtons[1].setImageDrawable(dr.getConstantState().newDrawable());
+        digitImageButtons[2].setImageDrawable(dr.getConstantState().newDrawable());
+        digitImageButtons[3].setImageDrawable(dr);
+
         return mRoot;
+    }
+
+    private Drawable createPinDrawable(Resources res) {
+        StateListDrawable result = new StateListDrawable();
+
+        Drawable dr = VectorDrawableCompat.create(res, R.drawable.ic_dot_checked_selected, null);
+        result.addState(new int[]{android.R.attr.state_checked, android.R.attr.state_selected}, dr);
+        dr = VectorDrawableCompat.create(res, R.drawable.ic_dot_checked, null);
+        result.addState(new int[]{android.R.attr.state_checked}, dr);
+        dr = VectorDrawableCompat.create(res, R.drawable.ic_dot_selected, null);
+        result.addState(new int[]{android.R.attr.state_selected}, dr);
+        dr = VectorDrawableCompat.create(res, R.drawable.ic_dot1, null);
+        result.addState(StateSet.WILD_CARD, dr);
+
+        result.setBounds(0, 0, result.getIntrinsicWidth(), result.getIntrinsicHeight());
+        return result;
     }
 
     @Override

@@ -36,10 +36,11 @@ public class LotteryViewMainViewHolder implements GetObjectCallback<CurrentDraws
     private final Handler handler = new Handler();
     private Draw draw;
     private boolean posted = false;
+    private boolean attached = false;
     private final Runnable updateTimerRunnable = new Runnable() {
         @Override
         public void run() {
-            if (view.isAttachedToWindow()) {
+            if (attached) {
                 posted = true;
                 handler.postDelayed(this, 1000);
                 updateTimer();
@@ -126,10 +127,12 @@ public class LotteryViewMainViewHolder implements GetObjectCallback<CurrentDraws
     @Override
     public void onViewAttachedToWindow(View v) {
         handler.post(updateTimerRunnable);
+        attached = true;
     }
 
     @Override
     public void onViewDetachedFromWindow(View v) {
+        attached = false;
     }
 
     @Override

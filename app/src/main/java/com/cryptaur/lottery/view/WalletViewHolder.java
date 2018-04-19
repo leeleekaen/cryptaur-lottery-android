@@ -1,5 +1,6 @@
 package com.cryptaur.lottery.view;
 
+import android.support.graphics.drawable.VectorDrawableCompat;
 import android.view.View;
 import android.widget.TextView;
 
@@ -20,6 +21,11 @@ public class WalletViewHolder implements GetObjectCallback<BigInteger>, View.OnC
         this.view = view;
         this.listener = listener;
         view.setOnClickListener(this);
+
+        VectorDrawableCompat dr = VectorDrawableCompat.create(view.getResources(), R.drawable.ic_wallet, null);
+        dr.setBounds(0, 0, dr.getIntrinsicWidth(), dr.getIntrinsicHeight());
+        view.setCompoundDrawables(dr, null, null, null);
+
         refresh(false);
     }
 
