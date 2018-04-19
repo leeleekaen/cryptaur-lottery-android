@@ -22,6 +22,20 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
+    if (project.hasProperty("Lottery.signing")
+            && new File(project.property("Lottery.signing") + "Lottery.gradle").exists()) {
+        apply from: project.property("Lottery.signing") + "Lottery.gradle";
+    }
+
+    applicationVariants.matching(
+            { it.buildType.name == android.buildTypes.release.name }
+    ).all { variant ->
+
+        variant.outputs.all {
+            outputFileName = "../../../../../build/${variant.applicationId}-${variant.versionName}_${variant.versionCode}.apk"
+        }
+    }
 }
 
 dependencies {
