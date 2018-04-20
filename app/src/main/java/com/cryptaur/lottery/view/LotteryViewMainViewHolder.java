@@ -3,6 +3,7 @@ package com.cryptaur.lottery.view;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.cryptaur.lottery.Const;
 import com.cryptaur.lottery.R;
 import com.cryptaur.lottery.buytickets.BuyTicketActivity;
 import com.cryptaur.lottery.model.GetObjectCallback;
@@ -25,6 +27,7 @@ import org.threeten.bp.temporal.ChronoUnit;
 import java.util.Locale;
 
 public class LotteryViewMainViewHolder implements GetObjectCallback<CurrentDraws>, View.OnAttachStateChangeListener, View.OnClickListener {
+
     public final ViewGroup view;
     public final Lottery lottery;
 
@@ -34,6 +37,12 @@ public class LotteryViewMainViewHolder implements GetObjectCallback<CurrentDraws
     private final Button buyButtonView;
 
     private final Handler handler = new Handler();
+    /**
+     * a little randomize intervals to avoid request peaks at server
+     */
+    private final long _1_min_interval = 55_000 + Math.round(Math.random() * 20_000);
+    private final long _5_min_interval = 290_000 + Math.round(Math.random() * 60_000);
+    private final long _10_min_interval = 580_000 + Math.round(Math.random() * 60_000);
     private Draw draw;
     private boolean posted = false;
     private boolean attached = false;
@@ -70,7 +79,7 @@ public class LotteryViewMainViewHolder implements GetObjectCallback<CurrentDraws
                 ballsView.setImageResource(R.drawable.balls_6x42);
                 break;
         }
-        update();
+        update(false);
 
         view.addOnAttachStateChangeListener(this);
         buyButtonView.setOnClickListener(this);
@@ -82,8 +91,8 @@ public class LotteryViewMainViewHolder implements GetObjectCallback<CurrentDraws
         return new LotteryViewMainViewHolder(view, lottery);
     }
 
-    private void update() {
-        Keeper.getInstance(view.getContext()).getCurrentDraws(this);
+    private void update(boolean force) {
+        Keeper.getInstance(view.getContext()).getCurrentDraws(this, force);
     }
 
     @Override
@@ -104,13 +113,34 @@ public class LotteryViewMainViewHolder implements GetObjectCallback<CurrentDraws
     private void updateTimer() {
         if (draw != null) {
             long secondsToDraw = Instant.now().until(draw.startTime, ChronoUnit.SECONDS);
-            int hourstoDraw = (int) Math.abs(secondsToDraw / 60 / 60);
-            int minutesToDraw = (int) ((Math.abs(secondsToDraw) / 60) % 60);
-            int secstoDraw = (int) (Math.abs(secondsToDraw) % 60);
+            if (secondsToDraw > 0) {
+                int hourstoDraw = (int) Math.abs(secondsToDraw / 60 / 60);
+                int minutesToDraw = (int) ((Math.abs(secondsToDraw) / 60) % 60);
+                int secstoDraw = (int) (Math.abs(secondsToDraw) % 60);
 
-            String sign = secondsToDraw < 0 ? "-" : "";
-            String time = String.format(Locale.US, "%s%02d:%02d:%02d", sign, hourstoDraw, minutesToDraw, secstoDraw);
-            timeLeftView.setText(view.getResources().getString(R.string.time_left_, time));
+                String sign = secondsToDraw < 0 ? "-" : "";
+                String time = String.format(Locale.US, "%s%02d:%02d:%02d", sign, hourstoDraw, minutesToDraw, secstoDraw);
+                timeLeftView.setText(view.getResources().getString(R.string.time_left_, time));
+            } else {
+                timeLeftView.setText(R.string.draw_in_progress);
+                long overtime = -secondsToDraw;
+                if (overtime > _1_min_interval) {
+                    long age = System.currentTimeMillis() - draw.timestamp;
+                    if (age > overtime) {
+                        Log.d(Const.TAG, String.format("lottery %d, update 1, age: %d, overtime: %d", draw.lottery.getServerId(), age, overtime));
+                        update(true);
+                    } else if (overtime > _5_min_interval && overtime - age < 100_000) {
+                        Log.d(Const.TAG, String.format("lottery %d, update 2, age: %d, overtime: %d", draw.lottery.getServerId(), age, overtime));
+                        update(true);
+                    } else if (overtime > _10_min_interval && overtime - age < 400_000) {
+                        Log.d(Const.TAG, String.format("lottery %d, update 3, age: %d, overtime: %d", draw.lottery.getServerId(), age, overtime));
+                        update(true);
+                    } else if (age > _10_min_interval) {
+                        Log.d(Const.TAG, String.format("lottery %d, update 4, age: %d, overtime: %d", draw.lottery.getServerId(), age, overtime));
+                        update(true);
+                    }
+                }
+            }
         }
     }
 
@@ -128,11 +158,13 @@ public class LotteryViewMainViewHolder implements GetObjectCallback<CurrentDraws
     public void onViewAttachedToWindow(View v) {
         handler.post(updateTimerRunnable);
         attached = true;
+        Keeper.getInstance(view.getContext()).addCurrentDrawsListener(this);
     }
 
     @Override
     public void onViewDetachedFromWindow(View v) {
         attached = false;
+        Keeper.getInstance(view.getContext()).removeCurrentDrawsListener(this);
     }
 
     @Override

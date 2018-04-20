@@ -12,8 +12,6 @@ public class MainLotteryPagerAdapter extends PagerAdapter {
 
     private final Lottery[] lotteries;
 
-    private float pageWidth = 1.0f;
-
     public MainLotteryPagerAdapter(Lottery[] lotteries) {
         this.lotteries = lotteries;
     }
@@ -28,12 +26,6 @@ public class MainLotteryPagerAdapter extends PagerAdapter {
     public Object instantiateItem(@NonNull ViewGroup container, int position) {
         LotteryViewMainViewHolder holder = LotteryViewMainViewHolder.create(container, lotteries[position]);
         container.addView(holder.view);
-        float density = container.getContext().getResources().getDisplayMetrics().density;
-        int scrWidth = container.getContext().getResources().getDisplayMetrics().widthPixels;
-        int dp32 = (int) (density * 32);
-        float pgWidth = scrWidth - dp32 *2;
-        pageWidth = pgWidth / scrWidth;
-
         return holder;
     }
 

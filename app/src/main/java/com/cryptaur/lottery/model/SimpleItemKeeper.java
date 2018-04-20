@@ -10,21 +10,22 @@ import java.util.List;
 @UiThread
 class SimpleItemKeeper<T> implements NetworkRequest.NetworkRequestListener<T> {
 
-    private final List<GetObjectCallback<T>> getObjectCallbacks = new ArrayList<>();
+    private final List<GetObjectCallback<T>> dynamicCallbacks = new ArrayList<>();
+    private final List<GetObjectCallback<T>> updateListeners = new ArrayList<>();
     private final long valueTimeout;
+    private final Executor<T> executor;
     private T value;
     private boolean executingRequest;
     private long responceTimestamp;
-    private final Executor<T> executor;
 
     SimpleItemKeeper(long valueTimeout, Executor<T> executor) {
         this.valueTimeout = valueTimeout;
         this.executor = executor;
     }
 
-    private void addCallback(GetObjectCallback<T> callback) {
-        if (!getObjectCallbacks.contains(callback))
-            getObjectCallbacks.add(callback);
+    private void addDynamicCallback(GetObjectCallback<T> callback) {
+        if (!dynamicCallbacks.contains(callback))
+            dynamicCallbacks.add(callback);
     }
 
     @Override
@@ -36,28 +37,31 @@ class SimpleItemKeeper<T> implements NetworkRequest.NetworkRequestListener<T> {
         value = responce;
         responceTimestamp = System.currentTimeMillis();
         executingRequest = false;
-        for (int i = 0; i < getObjectCallbacks.size(); i++) {
-            getObjectCallbacks.get(i).onRequestResult(responce);
+        for (int i = 0; i < dynamicCallbacks.size(); i++) {
+            dynamicCallbacks.get(i).onRequestResult(responce);
         }
-        getObjectCallbacks.clear();
+        dynamicCallbacks.clear();
+        for (int i = 0; i < updateListeners.size(); i++) {
+            updateListeners.get(i).onRequestResult(responce);
+        }
     }
 
     @Override
     public void onNetworkRequestError(NetworkRequest request, Exception e) {
         executingRequest = false;
-        for (int i = 0; i < getObjectCallbacks.size(); i++) {
-            getObjectCallbacks.get(i).onNetworkRequestError(e);
+        for (int i = 0; i < dynamicCallbacks.size(); i++) {
+            dynamicCallbacks.get(i).onNetworkRequestError(e);
         }
-        getObjectCallbacks.clear();
+        dynamicCallbacks.clear();
     }
 
     @Override
     public void onCancel(NetworkRequest request) {
         executingRequest = false;
-        for (int i = 0; i < getObjectCallbacks.size(); i++) {
-            getObjectCallbacks.get(i).onCancel();
+        for (int i = 0; i < dynamicCallbacks.size(); i++) {
+            dynamicCallbacks.get(i).onCancel();
         }
-        getObjectCallbacks.clear();
+        dynamicCallbacks.clear();
     }
 
     public long getResponceTimestamp() {
@@ -73,13 +77,13 @@ class SimpleItemKeeper<T> implements NetworkRequest.NetworkRequestListener<T> {
     }
 
     @UiThread
-    public void requestValue(final GetObjectCallback<T> listener, boolean force) {
+    public void requestValue(final GetObjectCallback<T> listener, boolean forceUpdate) {
         if (executingRequest) {
-            addCallback(listener);
+            addDynamicCallback(listener);
         } else {
-            if (force || isResultOutdated(valueTimeout)) {
+            if (forceUpdate || isResultOutdated(valueTimeout)) {
                 executingRequest = true;
-                addCallback(listener);
+                addDynamicCallback(listener);
                 executor.executeRequest(this);
             }
         }
@@ -87,6 +91,17 @@ class SimpleItemKeeper<T> implements NetworkRequest.NetworkRequestListener<T> {
         if (value != null) {
             listener.onRequestResult(value);
         }
+    }
+
+    public void addListener(GetObjectCallback<T> listener) {
+        if (!updateListeners.contains(listener))
+            updateListeners.add(listener);
+        if (value != null)
+            listener.onRequestResult(value);
+    }
+
+    public void removeListener(GetObjectCallback<T> listener) {
+        updateListeners.remove(listener);
     }
 
     public interface Executor<T> {

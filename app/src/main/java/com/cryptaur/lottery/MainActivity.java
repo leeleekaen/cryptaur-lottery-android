@@ -37,7 +37,7 @@ public class MainActivity extends ActivityBase implements GetObjectCallback<Curr
         float density = getResources().getDisplayMetrics().density;
         lotteryPager.setPageMargin((int) (density * 8));
 
-        Keeper.getInstance(this).getCurrentDraws(this);
+        Keeper.getInstance(this).getCurrentDraws(this, false);
     }
 
     @Override
@@ -54,5 +54,17 @@ public class MainActivity extends ActivityBase implements GetObjectCallback<Curr
 
     @Override
     public void onCancel() {
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Keeper.getInstance(this).addCurrentDrawsListener(this);
+    }
+
+    @Override
+    protected void onPause() {
+        Keeper.getInstance(this).removeCurrentDrawsListener(this);
+        super.onPause();
     }
 }

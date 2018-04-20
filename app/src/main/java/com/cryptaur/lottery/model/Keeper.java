@@ -49,8 +49,8 @@ public class Keeper {
     }
 
     @UiThread
-    public void getCurrentDraws(final GetObjectCallback<CurrentDraws> listener) {
-        currentDrawsKeeper.requestValue(listener, false);
+    public void getCurrentDraws(final GetObjectCallback<CurrentDraws> listener, boolean force) {
+        currentDrawsKeeper.requestValue(listener, force);
 
         CurrentDraws draws = currentDrawsKeeper.getValue();
         if (draws != null) {
@@ -92,5 +92,13 @@ public class Keeper {
 
     public void updateTicketFee(Draw currentDraw, @Nullable GetObjectCallback<Money> listener) {
         Transport.INSTANCE.getTicketFee(currentDraw.lottery, new TicketFeeUpdater(currentDraw, listener));
+    }
+
+    public void addCurrentDrawsListener(GetObjectCallback<CurrentDraws> listener) {
+        currentDrawsKeeper.addListener(listener);
+    }
+
+    public void removeCurrentDrawsListener(GetObjectCallback<CurrentDraws> listener) {
+        currentDrawsKeeper.removeListener(listener);
     }
 }

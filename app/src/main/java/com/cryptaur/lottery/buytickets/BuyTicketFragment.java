@@ -77,7 +77,7 @@ public class BuyTicketFragment extends Fragment implements BuyTicketRecyclerView
         root = (ViewGroup) inflater.inflate(R.layout.fragment_buy_ticket, container, false);
         Context context = root.getContext();
 
-        Keeper.getInstance(root.getContext()).getCurrentDraws(this);
+        Keeper.getInstance(root.getContext()).getCurrentDraws(this, false);
 
         recyclerView = root.findViewById(R.id.list);
         availableView = new AvailableViewHolder(root.findViewById(R.id.availableText));
@@ -93,7 +93,6 @@ public class BuyTicketFragment extends Fragment implements BuyTicketRecyclerView
         buyButton.setOnClickListener(this);
 
         fillControls();
-
         return root;
     }
 
