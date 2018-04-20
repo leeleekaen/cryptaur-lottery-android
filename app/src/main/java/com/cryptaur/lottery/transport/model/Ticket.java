@@ -75,7 +75,8 @@ public class Ticket {
         for (int i = 0; i < numbersArray.length; i++) {
             numbersArray[i] = numbers.get(i);
         }
-        return new Ticket(currentDraw.lottery, currentDraw.number, currentDraw.startTime, -1, -1, null, currentDraw.ticketPrice, numbersArray);
+        return new Ticket(currentDraw.lottery, currentDraw.number, currentDraw.startTime, -1, -1, null,
+                currentDraw.getTicketPrice().amount, numbersArray);
     }
 
     public boolean isWinNumber(int number) {

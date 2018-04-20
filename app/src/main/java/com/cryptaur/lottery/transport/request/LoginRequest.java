@@ -40,14 +40,23 @@ public class LoginRequest extends BaseLotteryRequest<Session> {
 
     @Override
     protected Request createRequest(String method, RequestType requestType, String requestBody) throws IOException {
-        RequestBody formBody = new FormBody.Builder()
+        FormBody.Builder formBodyBuilder = new FormBody.Builder()
                 .add("grant_type", "password")
                 .add("username", login.login.toString())
-                .add("password", login.password.toString())
                 .add("deviceId", deviceId)
-                .add("scope", "lottery_main offline_access")
-                .add("pin", login.pin.toString())
-                .build();
+                .add("scope", "lottery_main offline_access");
+
+        if (login.password == null) {
+            formBodyBuilder
+                    .add("password", login.pin.toString())
+                    .add("use_pin_password", "1");
+        } else {
+            formBodyBuilder
+                    .add("password", login.password.toString())
+                    .add("pin", login.pin.toString());
+        }
+
+        RequestBody formBody = formBodyBuilder.build();
 
         Request.Builder builder = new Request.Builder()
                 .url(Const.AUTH_URL + METHOD)

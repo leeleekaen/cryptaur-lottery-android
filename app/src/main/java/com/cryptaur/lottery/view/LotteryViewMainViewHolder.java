@@ -92,7 +92,7 @@ public class LotteryViewMainViewHolder implements GetObjectCallback<CurrentDraws
         if (draw == null)
             return;
         String jackPotSize = Strings.toDecimalString(draw.jackpot, 8, 3, ".", ",");
-        String ticketPrice = Strings.toDecimalString(draw.ticketPrice, 8, 0, ".", ",");
+        String ticketPrice = Strings.toDecimalString(draw.getTicketPrice().amount, 8, 0, ".", ",");
         Resources res = view.getResources();
         drawNumberView.setText(res.getString(R.string.draw_number, draw.number));
 

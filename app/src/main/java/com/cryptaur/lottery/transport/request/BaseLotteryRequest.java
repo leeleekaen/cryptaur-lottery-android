@@ -28,8 +28,9 @@ public abstract class BaseLotteryRequest<Result> extends NetworkRequest<Result> 
     protected Request createRequest(String method, RequestType requestType, String requestBody) throws IOException {
         Request.Builder builder = new Request.Builder().url(Const.SERVER_URL + method);
         if (requestType.isEnclosing() && requestBody != null) {
-            RequestBody body = RequestBody.create(MediaType.parse("application/x-www-form-urlencoded"), requestBody);
-            builder.method(requestType.requestTypeString(), body);
+            RequestBody body = RequestBody.create(MediaType.parse("application/json"), requestBody);
+            builder.method(requestType.requestTypeString(), body)
+                    .addHeader("Content-Type", "application/json");
         } else {
             builder.method(requestType.requestTypeString(), null);
         }
@@ -65,15 +66,16 @@ public abstract class BaseLotteryRequest<Result> extends NetworkRequest<Result> 
     @Override
     protected Result parse(String source, int status) throws IOException, JSONException {
         JSONObject res;
-
-        res = new JSONObject(source);
-
-        if (res.has("errorCode")) {
-            int code = res.getInt("errorCode");
-            String message = res.isNull("errorMessage") ? null : res.getString("errorMessage");
-            throw new ServerException(code, message);
-        }
-        return parseJson(res);
+        if (source.length() > 0) {
+            res = new JSONObject(source);
+            if (res.has("errorCode")) {
+                int code = res.getInt("errorCode");
+                String message = res.isNull("errorMessage") ? null : res.getString("errorMessage");
+                throw new ServerException(code, message);
+            }
+            return parseJson(res);
+        } else
+            return parseJson(null);
     }
 
     public void setAuthString(String authString) {

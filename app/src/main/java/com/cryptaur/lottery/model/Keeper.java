@@ -2,10 +2,13 @@ package com.cryptaur.lottery.model;
 
 import android.content.Context;
 import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
 
 import com.cryptaur.lottery.transport.Transport;
 import com.cryptaur.lottery.transport.model.CurrentDraws;
+import com.cryptaur.lottery.transport.model.Draw;
+import com.cryptaur.lottery.transport.model.Money;
 import com.cryptaur.lottery.transport.model.Ticket;
 import com.cryptaur.lottery.transport.model.TicketsList;
 
@@ -87,5 +90,7 @@ public class Keeper {
         listener.onRequestResult(BigInteger.valueOf(100_0000_0000L));
     }
 
-
+    public void updateTicketFee(Draw currentDraw, @Nullable GetObjectCallback<Money> listener) {
+        Transport.INSTANCE.getTicketFee(currentDraw.lottery, new TicketFeeUpdater(currentDraw, listener));
+    }
 }

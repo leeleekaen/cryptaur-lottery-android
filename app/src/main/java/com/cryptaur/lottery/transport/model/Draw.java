@@ -18,11 +18,13 @@ public class Draw {
     public final BigInteger jackpotAdded;
     public final BigInteger reserveAdded;
     public final int ticketsBought;
-    public final BigInteger ticketPrice;
+    public final long timestamp;
     public final int[] numbers;
+    private Money ticketPrice;
 
     public Draw(Lottery lottery, JSONObject source) throws JSONException {
         this.lottery = lottery;
+        timestamp = System.currentTimeMillis();
         JSONObjectHelper helper = new JSONObjectHelper(source);
         number = source.getInt("number");
         startTime = helper.getInstant("date");
@@ -33,14 +35,24 @@ public class Draw {
         reserve = helper.getUnsignedBigInteger("reserve");
         jackpotAdded = helper.getUnsignedBigInteger("jackpotAdded");
         reserveAdded = helper.getUnsignedBigInteger("reserveAdded");
-        ticketPrice = helper.getUnsignedBigInteger("ticketPrice");
-        ticketsBought = helper.getUnsignedBigInteger("ticketPrice").intValue();
-        //ticketsBought = source.getInt("ticketsBought");
 
+        ticketsBought = helper.getUnsignedBigInteger("ticketPrice").intValue();
         numbers = helper.getIntArray("numbers");
+
+        BigInteger ticketPrice = helper.getUnsignedBigInteger("ticketPrice");
+        BigInteger fee = helper.getUnsignedBigInteger("buyTicketGasFee");
+        this.ticketPrice = new Money(ticketPrice, fee);
     }
 
     public Draw(JSONObject source) throws JSONException {
         this(Lottery.ofServerId(source.getInt("lotteryId")), source);
+    }
+
+    public Money getTicketPrice() {
+        return ticketPrice;
+    }
+
+    public void setTicketPrice(Money ticketPrice) {
+        this.ticketPrice = ticketPrice;
     }
 }

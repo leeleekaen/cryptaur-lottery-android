@@ -3,8 +3,6 @@ package com.cryptaur.lottery.buytickets;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -26,6 +24,7 @@ import com.cryptaur.lottery.transport.model.BuyTicketResponce;
 import com.cryptaur.lottery.transport.model.CurrentDraws;
 import com.cryptaur.lottery.transport.model.Draw;
 import com.cryptaur.lottery.transport.model.Lottery;
+import com.cryptaur.lottery.transport.model.Money;
 import com.cryptaur.lottery.transport.model.Ticket;
 import com.cryptaur.lottery.util.Strings;
 
@@ -118,7 +117,7 @@ public class BuyTicketFragment extends Fragment implements BuyTicketRecyclerView
 
     private void fillControls() {
         if (currentDraw != null && buyButton != null) {
-            String text = Strings.toDecimalString(currentDraw.ticketPrice, 8, 0, ".", ",");
+            String text = Strings.toDecimalString(currentDraw.getTicketPrice().amount, 8, 0, ".", ",");
             text = buyButton.getResources().getString(R.string.buy_for__cpt, text);
             buyButton.setText(text);
 
@@ -132,6 +131,9 @@ public class BuyTicketFragment extends Fragment implements BuyTicketRecyclerView
     @Override
     public void onNumbersChanged(List<Integer> numbers, boolean filled) {
         buyButton.setEnabled(filled);
+        if (filled) {
+            Keeper.getInstance(root.getContext()).updateTicketFee(currentDraw, null);
+        }
     }
 
     @Override
@@ -171,50 +173,74 @@ public class BuyTicketFragment extends Fragment implements BuyTicketRecyclerView
                 if (!Transport.INSTANCE.isLoggedIn()) {
                     mListener.doAction(InteractionListener.Action.Login, this);
                 } else {
+                    if (currentDraw.getTicketPrice().age() < 60_000) {
+                        showBuyTicketDialog();
+                    } else {
+                        Toast.makeText(v.getContext(), R.string.updatingTicketFee, Toast.LENGTH_SHORT).show();
+                        Keeper.getInstance(v.getContext()).updateTicketFee(currentDraw, new GetObjectCallback<Money>() {
+                            @Override
+                            public void onRequestResult(Money responce) {
+                                showBuyTicketDialog();
+                            }
 
-                    List<Integer> numbers = adapter.getCheckedNumbers();
-                    StringBuilder strBuilder = new StringBuilder();
-                    strBuilder.append("Buy ticket with numbers ");
-                    for (int i = 0; i < numbers.size(); i++) {
-                        strBuilder.append(String.format(Locale.getDefault(), "%d", numbers.get(i)));
-                        if (i < numbers.size() - 1)
-                            strBuilder.append(", ");
+                            @Override
+                            public void onNetworkRequestError(Exception e) {
+                                Toast.makeText(v.getContext(), R.string.errorupdatingTicketFee, Toast.LENGTH_SHORT).show();
+                            }
+
+                            @Override
+                            public void onCancel() {
+                            }
+                        });
                     }
-                    strBuilder.append(" for ")
-                            .append(Strings.toDecimalString(currentDraw.ticketPrice, 8, 0, ".", ","))
-                            .append("?");
-
-                    new AlertDialog.Builder(getActivity())
-                            .setTitle("Buy ticket?")
-                            .setMessage(strBuilder)
-                            .setPositiveButton(android.R.string.yes, (dialog, which) -> {
-                                doBuyTicket();
-                                dialog.dismiss();
-                            }).setNegativeButton(android.R.string.no, (dialog, which) -> dialog.dismiss())
-                            .show();
                 }
                 break;
         }
     }
 
+    private void showBuyTicketDialog() {
+        List<Integer> numbers = adapter.getCheckedNumbers();
+        StringBuilder strBuilder = new StringBuilder();
+        strBuilder.append("Buy ticket with numbers ");
+        for (int i = 0; i < numbers.size(); i++) {
+            strBuilder.append(String.format(Locale.getDefault(), "%d", numbers.get(i)));
+            if (i < numbers.size() - 1)
+                strBuilder.append(", ");
+        }
+        strBuilder.append(" for ")
+                .append(Strings.toDecimalString(currentDraw.getTicketPrice().amount, 8, 0, ".", ","))
+                .append(" CPT?\n")
+                .append("Transaction fee :")
+                .append(Strings.toDecimalString(currentDraw.getTicketPrice().fee, 8, 0, ".", ","))
+                .append(" CPT.");
+
+        new AlertDialog.Builder(getActivity())
+                .setTitle("Buy ticket?")
+                .setMessage(strBuilder)
+                .setPositiveButton(android.R.string.yes, (dialog, which) -> {
+                    doBuyTicket();
+                    dialog.dismiss();
+                }).setNegativeButton(android.R.string.no, (dialog, which) -> dialog.dismiss())
+                .show();
+    }
+
     @Override
     public void onNetworkRequestStart(NetworkRequest request) {
-        new Handler(Looper.getMainLooper()).post(() -> Toast.makeText(getActivity(), "start request", Toast.LENGTH_SHORT).show());
-        mListener.doAction(InteractionListener.Action.CloseThisFragment, this);
     }
 
     @Override
     public void onNetworkRequestDone(NetworkRequest request, BuyTicketResponce responce) {
-        new Handler(Looper.getMainLooper()).post(() -> Toast.makeText(getActivity(), "request done", Toast.LENGTH_SHORT).show());
+        Toast.makeText(root.getContext(), R.string.boughtTicket, Toast.LENGTH_SHORT).show();
+        mListener.doAction(InteractionListener.Action.CloseThisFragment, this);
     }
 
     @Override
     public void onNetworkRequestError(NetworkRequest request, Exception e) {
-        new Handler(Looper.getMainLooper()).post(() -> Toast.makeText(getActivity(), "request error", Toast.LENGTH_SHORT).show());
+        Toast.makeText(root.getContext(), R.string.requestError, Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onCancel(NetworkRequest request) {
-        new Handler(Looper.getMainLooper()).post(() -> Toast.makeText(getActivity(), "request cancelled", Toast.LENGTH_SHORT).show());
+        Toast.makeText(root.getContext(), R.string.requestCancelled, Toast.LENGTH_SHORT).show();
     }
 }

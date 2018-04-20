@@ -10,12 +10,15 @@ import com.cryptaur.lottery.transport.base.NetworkRequest;
 import com.cryptaur.lottery.transport.model.BuyTicketResponce;
 import com.cryptaur.lottery.transport.model.CurrentDraws;
 import com.cryptaur.lottery.transport.model.Login;
+import com.cryptaur.lottery.transport.model.Lottery;
+import com.cryptaur.lottery.transport.model.Money;
 import com.cryptaur.lottery.transport.model.Session;
 import com.cryptaur.lottery.transport.model.Ticket;
 import com.cryptaur.lottery.transport.request.BaseLotteryRequest;
 import com.cryptaur.lottery.transport.request.BuyTicketRequest;
 import com.cryptaur.lottery.transport.request.GetBalanceRequest;
 import com.cryptaur.lottery.transport.request.GetCurrentLotteriesRequest;
+import com.cryptaur.lottery.transport.request.GetTicketPriceRequest;
 import com.cryptaur.lottery.transport.request.LoginRequest;
 import com.cryptaur.lottery.transport.request.RefreshSessionRequest;
 
@@ -53,7 +56,7 @@ public class Transport implements SessionRefresher.RefresherListener {
             sessionTransport.clear();
             String deviceId = sessionTransport.getDeviceId(context);
             String username = sessionTransport.getUsername(context);
-            Login login = new Login(username, "", pin);
+            Login login = new Login(username, null, pin);
             BaseLotteryRequest request = new LoginRequest(context, client, login, deviceId, new NetworkSessionRequestWrapper<>(listener));
             sessionTransport.doRequest(request);
         }
@@ -99,6 +102,10 @@ public class Transport implements SessionRefresher.RefresherListener {
 
     public boolean canAuthorizeWithPin(Context context) {
         return sessionTransport.canAuthorizeWithPin(context);
+    }
+
+    public void getTicketFee(Lottery lottery, NetworkRequest.NetworkRequestListener<Money> listener) {
+        new GetTicketPriceRequest(lottery, client, new NetworkRequestWrapper<>(listener)).execute();
     }
 
     /**
