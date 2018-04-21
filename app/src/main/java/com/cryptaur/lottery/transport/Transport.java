@@ -11,14 +11,17 @@ import com.cryptaur.lottery.transport.model.BuyTicketResponce;
 import com.cryptaur.lottery.transport.model.CurrentDraws;
 import com.cryptaur.lottery.transport.model.Login;
 import com.cryptaur.lottery.transport.model.Lottery;
+import com.cryptaur.lottery.transport.model.LotteryTicketsList;
 import com.cryptaur.lottery.transport.model.Money;
 import com.cryptaur.lottery.transport.model.Session;
 import com.cryptaur.lottery.transport.model.Ticket;
+import com.cryptaur.lottery.transport.model.TicketsToLoad;
 import com.cryptaur.lottery.transport.request.BaseLotteryRequest;
 import com.cryptaur.lottery.transport.request.BuyTicketRequest;
 import com.cryptaur.lottery.transport.request.GetBalanceRequest;
 import com.cryptaur.lottery.transport.request.GetCurrentLotteriesRequest;
 import com.cryptaur.lottery.transport.request.GetTicketPriceRequest;
+import com.cryptaur.lottery.transport.request.GetTicketsRequest;
 import com.cryptaur.lottery.transport.request.LoginRequest;
 import com.cryptaur.lottery.transport.request.RefreshSessionRequest;
 
@@ -37,6 +40,10 @@ public class Transport implements SessionRefresher.RefresherListener {
     private final SessionTransport sessionTransport = new SessionTransport();
     private final OkHttpClient client = new OkHttpClient();
     private final SessionRefresher sessionRefresher = new SessionRefresher(handler, this);
+
+    public void initContext(Context context) {
+        sessionTransport.initContext(context);
+    }
 
     public void getLotteries(@Nullable NetworkRequest.NetworkRequestListener<CurrentDraws> listener) {
         new GetCurrentLotteriesRequest(client, new NetworkRequestWrapper<>(listener)).execute();
@@ -93,7 +100,7 @@ public class Transport implements SessionRefresher.RefresherListener {
     }
 
     public void getBalance(Context context, NetworkRequest.NetworkRequestListener<BigInteger> listener) {
-        String address = sessionTransport.getAddress(context);
+        String address = sessionTransport.getAddress();
         if (address == null)
             listener.onCancel(null);
         else
@@ -106,6 +113,11 @@ public class Transport implements SessionRefresher.RefresherListener {
 
     public void getTicketFee(Lottery lottery, NetworkRequest.NetworkRequestListener<Money> listener) {
         new GetTicketPriceRequest(lottery, client, new NetworkRequestWrapper<>(listener)).execute();
+    }
+
+    public void getTickets(TicketsToLoad toLoad, NetworkRequest.NetworkRequestListener<LotteryTicketsList> listener) {
+        String address = sessionTransport.getAddress();
+        new GetTicketsRequest(toLoad, address, client, new NetworkRequestWrapper<>(listener)).execute();
     }
 
     /**

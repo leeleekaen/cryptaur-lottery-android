@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 
+import com.cryptaur.lottery.Const;
 import com.cryptaur.lottery.InteractionListener;
 import com.cryptaur.lottery.R;
 import com.cryptaur.lottery.model.GetObjectCallback;
@@ -75,8 +76,8 @@ public class MyTicketRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
         ITicketStorageRead ticketStorage = Keeper.getInstance(context).getTicketsStorage();
         ticketList.addAll(ticketStorage.getTickets(ticketsType));
         canLoadMoreTickets = ticketStorage.canLoadMoreTickets(ticketsType);
-        /*if (ticketStorage.canLoadMoreTickets(ticketsType)){
-            Keeper.getInstance(context).updateTickets(getTicketsListener);
+        /*if (ticketStorage.canLoadMoreTickets(ticketsType)) {
+            Keeper.getInstance(context).updateTickets(ticketsType, Const.GET_TICKETS_STEP, getTicketsListener);
         }*/
 
         refreshPositions();
@@ -104,7 +105,7 @@ public class MyTicketRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
             boolean win = winAmount != null && winAmount.compareTo(BigInteger.ZERO) > 0;
             ((MyTicketViewHolder) holder).setTicket(ticketList.get(position - (win ? 1 : 0)));
         } else if (holder instanceof LoadingViewHolder) {
-            Keeper.getInstance(context).updateTickets(getTicketsListener);
+            Keeper.getInstance(context).updateTickets(ticketsType, ticketList.size() + Const.GET_TICKETS_STEP, getTicketsListener);
         }
     }
 
@@ -135,7 +136,7 @@ public class MyTicketRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
         refreshPositions();
         notifyDataSetChanged();
         Keeper.getInstance(context).refreshTickets();
-        Keeper.getInstance(context).updateTickets(getTicketsListener);
+        Keeper.getInstance(context).updateTickets(ticketsType, Const.GET_TICKETS_STEP, getTicketsListener);
         Keeper.getInstance(context).getUnusedWin(getTheWinListener);
     }
 }

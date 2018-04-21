@@ -37,6 +37,12 @@ public class SessionTransport {
     private NetworkRequest currentRequest;
     private Session currentSession;
 
+    private Context context;
+
+    public void initContext(Context context) {
+        this.context = context.getApplicationContext();
+    }
+
     public String getDeviceId(Context context) {
         SharedPreferences preferences = context.getSharedPreferences("device", Context.MODE_PRIVATE);
         if (preferences.contains(KEY_DEVICE_ID)) {
@@ -142,9 +148,11 @@ public class SessionTransport {
         return currentSession != null && currentSession.isAlive();
     }
 
-    public String getAddress(Context context) {
+    public String getAddress() {
         if (currentSession != null)
             return currentSession.address;
+        if (context == null)
+            return null;
         return PreferenceManager.getDefaultSharedPreferences(context).getString(KEY_ADDRESS, null);
     }
 

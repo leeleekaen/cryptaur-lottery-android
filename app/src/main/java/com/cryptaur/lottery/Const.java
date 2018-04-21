@@ -7,4 +7,6 @@ public interface Const {
     String AUTH_URL = "https://lottery-1.cryptaur.com/";
 
     String KEY_ADDRESS = "address";
+
+    int GET_TICKETS_STEP = 10;
 }

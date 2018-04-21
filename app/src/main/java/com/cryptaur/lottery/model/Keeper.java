@@ -1,7 +1,6 @@
 package com.cryptaur.lottery.model;
 
 import android.content.Context;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
 
@@ -9,8 +8,7 @@ import com.cryptaur.lottery.transport.Transport;
 import com.cryptaur.lottery.transport.model.CurrentDraws;
 import com.cryptaur.lottery.transport.model.Draw;
 import com.cryptaur.lottery.transport.model.Money;
-import com.cryptaur.lottery.transport.model.Ticket;
-import com.cryptaur.lottery.transport.model.TicketsList;
+import com.cryptaur.lottery.transport.model.TicketsType;
 
 import java.math.BigInteger;
 
@@ -66,24 +64,12 @@ public class Keeper {
         return ticketRequestJoiner.getTicketsStorage();
     }
 
-    public void updateTickets(final GetObjectCallback<ITicketStorageRead> listener) {
-        ticketRequestJoiner.addCallback(listener);
-        if (!ticketRequestJoiner.isExecutingRequest()) {
-            int maxIndex = 55;
-            Ticket[] tickets = new Ticket[10];
-            int totalTickets = ticketRequestJoiner.getTicketsStorage().getTotalTickets();
-            int indexStart = maxIndex - totalTickets - 1;
-            for (int i = 0; i < tickets.length; i++) {
-                tickets[i] = Ticket.createTemp(indexStart - i);
-            }
-            TicketsList list = new TicketsList(totalTickets, tickets);
-
-            new Handler().postDelayed(() -> ticketRequestJoiner.onNetworkRequestDone(null, list), 2000);
-        }
+    public void updateTickets(TicketsType type, int minAmount, final GetObjectCallback<ITicketStorageRead> listener) {
+        ticketRequestJoiner.requestTicketStorage(type, minAmount, listener);
     }
 
     public void refreshTickets() {
-        ticketRequestJoiner.getTicketsStorage().clear();
+        ticketRequestJoiner.reset();
     }
 
     public void getUnusedWin(final GetObjectCallback<BigInteger> listener) {

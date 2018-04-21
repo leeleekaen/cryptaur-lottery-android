@@ -23,7 +23,7 @@ public class Ticket {
         JSONObjectHelper helper = new JSONObjectHelper(source);
         drawIndex = source.getInt("drawIndex");
         drawDate = helper.getInstant("drawDate");
-        index = source.getInt("index");
+        index = source.getInt("ticketIndex");
         winLevel = source.getInt("winLevel");
         winAmount = helper.getUnsignedBigInteger("winAmount");
         price = helper.getUnsignedBigInteger("price");
