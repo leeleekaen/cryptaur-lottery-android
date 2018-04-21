@@ -55,7 +55,7 @@ public class RefreshSessionRequest extends BaseLotteryRequest<Session> implement
 
     @Override
     protected Session parseJson(JSONObject source) throws JSONException {
-        return new Session(source);
+        return new Session(oldSession, source);
     }
 
     @Override

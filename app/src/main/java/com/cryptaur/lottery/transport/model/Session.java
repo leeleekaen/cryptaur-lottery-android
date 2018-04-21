@@ -35,6 +35,16 @@ public class Session {
         expireTimestamp = timeStamp + expiresIn - EXPIRE_GAP;
     }
 
+    public Session(Session oldSession, JSONObject source) throws JSONException {
+        timeStamp = System.currentTimeMillis();
+        key = source.getString("access_token");
+        address = oldSession.address;
+        expiresIn = source.getInt("expires_in") * 1000;
+        refreshToken = source.getString("refresh_token");
+        tokenType = source.getString("token_type");
+        expireTimestamp = timeStamp + expiresIn - EXPIRE_GAP;
+    }
+
     public boolean isAlive() {
         return (System.currentTimeMillis() - timeStamp) < expiresIn;
     }
