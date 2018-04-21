@@ -30,6 +30,7 @@ public class MyTicketRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
     private int getTheWinPosition = -1;
     private int loadMorePosition = -1;
     private int itemAmount = 0;
+    private final RefreshDoneListener refreshDoneListener;
     private final GetObjectCallback<BigInteger> getTheWinListener = new GetObjectCallback<BigInteger>() {
         @Override
         public void onRequestResult(BigInteger responce) {
@@ -56,29 +57,29 @@ public class MyTicketRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
             canLoadMoreTickets = responce.canLoadMoreTickets(ticketsType);
             refreshPositions();
             notifyDataSetChanged();
+            refreshDoneListener.onRefreshDone();
         }
 
         @Override
         public void onNetworkRequestError(Exception e) {
-
+            refreshDoneListener.onRefreshDone();
         }
 
         @Override
         public void onCancel() {
-
+            refreshDoneListener.onRefreshDone();
         }
     };
 
-    public MyTicketRecyclerViewAdapter(TicketsType ticketsType, Context context, InteractionListener listener) {
+    public MyTicketRecyclerViewAdapter(TicketsType ticketsType, Context context, InteractionListener listener, RefreshDoneListener refreshDoneListener) {
         this.ticketsType = ticketsType;
         this.context = context;
         this.listener = listener;
+        this.refreshDoneListener = refreshDoneListener;
         ITicketStorageRead ticketStorage = Keeper.getInstance(context).getTicketsStorage();
         ticketList.addAll(ticketStorage.getTickets(ticketsType));
         canLoadMoreTickets = ticketStorage.canLoadMoreTickets(ticketsType);
-        /*if (ticketStorage.canLoadMoreTickets(ticketsType)) {
-            Keeper.getInstance(context).updateTickets(ticketsType, Const.GET_TICKETS_STEP, getTicketsListener);
-        }*/
+        Keeper.getInstance(context).getUnusedWin(getTheWinListener);
 
         refreshPositions();
     }
@@ -138,5 +139,9 @@ public class MyTicketRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
         Keeper.getInstance(context).refreshTickets();
         Keeper.getInstance(context).updateTickets(ticketsType, Const.GET_TICKETS_STEP, getTicketsListener);
         Keeper.getInstance(context).getUnusedWin(getTheWinListener);
+    }
+
+    public interface RefreshDoneListener {
+        void onRefreshDone();
     }
 }

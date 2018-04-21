@@ -158,6 +158,7 @@ public class BuyTicketFragment extends Fragment implements BuyTicketRecyclerView
         List<Integer> numbers = adapter.getCheckedNumbers();
         Ticket ticket = Ticket.buyTicket(currentDraw, numbers);
         Transport.INSTANCE.buyTicket(ticket, this);
+        Keeper.getInstance(root.getContext()).refreshTickets();
     }
 
     @Override

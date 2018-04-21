@@ -18,7 +18,7 @@ public class MyTicketsPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        return TicketFragment.newInstance(TicketsType.values()[position]);
+        return MyTicketsFragment.newInstance(TicketsType.values()[position]);
     }
 
     @Override

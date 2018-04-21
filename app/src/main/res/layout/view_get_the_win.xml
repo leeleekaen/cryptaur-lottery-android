@@ -5,12 +5,12 @@
     android:layout_height="wrap_content">
 
     <View
-        android:id="@+id/view"
+        android:id="@+id/bgView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginBottom="22dp"
         android:layout_marginTop="16dp"
-        android:background="@drawable/bg_sparks"
+
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintDimensionRatio="345:145"
         app:layout_constraintLeft_toLeftOf="parent"

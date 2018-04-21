@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -22,20 +23,25 @@ import com.cryptaur.lottery.transport.model.TicketsType;
  * Activities containing this fragment MUST implement the
  * interface.
  */
-public class TicketFragment extends Fragment implements InteractionListener {
+public class MyTicketsFragment extends Fragment implements InteractionListener, SwipeRefreshLayout.OnRefreshListener, MyTicketRecyclerViewAdapter.RefreshDoneListener {
 
     private static final String ARG_TYCKETS_TYPE = "tickets-type";
     private TicketsType ticketsType = TicketsType.Active;
+
+    private ViewGroup root;
+    private SwipeRefreshLayout refreshLayout;
+    private RecyclerView recyclerView;
+    private MyTicketRecyclerViewAdapter adapter;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public TicketFragment() {
+    public MyTicketsFragment() {
     }
 
-    public static TicketFragment newInstance(TicketsType type) {
-        TicketFragment fragment = new TicketFragment();
+    public static MyTicketsFragment newInstance(TicketsType type) {
+        MyTicketsFragment fragment = new MyTicketsFragment();
         Bundle args = new Bundle();
         args.putSerializable(ARG_TYCKETS_TYPE, type);
         fragment.setArguments(args);
@@ -54,18 +60,19 @@ public class TicketFragment extends Fragment implements InteractionListener {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_ticket_list, container, false);
+        root = (ViewGroup) inflater.inflate(R.layout.fragment_ticket_list, container, false);
 
-        // Set the adapter
-        if (view instanceof RecyclerView) {
-            Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
+        refreshLayout = root.findViewById(R.id.refresh);
+        recyclerView = root.findViewById(R.id.list);
 
-            recyclerView.setLayoutManager(new LinearLayoutManager(context));
+        Context context = root.getContext();
+        recyclerView.setLayoutManager(new LinearLayoutManager(context));
+        adapter = new MyTicketRecyclerViewAdapter(ticketsType, context, this, this);
+        recyclerView.setAdapter(adapter);
 
-            recyclerView.setAdapter(new MyTicketRecyclerViewAdapter(ticketsType, view.getContext(), this));
-        }
-        return view;
+        refreshLayout.setOnRefreshListener(this);
+
+        return root;
     }
 
     @Override
@@ -76,5 +83,15 @@ public class TicketFragment extends Fragment implements InteractionListener {
     @Override
     public void doAction(IAction action, @Nullable Fragment fragment) {
 
+    }
+
+    @Override
+    public void onRefresh() {
+        adapter.fullRefresh();
+    }
+
+    @Override
+    public void onRefreshDone() {
+        refreshLayout.setRefreshing(false);
     }
 }
