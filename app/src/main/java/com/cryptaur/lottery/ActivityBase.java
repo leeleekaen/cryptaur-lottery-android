@@ -12,12 +12,16 @@ import com.cryptaur.lottery.controller.WorkflowController;
 import com.cryptaur.lottery.login.InitialLoginController;
 import com.cryptaur.lottery.login.MenuDialogFragmentFragment;
 import com.cryptaur.lottery.login.PinLoginController;
+import com.cryptaur.lottery.model.GetObjectCallback;
+import com.cryptaur.lottery.model.Keeper;
 import com.cryptaur.lottery.transport.Transport;
+import com.cryptaur.lottery.transport.model.CurrentDraws;
+import com.cryptaur.lottery.transport.model.TicketsType;
 import com.cryptaur.lottery.view.WalletViewHolder;
 
-public abstract class ActivityBase extends AppCompatActivity implements InteractionListener {
+public abstract class ActivityBase extends AppCompatActivity implements InteractionListener, GetObjectCallback<CurrentDraws> {
 
-    private final MenuHelper helper = new MenuHelper(this);
+    private final MenuHelper menuHelper = new MenuHelper(this);
     WorkflowController workflowController;
     private WalletViewHolder walletView;
 
@@ -31,13 +35,13 @@ public abstract class ActivityBase extends AppCompatActivity implements Interact
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
-        helper.onCreateOptionsMenu(menu);
+        menuHelper.onCreateOptionsMenu(menu);
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        helper.onPrepareOptionsMenu(menu);
+        menuHelper.onPrepareOptionsMenu(menu);
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -95,14 +99,28 @@ public abstract class ActivityBase extends AppCompatActivity implements Interact
                     workflowController = new InitialLoginController(this);
                     workflowController.start();
                     break;
-
             }
         }
     }
 
     @Override
+    public void onRequestResult(CurrentDraws responce) {
+        Keeper.getInstance(this).updateTickets(TicketsType.Played, 10, null);
+    }
+
+    @Override
+    public void onNetworkRequestError(Exception e) {
+    }
+
+    @Override
+    public void onCancel() {
+    }
+
+    @Override
     protected void onPause() {
         Transport.INSTANCE.onPauseActivity();
+        Keeper.getInstance(this).removeTicketsListener(menuHelper);
+        Keeper.getInstance(this).removeCurrentDrawsListener(this);
         super.onPause();
     }
 
@@ -110,5 +128,7 @@ public abstract class ActivityBase extends AppCompatActivity implements Interact
     protected void onResume() {
         super.onResume();
         Transport.INSTANCE.onResumeActivity();
+        Keeper.getInstance(this).addCurrentDrawsListener(this);
+        Keeper.getInstance(this).addTicketsListener(menuHelper);
     }
 }

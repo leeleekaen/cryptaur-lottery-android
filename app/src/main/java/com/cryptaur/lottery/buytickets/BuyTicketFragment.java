@@ -20,12 +20,12 @@ import com.cryptaur.lottery.model.GetObjectCallback;
 import com.cryptaur.lottery.model.Keeper;
 import com.cryptaur.lottery.transport.Transport;
 import com.cryptaur.lottery.transport.base.NetworkRequest;
-import com.cryptaur.lottery.transport.model.BuyTicketResponce;
 import com.cryptaur.lottery.transport.model.CurrentDraws;
 import com.cryptaur.lottery.transport.model.Draw;
 import com.cryptaur.lottery.transport.model.Lottery;
 import com.cryptaur.lottery.transport.model.Money;
 import com.cryptaur.lottery.transport.model.Ticket;
+import com.cryptaur.lottery.transport.model.Transaction;
 import com.cryptaur.lottery.util.Strings;
 
 import java.util.List;
@@ -37,7 +37,7 @@ import java.util.Locale;
  * Activities containing this fragment MUST implement the {@link InteractionListener}
  * interface.
  */
-public class BuyTicketFragment extends Fragment implements BuyTicketRecyclerViewAdapter.NumbersListener, GetObjectCallback, View.OnClickListener, NetworkRequest.NetworkRequestListener<BuyTicketResponce> {
+public class BuyTicketFragment extends Fragment implements BuyTicketRecyclerViewAdapter.NumbersListener, GetObjectCallback, View.OnClickListener, NetworkRequest.NetworkRequestListener<Transaction> {
 
     private static final String ARG_LOTTERY = "lottery";
     private ViewGroup root;
@@ -185,7 +185,7 @@ public class BuyTicketFragment extends Fragment implements BuyTicketRecyclerView
 
                             @Override
                             public void onNetworkRequestError(Exception e) {
-                                Toast.makeText(v.getContext(), R.string.errorupdatingTicketFee, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(v.getContext(), R.string.errorUpdatingTicketFee, Toast.LENGTH_SHORT).show();
                             }
 
                             @Override
@@ -229,7 +229,7 @@ public class BuyTicketFragment extends Fragment implements BuyTicketRecyclerView
     }
 
     @Override
-    public void onNetworkRequestDone(NetworkRequest request, BuyTicketResponce responce) {
+    public void onNetworkRequestDone(NetworkRequest request, Transaction responce) {
         Toast.makeText(root.getContext(), R.string.boughtTicket, Toast.LENGTH_SHORT).show();
         mListener.doAction(InteractionListener.Action.CloseThisFragment, this);
     }

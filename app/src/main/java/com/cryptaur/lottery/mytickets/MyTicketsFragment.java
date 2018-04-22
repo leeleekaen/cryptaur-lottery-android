@@ -3,7 +3,6 @@ package com.cryptaur.lottery.mytickets;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -23,7 +22,7 @@ import com.cryptaur.lottery.transport.model.TicketsType;
  * Activities containing this fragment MUST implement the
  * interface.
  */
-public class MyTicketsFragment extends Fragment implements InteractionListener, SwipeRefreshLayout.OnRefreshListener, MyTicketRecyclerViewAdapter.RefreshDoneListener {
+public class MyTicketsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, MyTicketRecyclerViewAdapter.RefreshListener {
 
     private static final String ARG_TYCKETS_TYPE = "tickets-type";
     private TicketsType ticketsType = TicketsType.Active;
@@ -32,6 +31,8 @@ public class MyTicketsFragment extends Fragment implements InteractionListener, 
     private SwipeRefreshLayout refreshLayout;
     private RecyclerView recyclerView;
     private MyTicketRecyclerViewAdapter adapter;
+    private InteractionListener mListener;
+    private boolean isPrimary;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -67,12 +68,24 @@ public class MyTicketsFragment extends Fragment implements InteractionListener, 
 
         Context context = root.getContext();
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
-        adapter = new MyTicketRecyclerViewAdapter(ticketsType, context, this, this);
+        adapter = new MyTicketRecyclerViewAdapter(ticketsType, context, mListener, this);
+        adapter.setPrimary(isPrimary);
         recyclerView.setAdapter(adapter);
 
         refreshLayout.setOnRefreshListener(this);
-
         return root;
+    }
+
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof InteractionListener) {
+            mListener = (InteractionListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnListFragmentInteractionListener");
+        }
     }
 
     @Override
@@ -81,17 +94,19 @@ public class MyTicketsFragment extends Fragment implements InteractionListener, 
     }
 
     @Override
-    public void doAction(IAction action, @Nullable Fragment fragment) {
-
-    }
-
-    @Override
     public void onRefresh() {
+        refreshLayout.setRefreshing(true);
         adapter.fullRefresh();
     }
 
     @Override
     public void onRefreshDone() {
         refreshLayout.setRefreshing(false);
+    }
+
+    public void setPrimary(boolean isPrimary) {
+        this.isPrimary = isPrimary;
+        if (adapter != null)
+            adapter.setPrimary(isPrimary);
     }
 }

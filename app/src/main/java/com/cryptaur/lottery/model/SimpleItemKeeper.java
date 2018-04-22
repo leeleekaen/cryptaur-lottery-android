@@ -88,7 +88,7 @@ class SimpleItemKeeper<T> implements NetworkRequest.NetworkRequestListener<T> {
             }
         }
 
-        if (value != null) {
+        if (value != null && !forceUpdate) {
             listener.onRequestResult(value);
         }
     }

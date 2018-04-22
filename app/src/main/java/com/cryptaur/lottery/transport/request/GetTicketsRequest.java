@@ -13,7 +13,7 @@ import okhttp3.OkHttpClient;
 
 public class GetTicketsRequest extends BaseLotteryRequest<LotteryTicketsList> {
     private static final String METHOD = "api/getPlayerTickets";
-    private final TicketsToLoad toLoad;
+    public final TicketsToLoad toLoad;
     private final String address;
 
     public GetTicketsRequest(TicketsToLoad toLoad, String address, OkHttpClient client, NetworkRequestListener<LotteryTicketsList> listener) {

@@ -15,18 +15,21 @@ import java.math.BigInteger;
 public class Keeper {
     private static final long DRAWS_UPDATE_TIMEOUT = 600_000; // 10 mins
     private static final long BALANCE_UPDATE_TIMEOUT = 600_000; // 10 mins
+    private static final long WIN_AMOUNT_UPDATE_TIMEOUT = 600_000; // 10 mins
 
     private static volatile Keeper keeper;
 
     private final SimpleItemKeeper<CurrentDraws> currentDrawsKeeper
             = new SimpleItemKeeper<>(DRAWS_UPDATE_TIMEOUT, Transport.INSTANCE::getLotteries);
     private final SimpleItemKeeper<BigInteger> balanceKeeper;
+    private final SimpleItemKeeper<Money> winAmountKeeper = new SimpleItemKeeper<>(WIN_AMOUNT_UPDATE_TIMEOUT, Transport.INSTANCE::getWinAmount);
 
-    private final TicketsRequestJoiner ticketRequestJoiner = new TicketsRequestJoiner();
+    private final TicketsRequestJoiner ticketRequestJoiner;
 
     private Keeper(Context context) {
         final Context ctx = context.getApplicationContext();
         balanceKeeper = new SimpleItemKeeper<>(BALANCE_UPDATE_TIMEOUT, listener -> Transport.INSTANCE.getBalance(ctx, listener));
+        ticketRequestJoiner = new TicketsRequestJoiner(this);
     }
 
     public static Keeper getInstance(Context context) {
@@ -72,12 +75,12 @@ public class Keeper {
         ticketRequestJoiner.reset();
     }
 
-    public void getUnusedWin(final GetObjectCallback<BigInteger> listener) {
-        listener.onRequestResult(BigInteger.valueOf(100_0000_0000L));
-    }
-
     public void updateTicketFee(Draw currentDraw, @Nullable GetObjectCallback<Money> listener) {
         Transport.INSTANCE.getTicketFee(currentDraw.lottery, new TicketFeeUpdater(currentDraw, listener));
+    }
+
+    public void getWinAmount(GetObjectCallback<Money> listener, boolean forceUpdate) {
+        winAmountKeeper.requestValue(listener, forceUpdate);
     }
 
     public void addCurrentDrawsListener(GetObjectCallback<CurrentDraws> listener) {
@@ -86,5 +89,13 @@ public class Keeper {
 
     public void removeCurrentDrawsListener(GetObjectCallback<CurrentDraws> listener) {
         currentDrawsKeeper.removeListener(listener);
+    }
+
+    public void addTicketsListener(GetObjectCallback<ITicketStorageRead> listener) {
+        ticketRequestJoiner.addListener(listener);
+    }
+
+    public void removeTicketsListener(GetObjectCallback<ITicketStorageRead> listener) {
+        ticketRequestJoiner.removeListener(listener);
     }
 }

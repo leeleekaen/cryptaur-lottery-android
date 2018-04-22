@@ -7,7 +7,6 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.cryptaur.lottery.transport.base.NetworkRequest;
-import com.cryptaur.lottery.transport.model.BuyTicketResponce;
 import com.cryptaur.lottery.transport.model.CurrentDraws;
 import com.cryptaur.lottery.transport.model.Login;
 import com.cryptaur.lottery.transport.model.Lottery;
@@ -16,12 +15,15 @@ import com.cryptaur.lottery.transport.model.Money;
 import com.cryptaur.lottery.transport.model.Session;
 import com.cryptaur.lottery.transport.model.Ticket;
 import com.cryptaur.lottery.transport.model.TicketsToLoad;
+import com.cryptaur.lottery.transport.model.Transaction;
 import com.cryptaur.lottery.transport.request.BaseLotteryRequest;
 import com.cryptaur.lottery.transport.request.BuyTicketRequest;
 import com.cryptaur.lottery.transport.request.GetBalanceRequest;
 import com.cryptaur.lottery.transport.request.GetCurrentLotteriesRequest;
+import com.cryptaur.lottery.transport.request.GetTheWinRequest;
 import com.cryptaur.lottery.transport.request.GetTicketPriceRequest;
 import com.cryptaur.lottery.transport.request.GetTicketsRequest;
+import com.cryptaur.lottery.transport.request.GetWinAmountRequest;
 import com.cryptaur.lottery.transport.request.LoginRequest;
 import com.cryptaur.lottery.transport.request.RefreshSessionRequest;
 
@@ -47,6 +49,18 @@ public class Transport implements SessionRefresher.RefresherListener {
 
     public void getLotteries(@Nullable NetworkRequest.NetworkRequestListener<CurrentDraws> listener) {
         new GetCurrentLotteriesRequest(client, new NetworkRequestWrapper<>(listener)).execute();
+    }
+
+    public boolean isLoggedIn() {
+        return sessionTransport.isLoggedIn();
+    }
+
+    public void onResumeActivity() {
+        sessionRefresher.onResumeActivity();
+    }
+
+    public void onPauseActivity() {
+        sessionRefresher.onPauseActivity();
     }
 
     public void login(Context context, Login login, @Nullable NetworkRequest.NetworkRequestListener<Session> listener) {
@@ -83,21 +97,10 @@ public class Transport implements SessionRefresher.RefresherListener {
         }
     }
 
-    public void buyTicket(Ticket ticket, NetworkRequest.NetworkRequestListener<BuyTicketResponce> listener) {
+    public void buyTicket(Ticket ticket, NetworkRequest.NetworkRequestListener<Transaction> listener) {
         new BuyTicketRequest(client, ticket, sessionTransport.getCurrentSession(), new NetworkRequestWrapper<>(listener)).execute();
     }
 
-    public boolean isLoggedIn() {
-        return sessionTransport.isLoggedIn();
-    }
-
-    public void onResumeActivity() {
-        sessionRefresher.onResumeActivity();
-    }
-
-    public void onPauseActivity() {
-        sessionRefresher.onPauseActivity();
-    }
 
     public void getBalance(Context context, NetworkRequest.NetworkRequestListener<BigInteger> listener) {
         String address = sessionTransport.getAddress();
@@ -117,7 +120,23 @@ public class Transport implements SessionRefresher.RefresherListener {
 
     public void getTickets(TicketsToLoad toLoad, NetworkRequest.NetworkRequestListener<LotteryTicketsList> listener) {
         String address = sessionTransport.getAddress();
+        if (address == null) {
+            listener.onCancel(new GetTicketsRequest(toLoad, address, client, listener));
+            return;
+        }
         new GetTicketsRequest(toLoad, address, client, new NetworkRequestWrapper<>(listener)).execute();
+    }
+
+    public void getWinAmount(NetworkRequest.NetworkRequestListener<Money> listener) {
+        String address = sessionTransport.getAddress();
+        if (address == null)
+            listener.onCancel(null);
+
+        new GetWinAmountRequest(address, client, new NetworkRequestWrapper<>(listener)).execute();
+    }
+
+    public void getTheWin(Money amount, NetworkRequest.NetworkRequestListener<Transaction> listener) {
+        new GetTheWinRequest(amount, sessionTransport.getCurrentSession(), client, new NetworkRequestWrapper<>(listener)).execute();
     }
 
     /**

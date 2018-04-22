@@ -1,9 +1,11 @@
 package com.cryptaur.lottery.model;
 
+import android.content.Context;
+
 import com.cryptaur.lottery.transport.model.Ticket;
 import com.cryptaur.lottery.transport.model.TicketsType;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * intarface for reading available tickets;
@@ -11,15 +13,21 @@ import java.util.List;
 public interface ITicketStorageRead {
     /**
      * returns tickets
+     *
      * @param type -- played and not played
      * @return
      */
-    List<Ticket> getTickets(TicketsType type);
+    Collection<Ticket> getTickets(TicketsType type);
 
     /**
      * return true if we might get more tickets of this type from server
+     *
      * @param type
      * @return
      */
     boolean canLoadMoreTickets(TicketsType type);
+
+    void onShowPlayedTicketIds(Context context);
+
+    int getUnshownTicketsAmount(Context context);
 }

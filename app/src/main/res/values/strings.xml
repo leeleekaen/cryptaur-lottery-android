@@ -33,8 +33,10 @@
     <string name="repeatPinCode">Please, repeat PIN-code</string>
     <string name="enter_your_pin_code_to_login">Enter your PIN-code\nto login</string>
     <string name="updatingTicketFee">Updating ticket fee</string>
-    <string name="errorupdatingTicketFee">Error updating ticket fee</string>
-    <string name="boughtTicket">Buy ticket transaction in progress</string>
+    <string name="updatingAmountAndFee">Updating amount and fee</string>
+    <string name="errorUpdatingTicketFee">Error updating ticket fee</string>
+    <string name="boughtTicket">Buy ticket transaction in progress. It will take some time.</string>
     <string name="requestError">request error</string>
     <string name="requestCancelled">request cancelled</string>
+    <string name="executingGetTheWinRequest">Executing Get the win request. It will take some time to process.</string>
 </resources>

@@ -11,6 +11,7 @@ import com.cryptaur.lottery.R;
 import com.cryptaur.lottery.model.GetObjectCallback;
 import com.cryptaur.lottery.model.ITicketStorageRead;
 import com.cryptaur.lottery.model.Keeper;
+import com.cryptaur.lottery.transport.model.Money;
 import com.cryptaur.lottery.transport.model.Ticket;
 import com.cryptaur.lottery.transport.model.TicketsType;
 import com.cryptaur.lottery.view.LoadingViewHolder;
@@ -30,11 +31,11 @@ public class MyTicketRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
     private int getTheWinPosition = -1;
     private int loadMorePosition = -1;
     private int itemAmount = 0;
-    private final RefreshDoneListener refreshDoneListener;
-    private final GetObjectCallback<BigInteger> getTheWinListener = new GetObjectCallback<BigInteger>() {
+    private final RefreshListener refreshListener;
+    private final GetObjectCallback<Money> getTheWinListener = new GetObjectCallback<Money>() {
         @Override
-        public void onRequestResult(BigInteger responce) {
-            winAmount = responce;
+        public void onRequestResult(Money responce) {
+            winAmount = responce.amount;
             refreshPositions();
             notifyDataSetChanged();
         }
@@ -49,6 +50,7 @@ public class MyTicketRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
 
         }
     };
+    private boolean isPrimary = false;
     private final GetObjectCallback<ITicketStorageRead> getTicketsListener = new GetObjectCallback<ITicketStorageRead>() {
         @Override
         public void onRequestResult(ITicketStorageRead responce) {
@@ -57,29 +59,32 @@ public class MyTicketRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
             canLoadMoreTickets = responce.canLoadMoreTickets(ticketsType);
             refreshPositions();
             notifyDataSetChanged();
-            refreshDoneListener.onRefreshDone();
+            refreshListener.onRefreshDone();
+            if (isPrimary && ticketsType == TicketsType.Played) {
+                responce.onShowPlayedTicketIds(context);
+            }
         }
 
         @Override
         public void onNetworkRequestError(Exception e) {
-            refreshDoneListener.onRefreshDone();
+            refreshListener.onRefreshDone();
         }
 
         @Override
         public void onCancel() {
-            refreshDoneListener.onRefreshDone();
+            refreshListener.onRefreshDone();
         }
     };
 
-    public MyTicketRecyclerViewAdapter(TicketsType ticketsType, Context context, InteractionListener listener, RefreshDoneListener refreshDoneListener) {
+    public MyTicketRecyclerViewAdapter(TicketsType ticketsType, Context context, InteractionListener listener, RefreshListener refreshListener) {
         this.ticketsType = ticketsType;
         this.context = context;
         this.listener = listener;
-        this.refreshDoneListener = refreshDoneListener;
+        this.refreshListener = refreshListener;
         ITicketStorageRead ticketStorage = Keeper.getInstance(context).getTicketsStorage();
         ticketList.addAll(ticketStorage.getTickets(ticketsType));
         canLoadMoreTickets = ticketStorage.canLoadMoreTickets(ticketsType);
-        Keeper.getInstance(context).getUnusedWin(getTheWinListener);
+        Keeper.getInstance(context).getWinAmount(getTheWinListener, false);
 
         refreshPositions();
     }
@@ -92,7 +97,7 @@ public class MyTicketRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
                 return MyTicketViewHolder.create(parent);
 
             case R.layout.view_get_the_win:
-                return GetTheWinViewHolder.create(parent, listener);
+                return GetTheWinViewHolder.create(parent, listener, refreshListener);
 
             case R.layout.view_loading:
                 return LoadingViewHolder.create(parent);
@@ -138,10 +143,16 @@ public class MyTicketRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
         notifyDataSetChanged();
         Keeper.getInstance(context).refreshTickets();
         Keeper.getInstance(context).updateTickets(ticketsType, Const.GET_TICKETS_STEP, getTicketsListener);
-        Keeper.getInstance(context).getUnusedWin(getTheWinListener);
+        Keeper.getInstance(context).getWinAmount(getTheWinListener, true);
     }
 
-    public interface RefreshDoneListener {
+    public void setPrimary(boolean isPrimary) {
+        this.isPrimary = isPrimary;
+    }
+
+    public interface RefreshListener {
         void onRefreshDone();
+
+        void onRefresh();
     }
 }

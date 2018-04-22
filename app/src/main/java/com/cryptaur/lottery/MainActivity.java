@@ -6,7 +6,6 @@ import android.support.v7.widget.Toolbar;
 import android.widget.TextView;
 
 import com.cryptaur.lottery.adapter.MainLotteryPagerAdapter;
-import com.cryptaur.lottery.model.GetObjectCallback;
 import com.cryptaur.lottery.model.Keeper;
 import com.cryptaur.lottery.transport.model.CurrentDraws;
 import com.cryptaur.lottery.transport.model.Lottery;
@@ -14,7 +13,7 @@ import com.cryptaur.lottery.util.Strings;
 
 import java.math.BigInteger;
 
-public class MainActivity extends ActivityBase implements GetObjectCallback<CurrentDraws> {
+public class MainActivity extends ActivityBase {
     private Toolbar toolbar;
     private ViewPager lotteryPager;
     private TextView prizePool;
@@ -42,6 +41,7 @@ public class MainActivity extends ActivityBase implements GetObjectCallback<Curr
 
     @Override
     public void onRequestResult(CurrentDraws responce) {
+        super.onRequestResult(responce);
         BigInteger jackpot = responce.getTotalJackpot();
         String jackpotStr = Strings.toDecimalString(jackpot, 8, 0, ".", ",");
         jackpotStr = getResources().getString(R.string._CPT, jackpotStr);
@@ -59,12 +59,10 @@ public class MainActivity extends ActivityBase implements GetObjectCallback<Curr
     @Override
     protected void onResume() {
         super.onResume();
-        Keeper.getInstance(this).addCurrentDrawsListener(this);
     }
 
     @Override
     protected void onPause() {
-        Keeper.getInstance(this).removeCurrentDrawsListener(this);
         super.onPause();
     }
 }

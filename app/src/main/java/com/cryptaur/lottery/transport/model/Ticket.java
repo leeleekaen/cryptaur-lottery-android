@@ -18,6 +18,8 @@ public class Ticket {
     public final BigInteger price;
     public final int[] numbers;
 
+    private boolean isPlayed;
+
     public Ticket(Lottery lottery, JSONObject source) throws JSONException {
         this.lottery = lottery;
         JSONObjectHelper helper = new JSONObjectHelper(source);
@@ -84,6 +86,10 @@ public class Ticket {
     }
 
     public boolean isPlayed() {
-        return winLevel >= 0;
+        return isPlayed;
+    }
+
+    public void setPlayed(boolean played) {
+        isPlayed = played;
     }
 }

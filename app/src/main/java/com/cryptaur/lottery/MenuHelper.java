@@ -7,14 +7,17 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-import com.cryptaur.lottery.model.Keeper;
+import com.cryptaur.lottery.model.GetObjectCallback;
+import com.cryptaur.lottery.model.ITicketStorageRead;
 import com.cryptaur.lottery.util.Drawables;
 
 import java.util.Locale;
 
-public class MenuHelper {
+public class MenuHelper implements GetObjectCallback<ITicketStorageRead> {
 
     private final Activity activity;
+
+    private int unshownTicketsAmount = 0;
 
     public MenuHelper(Activity activity) {
         this.activity = activity;
@@ -27,15 +30,34 @@ public class MenuHelper {
 
     public void onPrepareOptionsMenu(Menu menu) {
         MenuItem item = menu.findItem(R.id.menuItem_uncheckedTickets);
-        int amount = Keeper.getInstance(activity).getUncheckedTicketsAmount();
-        if (amount > 0) {
-            String amountStr = amount < 10 ?
-                    String.format(Locale.getDefault(), "%d", amount)
-                    : "9+";
-            Drawable drw = Drawables.createDrawableWithText(activity.getResources(), amountStr, R.drawable.ic_badge, Color.WHITE);
-            item.setIcon(drw);
-        } else {
+
+        //if (unshownTicketsAmount > 0) {
+        String amountStr = unshownTicketsAmount < 10 ?
+                String.format(Locale.getDefault(), "%d", unshownTicketsAmount)
+                : "9+";
+        Drawable drw = Drawables.createDrawableWithText(activity.getResources(), amountStr, R.drawable.ic_badge, Color.WHITE);
+        item.setIcon(drw);
+        /*} else {
             item.setVisible(false);
+        }*/
+    }
+
+    @Override
+    public void onRequestResult(ITicketStorageRead responce) {
+        int unshownTicketsAmount = responce.getUnshownTicketsAmount(activity);
+        if (this.unshownTicketsAmount != unshownTicketsAmount) {
+            this.unshownTicketsAmount = unshownTicketsAmount;
+            activity.invalidateOptionsMenu();
         }
+    }
+
+    @Override
+    public void onNetworkRequestError(Exception e) {
+
+    }
+
+    @Override
+    public void onCancel() {
+
     }
 }
