@@ -60,9 +60,9 @@ public class MyTicketRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
             refreshPositions();
             notifyDataSetChanged();
             refreshListener.onRefreshDone();
-            if (isPrimary && ticketsType == TicketsType.Played) {
+            /*if (isPrimary && ticketsType == TicketsType.Played) {
                 responce.onShowPlayedTicketIds(context);
-            }
+            }*/
         }
 
         @Override

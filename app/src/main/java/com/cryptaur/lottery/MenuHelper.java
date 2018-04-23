@@ -44,11 +44,6 @@ public class MenuHelper implements GetObjectCallback<ITicketStorageRead> {
 
     @Override
     public void onRequestResult(ITicketStorageRead responce) {
-        int unshownTicketsAmount = responce.getUnshownTicketsAmount(activity);
-        if (this.unshownTicketsAmount != unshownTicketsAmount) {
-            this.unshownTicketsAmount = unshownTicketsAmount;
-            activity.invalidateOptionsMenu();
-        }
     }
 
     @Override

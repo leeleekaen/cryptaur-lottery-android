@@ -1,7 +1,5 @@
 package com.cryptaur.lottery.model;
 
-import android.content.Context;
-
 import com.cryptaur.lottery.transport.model.Ticket;
 import com.cryptaur.lottery.transport.model.TicketsType;
 
@@ -26,8 +24,4 @@ public interface ITicketStorageRead {
      * @return
      */
     boolean canLoadMoreTickets(TicketsType type);
-
-    void onShowPlayedTicketIds(Context context);
-
-    int getUnshownTicketsAmount(Context context);
 }

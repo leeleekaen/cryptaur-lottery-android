@@ -22,7 +22,8 @@ public class LotteryTicketsQueueJoiner {
         Lottery lottery = ticketsList.lottery;
         for (LotteryTicketsQueue queue : queues) {
             if (queue.lottery == lottery) {
-                queue.add(ticketsList.tickets);
+                queue.add(ticketsList);
+                return;
             }
         }
     }

@@ -21,7 +21,7 @@ public class LastCheckedTicketIdsKeeper {
         return ids;
     }
 
-    public static void updateLastCheckedPlayedTicketIds(Context context, int[] newIds) {
+    public static void updateLastShownPlayedTicketDraws(Context context, int[] newIds) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = prefs.edit();
 

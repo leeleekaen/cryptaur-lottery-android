@@ -5,6 +5,7 @@ import org.json.JSONObject;
 import org.threeten.bp.Instant;
 
 import java.math.BigInteger;
+import java.util.Comparator;
 import java.util.List;
 
 public class Ticket {
@@ -91,5 +92,19 @@ public class Ticket {
 
     public void setPlayed(boolean played) {
         isPlayed = played;
+    }
+
+    public static class SortComparator implements Comparator<Ticket> {
+        public static final SortComparator INSTANCE = new SortComparator();
+
+        @Override
+        public int compare(Ticket o1, Ticket o2) {
+            int result = o2.drawDate.compareTo(o1.drawDate);
+            if (result != 0)
+                return result;
+            if (o1.lottery != o2.lottery)
+                return o2.lottery.ordinal() - o1.lottery.ordinal();
+            return o2.index - o1.index;
+        }
     }
 }

@@ -1,8 +1,5 @@
 package com.cryptaur.lottery.model;
 
-import android.content.Context;
-
-import com.cryptaur.lottery.mytickets.LastCheckedTicketIdsKeeper;
 import com.cryptaur.lottery.transport.model.CurrentDraws;
 import com.cryptaur.lottery.transport.model.Draw;
 import com.cryptaur.lottery.transport.model.Lottery;
@@ -14,28 +11,24 @@ import com.cryptaur.lottery.transport.model.TicketsType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
+import java.util.TreeSet;
 
 public class TicketsStorage2 implements ITicketStorageRead, GetObjectCallback<CurrentDraws> {
 
-    private final ArrayList<Ticket> playedTickets = new ArrayList<>();
-    private final ArrayList<Ticket> activeTickets = new ArrayList<>();
+    private final TreeSet<Ticket> playedTickets = new TreeSet<>(Ticket.SortComparator.INSTANCE);
+    private final TreeSet<Ticket> activeTickets = new TreeSet<>(Ticket.SortComparator.INSTANCE);
 
     private final LotteryTicketsQueueJoiner joiner;
-    private final int latestDraws[];
+    private final int latestDraws[] = new int[Lottery.values().length];
     private final List<Ticket> ticketsToUpdate = new ArrayList<>();
 
-    private final int[] maxIndex = new int[Lottery.values().length];
-    private final int[] maxPlayedIndex = new int[Lottery.values().length];
-
-    private int[] maxPlayedShownIndex;
-
+    private final int[] maxPlayedDraws = new int[Lottery.values().length];
+    private final int[] minLoadedDraws = new int[Lottery.values().length];
 
     public TicketsStorage2(Lottery[] lotteries) {
-        latestDraws = new int[Lottery.values().length];
         joiner = new LotteryTicketsQueueJoiner(lotteries);
+        Arrays.fill(minLoadedDraws, Integer.MAX_VALUE);
     }
 
     @Override
@@ -62,52 +55,39 @@ public class TicketsStorage2 implements ITicketStorageRead, GetObjectCallback<Cu
     }
 
     public void add(LotteryTicketsList tickets, boolean isUpdateRequest) {
-        if (isUpdateRequest && tickets.startFrom == 0 && tickets.tickets.size() > 0) {
-            Lottery lottery = tickets.lottery;
-            maxIndex[lottery.ordinal()] = tickets.tickets.get(0).index;
+        if (isUpdateRequest && tickets.tickets.size() > 0) {
             for (Ticket ticket : tickets.tickets) {
                 updateTicketPlayed(ticket);
                 update(ticket);
             }
-        }
-        joiner.add(tickets);
+        } else {
+            joiner.add(tickets);
 
-        Ticket ticket;
-        while ((ticket = joiner.next()) != null) {
-            updateTicketPlayed(ticket);
-            if (ticket.isPlayed()) {
-                playedTickets.add(ticket);
-                if (maxPlayedIndex[ticket.lottery.ordinal()] < ticket.index) {
-                    maxPlayedIndex[ticket.lottery.ordinal()] = ticket.index;
-                }
-            } else
-                activeTickets.add(ticket);
+            Ticket ticket;
+            while ((ticket = joiner.next()) != null) {
+                updateTicketPlayed(ticket);
+                if (ticket.isPlayed()) {
+                    playedTickets.add(ticket);
+                    if (maxPlayedDraws[ticket.lottery.ordinal()] < ticket.drawIndex)
+                        maxPlayedDraws[ticket.lottery.ordinal()] = ticket.drawIndex;
+                } else
+                    activeTickets.add(ticket);
+            }
         }
-        Collections.sort(playedTickets, TicketSortComparator.INSTANCE);
-        Collections.sort(activeTickets, TicketSortComparator.INSTANCE);
     }
 
     private void update(Ticket ticket) {
-        Ticket oldActiveTicket = oldTicket(activeTickets, ticket, true);
+
         if (ticket.isPlayed()) {
-            if (oldActiveTicket != null) {
-                activeTickets.remove(oldActiveTicket);
-                int indexUpdate = indexOfTicket(ticketsToUpdate, ticket, false);
-                if (indexUpdate >= 0)
-                    ticketsToUpdate.remove(indexUpdate);
-                playedTickets.add(ticket);
-            } else {
-                Ticket oldPlayedTicket = oldTicket(playedTickets, ticket, true);
-                if (oldPlayedTicket == null) {
-                    playedTickets.add(ticket);
-                }
-            }
-            if (maxPlayedIndex[ticket.lottery.ordinal()] < ticket.index) {
-                maxPlayedIndex[ticket.lottery.ordinal()] = ticket.index;
-            }
+            activeTickets.remove(ticket);
+            int indexUpdate = indexOfTicket(ticketsToUpdate, ticket, false);
+            if (indexUpdate >= 0)
+                ticketsToUpdate.remove(indexUpdate);
+            playedTickets.add(ticket);
+            if (maxPlayedDraws[ticket.lottery.ordinal()] < ticket.drawIndex)
+                maxPlayedDraws[ticket.lottery.ordinal()] = ticket.drawIndex;
         } else {
-            if (oldActiveTicket == null)
-                activeTickets.add(ticket);
+            activeTickets.add(ticket);
         }
     }
 
@@ -201,7 +181,7 @@ public class TicketsStorage2 implements ITicketStorageRead, GetObjectCallback<Cu
                 }
             }
             if (amount > 0) {
-                result.add(new TicketsToLoad(lottery, 0, maxIndex[lottery.ordinal()] - smallestId + 10));
+                result.add(new TicketsToLoad(lottery, 0, amount + 10));
             }
         }
         return result;
@@ -213,35 +193,5 @@ public class TicketsStorage2 implements ITicketStorageRead, GetObjectCallback<Cu
 
     @Override
     public void onCancel() {
-    }
-
-    @Override
-    public void onShowPlayedTicketIds(Context context) {
-        LastCheckedTicketIdsKeeper.updateLastCheckedPlayedTicketIds(context, maxPlayedIndex);
-        maxPlayedShownIndex = Arrays.copyOf(maxPlayedIndex, maxPlayedIndex.length);
-    }
-
-    @Override
-    public int getUnshownTicketsAmount(Context context) {
-        if (maxPlayedShownIndex == null) {
-            maxPlayedShownIndex = LastCheckedTicketIdsKeeper.getLastCheckedPlayedTicketIds(context);
-        }
-        int sum = 0;
-        for (int i = 0; i < maxPlayedIndex.length; i++) {
-            if (maxPlayedIndex[i] > 0)
-                sum += maxPlayedIndex[i] - maxPlayedShownIndex[i];
-        }
-
-        return sum;
-    }
-
-    private static class TicketSortComparator implements Comparator<Ticket> {
-        public static final TicketSortComparator INSTANCE = new TicketSortComparator();
-
-        @Override
-        public int compare(Ticket o1, Ticket o2) {
-            return o2.drawDate.compareTo(o1.drawDate);
-        }
-
     }
 }

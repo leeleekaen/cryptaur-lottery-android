@@ -1,39 +1,28 @@
 package com.cryptaur.lottery.model;
 
 import com.cryptaur.lottery.transport.model.Lottery;
+import com.cryptaur.lottery.transport.model.LotteryTicketsList;
 import com.cryptaur.lottery.transport.model.Ticket;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.List;
+import java.util.PriorityQueue;
 
 public class LotteryTicketsQueue {
     public final Lottery lottery;
-    private final Deque<Ticket> tickets = new ArrayDeque<>();
-    private int lastElementIndex = Integer.MAX_VALUE;
-    private int totalAddedTickets = 0;
-    private int skippedValues = 0;
+    private final PriorityQueue<Ticket> tickets = new PriorityQueue<>(50, Ticket.SortComparator.INSTANCE);
+
+    private int nextLoadIndex = 0;
+    private boolean canLoadMore = true;
 
     public LotteryTicketsQueue(Lottery lottery) {
         this.lottery = lottery;
     }
 
-    public void add(List<Ticket> list) {
-        if (list.size() == 0) {
-            lastElementIndex = 0;
-            return;
-        }
-
-        while (list.size() > 0 && list.get(0).index >= lastElementIndex) {
-            list.remove(0);
-            ++skippedValues;
-        }
-
-        totalAddedTickets += list.size();
-
-        tickets.addAll(list);
-        if (tickets.size() > 0) {
-            lastElementIndex = tickets.getLast().index;
+    public void add(LotteryTicketsList ticketsList) {
+        if (ticketsList.tickets.size() == 0) {
+            canLoadMore = false;
+        } else {
+            tickets.addAll(ticketsList.tickets);
+            nextLoadIndex = Math.max(nextLoadIndex, ticketsList.startFrom + ticketsList.tickets.size());
         }
     }
 
@@ -46,11 +35,11 @@ public class LotteryTicketsQueue {
     }
 
     public boolean canLoadMode() {
-        return lastElementIndex > 0;
+        return canLoadMore;
     }
 
     public int getNextLoadStart() {
-        return totalAddedTickets + skippedValues;
+        return nextLoadIndex;
     }
 
     public boolean shouldLoad() {
