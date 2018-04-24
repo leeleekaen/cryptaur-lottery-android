@@ -54,7 +54,7 @@ public class Keeper {
         currentDrawsKeeper.requestValue(listener, force);
 
         CurrentDraws draws = currentDrawsKeeper.getValue();
-        if (draws != null) {
+        if (draws != null && !force) {
             listener.onRequestResult(draws);
         }
     }

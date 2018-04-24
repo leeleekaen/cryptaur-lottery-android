@@ -3,6 +3,7 @@
     <string name="action_settings">Settings</string>
     <string name="prize_pool">PRIZE POOL</string>
     <string name="jackpot">JACKPOT</string>
+    <string name="cpt">CPT</string>
     <string name="draw_number">DRAW #%d</string>
     <string name="buy_ticket_for">Buy ticket for %s CPT</string>
     <string name="time_left_">TIME LEFT %s</string>
@@ -24,8 +25,6 @@
     <string name="select_d_numbers">select %d numbers</string>
     <string name="clear">clear</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="exit">Exit</string>
     <string name="inputLogin">Input login</string>
     <string name="inputPassword">Input password</string>
@@ -39,4 +38,7 @@
     <string name="requestError">request error</string>
     <string name="requestCancelled">request cancelled</string>
     <string name="executingGetTheWinRequest">Executing Get the win request. It will take some time to process.</string>
+    <string name="ticket">Ticket</string>
+    <string name="draw_archive">Draw Archive</string>
+    <string name="rules">Rules</string>
 </resources>

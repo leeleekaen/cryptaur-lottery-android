@@ -73,7 +73,7 @@ public class InitialLoginController implements WorkflowController, NetworkReques
 
     @Override
     public void onNetworkRequestError(NetworkRequest request, Exception e) {
-        Toast.makeText(activity, "Error logging in", Toast.LENGTH_SHORT).show();
+        Toast.makeText(activity, "Error logging in: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         pin1 = pin2 = null;
         LoginFragment.showDialog(activity.getSupportFragmentManager(), login);
     }

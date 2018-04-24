@@ -12,7 +12,7 @@
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
+        android:layout_height="?android:attr/actionBarSize"
         android:layout_weight="1"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_scrollFlags="scroll|enterAlways"
@@ -20,14 +20,13 @@
         app:title="@string/app_name">
 
         <android.support.v7.widget.AppCompatTextView
-            android:id="@+id/toolbar_title"
+            android:id="@+id/wallet"
             style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:drawablePadding="8dp"
             android:gravity="center_vertical"
-            android:text="5x36"
             android:textColor="@color/heather"
             android:textSize="16sp" />
 
@@ -43,19 +42,19 @@
             android:id="@+id/tabItem"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Ticket" />
+            android:text="@string/ticket" />
 
         <android.support.design.widget.TabItem
             android:id="@+id/tabItem2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Draw Archive" />
+            android:text="@string/draw_archive" />
 
         <android.support.design.widget.TabItem
             android:id="@+id/tabItem3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Rules" />
+            android:text="@string/rules" />
 
     </android.support.design.widget.TabLayout>
 

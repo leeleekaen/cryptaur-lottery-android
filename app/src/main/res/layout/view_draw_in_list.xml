@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/my_ticket_bg"
+    android:orientation="horizontal">
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/drawNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="21dp"
+        android:background="@drawable/draw_number_bg"
+        android:gravity="center"
+        android:minHeight="30dp"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
+        android:text="@string/draw_number"
+        android:textColor="@color/heather"
+        android:textSize="11sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/ticketNumber1"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginLeft="11dp"
+        android:layout_marginTop="11dp"
+        android:background="@drawable/ic_number_selected"
+        android:gravity="center"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/ticketNumber2"
+        app:layout_constraintTop_toBottomOf="@+id/drawNumber" />
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/ticketNumber2"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginLeft="4dp"
+        android:background="@drawable/ic_number_selected"
+        android:gravity="center"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
+        app:layout_constraintLeft_toRightOf="@+id/ticketNumber1"
+        app:layout_constraintRight_toLeftOf="@+id/ticketNumber3"
+        app:layout_constraintTop_toTopOf="@+id/ticketNumber1" />
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/ticketNumber3"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginLeft="4dp"
+        android:background="@drawable/ic_number_selected"
+        android:gravity="center"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
+        app:layout_constraintLeft_toRightOf="@+id/ticketNumber2"
+        app:layout_constraintRight_toLeftOf="@+id/ticketNumber4"
+        app:layout_constraintTop_toTopOf="@+id/ticketNumber2" />
+
+    <TextView
+        android:id="@+id/ticketNumber4"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginLeft="4dp"
+        android:background="@drawable/ic_number_selected"
+        android:gravity="center"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
+        app:layout_constraintLeft_toRightOf="@+id/ticketNumber3"
+        app:layout_constraintRight_toLeftOf="@+id/ticketNumber5"
+        app:layout_constraintTop_toTopOf="@+id/ticketNumber3" />
+
+    <TextView
+        android:id="@+id/ticketNumber5"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginLeft="4dp"
+        android:background="@drawable/ic_number_selected"
+        android:gravity="center"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
+        app:layout_constraintLeft_toRightOf="@+id/ticketNumber4"
+        app:layout_constraintRight_toLeftOf="@+id/ticketNumber6"
+        app:layout_constraintTop_toTopOf="@+id/ticketNumber4" />
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/ticketNumber6"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="11dp"
+        android:background="@drawable/ic_number_selected"
+        android:gravity="center"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
+        app:layout_constraintLeft_toRightOf="@+id/ticketNumber5"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/ticketNumber5" />
+
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/drawDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="10dp"
+        android:text="8 APR, 23:08:01"
+        android:textColor="@color/twilight"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ticketNumber1" />
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/jackpot"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="10dp"
+        android:text="@string/jackpot"
+        android:textColor="@color/twilight"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ticketNumber1" />
+
+</android.support.constraint.ConstraintLayout>

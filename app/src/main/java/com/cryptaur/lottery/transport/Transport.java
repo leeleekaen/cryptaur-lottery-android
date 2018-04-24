@@ -8,6 +8,8 @@ import android.util.Log;
 
 import com.cryptaur.lottery.transport.base.NetworkRequest;
 import com.cryptaur.lottery.transport.model.CurrentDraws;
+import com.cryptaur.lottery.transport.model.DrawsReply;
+import com.cryptaur.lottery.transport.model.DrawsRequest;
 import com.cryptaur.lottery.transport.model.Login;
 import com.cryptaur.lottery.transport.model.Lottery;
 import com.cryptaur.lottery.transport.model.LotteryTicketsList;
@@ -20,6 +22,7 @@ import com.cryptaur.lottery.transport.request.BaseLotteryRequest;
 import com.cryptaur.lottery.transport.request.BuyTicketRequest;
 import com.cryptaur.lottery.transport.request.GetBalanceRequest;
 import com.cryptaur.lottery.transport.request.GetCurrentLotteriesRequest;
+import com.cryptaur.lottery.transport.request.GetDrawsRequest;
 import com.cryptaur.lottery.transport.request.GetTheWinRequest;
 import com.cryptaur.lottery.transport.request.GetTicketPriceRequest;
 import com.cryptaur.lottery.transport.request.GetTicketsRequest;
@@ -121,10 +124,14 @@ public class Transport implements SessionRefresher.RefresherListener {
     public void getTickets(TicketsToLoad toLoad, NetworkRequest.NetworkRequestListener<LotteryTicketsList> listener) {
         String address = sessionTransport.getAddress();
         if (address == null) {
-            listener.onCancel(new GetTicketsRequest(toLoad, address, client, listener));
+            listener.onCancel(new GetTicketsRequest(toLoad, null, client, listener));
             return;
         }
         new GetTicketsRequest(toLoad, address, client, new NetworkRequestWrapper<>(listener)).execute();
+    }
+
+    public void getDraws(DrawsRequest request, NetworkRequest.NetworkRequestListener<DrawsReply> listener) {
+        new GetDrawsRequest(request, client, new NetworkRequestWrapper<>(listener)).execute();
     }
 
     public void getWinAmount(NetworkRequest.NetworkRequestListener<Money> listener) {

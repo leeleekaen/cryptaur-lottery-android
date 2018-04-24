@@ -5,9 +5,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.threeten.bp.Instant;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 
-public class Draw {
+public class Draw implements Serializable {
     public final Lottery lottery;
     public final int number;
     public final Instant startTime;
@@ -54,5 +55,9 @@ public class Draw {
 
     public void setTicketPrice(Money ticketPrice) {
         this.ticketPrice = ticketPrice;
+    }
+
+    public boolean isPlayed() {
+        return numbers != null && numbers.length >= lottery.getNumbersAmount();
     }
 }

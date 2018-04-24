@@ -1,6 +1,7 @@
 package com.cryptaur.lottery.view;
 
 import android.support.graphics.drawable.VectorDrawableCompat;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.TextView;
 
@@ -25,6 +26,12 @@ public class WalletViewHolder implements GetObjectCallback<BigInteger>, View.OnC
         VectorDrawableCompat dr = VectorDrawableCompat.create(view.getResources(), R.drawable.ic_wallet, null);
         dr.setBounds(0, 0, dr.getIntrinsicWidth(), dr.getIntrinsicHeight());
         view.setCompoundDrawables(dr, null, null, null);
+
+        TypedValue typedValue = new TypedValue();
+        view.getContext().getTheme().resolveAttribute(android.R.attr.textColor, typedValue, true);
+        int color = view.getContext().getResources().getColor(typedValue.resourceId);
+
+        dr.setTint(color);
 
         refresh(false);
     }
@@ -57,6 +64,5 @@ public class WalletViewHolder implements GetObjectCallback<BigInteger>, View.OnC
         } else {
             listener.doAction(InteractionListener.Action.Login, null);
         }
-
     }
 }

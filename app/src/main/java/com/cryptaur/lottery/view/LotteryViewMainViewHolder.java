@@ -118,18 +118,17 @@ public class LotteryViewMainViewHolder implements GetObjectCallback<CurrentDraws
                 int minutesToDraw = (int) ((Math.abs(secondsToDraw) / 60) % 60);
                 int secstoDraw = (int) (Math.abs(secondsToDraw) % 60);
 
-                String sign = secondsToDraw < 0 ? "-" : "";
-                String time = String.format(Locale.US, "%s%02d:%02d:%02d", sign, hourstoDraw, minutesToDraw, secstoDraw);
+                String time = String.format(Locale.US, "%02d:%02d:%02d", hourstoDraw, minutesToDraw, secstoDraw);
                 timeLeftView.setText(view.getResources().getString(R.string.time_left_, time));
             } else {
                 timeLeftView.setText(R.string.draw_in_progress);
-                long overtime = -secondsToDraw;
+                long overtime = secondsToDraw * -1000;
                 if (overtime > _1_min_interval) {
                     long age = System.currentTimeMillis() - draw.timestamp;
                     if (age > overtime) {
                         Log.d(Const.TAG, String.format("lottery %d, update 1, age: %d, overtime: %d", draw.lottery.getServerId(), age, overtime));
                         update(true);
-                    } else if (overtime > _5_min_interval && overtime - age < 100_000) {
+                    } else if (overtime > _5_min_interval && overtime - age < 200_000) {
                         Log.d(Const.TAG, String.format("lottery %d, update 2, age: %d, overtime: %d", draw.lottery.getServerId(), age, overtime));
                         update(true);
                     } else if (overtime > _10_min_interval && overtime - age < 400_000) {

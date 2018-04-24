@@ -25,15 +25,14 @@ public class BuyTicketsPagerAdapter extends FragmentPagerAdapter {
         switch (position) {
             case 0:
                 return BuyTicketFragment.newInstance(lottery);
+            case 1:
+                return DrawsFragment.newInstance(lottery);
         }
-        // getItem is called to instantiate the fragment for the given page.
-        // Return a PlaceholderFragment (defined as a static inner class below).
         return BuyTicketActivity.PlaceholderFragment.newInstance(position + 1);
     }
 
     @Override
     public int getCount() {
-        // Show 3 total pages.
         return 3;
     }
 

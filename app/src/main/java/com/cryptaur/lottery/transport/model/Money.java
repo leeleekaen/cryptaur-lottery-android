@@ -1,8 +1,9 @@
 package com.cryptaur.lottery.transport.model;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 
-public class Money {
+public class Money implements Serializable {
     public final BigInteger amount;
     public final BigInteger fee;
     public final long timestamp;

@@ -51,7 +51,7 @@ public class PinLoginController implements WorkflowController, NetworkRequest.Ne
 
     @Override
     public void onNetworkRequestError(NetworkRequest request, Exception e) {
-        Toast.makeText(activity, "Error logging in", Toast.LENGTH_SHORT).show();
+        Toast.makeText(activity, "Error logging in: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         Fragment fragment = FixCloseDialogFragment.findDialogFragment(activity.getSupportFragmentManager());
         if (fragment instanceof EnterPinCodeDialogFragment) {
             ((EnterPinCodeDialogFragment) fragment).resetPinInput();
