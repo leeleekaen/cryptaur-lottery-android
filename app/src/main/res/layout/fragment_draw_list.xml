@@ -9,13 +9,10 @@
     tools:context=".buytickets.DrawsFragment">
 
     <android.support.v7.widget.RecyclerView
+        android:background="#fff"
         android:id="@+id/list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
         app:layoutManager="android.support.v7.widget.LinearLayoutManager"
-        tools:listitem="@layout/view_my_ticket" />
+        tools:listitem="@layout/view_draw_in_list" />
 </android.support.v4.widget.SwipeRefreshLayout>

@@ -41,4 +41,33 @@
     <string name="ticket">Ticket</string>
     <string name="draw_archive">Draw Archive</string>
     <string name="rules">Rules</string>
+
+    <!-- RULES -->
+    <string name="participation">Participation</string>
+    <string name="participate_body">To participate in the lottery, you must choose any %d numbers out of %d in the playing field of the lottery ticket. The number of tickets is unlimited.</string>
+    <string name="ticket_price">Ticket price</string>
+    <string name="ticket_price_body">The cost of one ticket is determined by the lottery organizer and can be changed. Changes are allowed only after the end of the current drawing lot and before the next one. The ticket is paid by CPT tokens. The cost of GAS for the implementation of a transaction for the ticket purchase is not included in the ticket price and is debited from the participant`s wallet, i. e. the participant should have enough ETH in the wallet for the ticket purchase. The cost of GAS can vary depending on the workload of the network Ethereum. The purchased tickets cannot be exchanged and returned.</string>
+    <string name="distribution_of_funds">Distribution of funds from ticket sales</string>
+    <string name="distribution_of_funds_body">The funds raised from ticket sale in the current drawing lot are distributed as follows: 90% of the funds form the prize pool of the current draw; 10% of the funds - advertising, marketing, legal expenses, holding rallies.</string>
+    <string name="distribution_of_the_prize_pool">Distribution of the prize pool</string>
+    <string name="distribution_of_the_prize_pool_body1">The prize pool of the current drawing lot is divided into %d categories depending on the number of guessed numbers.</string>
+    <string name="distribution_of_the_prize_pool_body2">If there are no winners the sum goes to the Jackpot of the next draw.</string>
+    <string name="distribution_of_the_prize_pool_body3">50%% of the prize pool of category %d always goes to the Jackpot of the next draw.</string>
+    <string name="distribution_of_the_prize_pool_body4">The jackpot, accumulated over previous draws, divides tickets among themselves, in which %d numbers are guessed. If there are none the current jackpot amount is added to the next drawdown Jackpot.</string>
+    <string name="distribution_of_the_prize_pool_body5">The minimum guaranteed %d out of %d lottery jackpot is determined by the lottery organizer and can be changed. Changes are allowed only after the end of the current draw and before the next one.</string>
+    <string name="distribution_of_the_prize_pool_body6">In case the Jackpot won is less than the minimum jackpot amount, the required balance is taken from the reserve fund. After that all the funds intended for replenishment of the Jackpot of the following drawing lots go first to repay the amount taken from the reserve fund. The reserve fund initially accumulates at the expense of fees to the Jackpot, as well as at the expense of funds contributed by the lottery organizer.</string>
+    <string name="draw">Draw</string>
+    <string name="draw_body">The lottery is held every 154 hours. The time of the nearest draw is indicated in the lottery ticket. Ticket sale for draw ends 1 hour before its start.</string>
+    <string name="payout">Payout</string>
+    <string name="payout_body1">After the draw the system automatically determines winning tickets. The owner of the winning ticket should apply for a win before the next draw, otherwise the ticket is cancelled. The winner of the lottery shall pay the gas for getting the win.</string>
+    <string name="payout_body2">The lottery organizer is responsible for lottery costs.</string>
+    <string name="taxes">Taxes</string>
+    <string name="taxes_body">The Cryptaur project does not act as a tax agent. The duty to pay taxes rests with the owner of the cryptowallet where the payout was made.</string>
+    <string name="agreement">Agreement</string>
+    <string name="agreement_body">Taking part in the lottery, you agree with the rules of its conduct. You guarantee that at the time of purchasing a lottery ticket you turned 18 or you have reached another minimum age required to participate in the lottery provided for by the law of the country of your permanent residence.</string>
+    <string name="numbers_matched">Numbers Matched</string>
+    <string name="prize_pool_distribution">Prize pool distribution</string>
+    <string name="jackpot2">Jackpot</string>
+    <string name="distributionExpl">%d%% of the prize pool of the draw / number of people who guessed %d numbers</string>
+
 </resources>

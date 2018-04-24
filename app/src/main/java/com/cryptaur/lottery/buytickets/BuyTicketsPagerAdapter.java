@@ -27,8 +27,10 @@ public class BuyTicketsPagerAdapter extends FragmentPagerAdapter {
                 return BuyTicketFragment.newInstance(lottery);
             case 1:
                 return DrawsFragment.newInstance(lottery);
+            case 2:
+                return LotteryRulesFragment.newInstance(lottery);
         }
-        return BuyTicketActivity.PlaceholderFragment.newInstance(position + 1);
+        throw new RuntimeException("Not implemented for: " + position);
     }
 
     @Override

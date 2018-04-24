@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".buytickets.LotteryRulesFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingBottom="16dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp">
+
+        <TextView
+            style="@style/AppTheme.RulesHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/participation" />
+
+        <TextView
+            android:id="@+id/participateBody"
+            style="@style/AppTheme.RulesBody"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/participate_body" />
+
+        <TextView
+            style="@style/AppTheme.RulesHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/ticket_price" />
+
+        <TextView
+            style="@style/AppTheme.RulesBody"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/ticket_price_body"
+            android:visibility="gone" />
+
+        <TextView
+            style="@style/AppTheme.RulesHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/distribution_of_funds" />
+
+        <TextView
+            style="@style/AppTheme.RulesBody"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/distribution_of_funds_body" />
+
+        <TextView
+            style="@style/AppTheme.RulesHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/distribution_of_the_prize_pool" />
+
+        <TextView
+            android:id="@+id/prize_pool_1"
+            style="@style/AppTheme.RulesBody"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/distribution_of_the_prize_pool_body1" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginBottom="4dp"
+            android:layout_marginTop="4dp"
+            android:background="@color/heather" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="82dp"
+                android:layout_height="wrap_content"
+                android:text="@string/numbers_matched"
+                android:textSize="16sp" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/prize_pool_distribution"
+                android:textSize="16sp" />
+
+        </LinearLayout>
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/distributionNumberLine1"
+                style="@style/AppTheme.DistributionNumber"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                app:layout_constraintLeft_toLeftOf="parent" />
+
+            <TextView
+                android:id="@+id/distributionTextLine1"
+                style="@style/AppTheme.DistributionText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/jackpot2"
+                app:layout_constraintBottom_toBottomOf="@+id/distributionNumberLine1"
+                app:layout_constraintLeft_toRightOf="@+id/distributionNumberLine1"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/distributionNumberLine1" />
+
+            <TextView
+                android:id="@+id/distributionNumberLine2"
+                style="@style/AppTheme.DistributionNumber"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/distributionNumberLine1" />
+
+            <TextView
+                android:id="@+id/distributionTextLine2"
+                style="@style/AppTheme.DistributionText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="@+id/distributionNumberLine2"
+                app:layout_constraintLeft_toRightOf="@+id/distributionNumberLine2"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/distributionNumberLine2" />
+
+            <TextView
+                android:id="@+id/distributionNumberLine3"
+                style="@style/AppTheme.DistributionNumber"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/distributionNumberLine2" />
+
+            <TextView
+                android:id="@+id/distributionTextLine3"
+                style="@style/AppTheme.DistributionText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="@+id/distributionNumberLine3"
+                app:layout_constraintLeft_toRightOf="@+id/distributionNumberLine3"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/distributionNumberLine3" />
+
+            <TextView
+                android:id="@+id/distributionNumberLine4"
+                style="@style/AppTheme.DistributionNumber"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/distributionNumberLine3" />
+
+            <TextView
+                android:id="@+id/distributionTextLine4"
+                style="@style/AppTheme.DistributionText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="@+id/distributionNumberLine4"
+                app:layout_constraintLeft_toRightOf="@+id/distributionNumberLine4"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/distributionNumberLine4" />
+
+            <TextView
+                android:id="@+id/distributionNumberLine5"
+                style="@style/AppTheme.DistributionNumber"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/distributionNumberLine4" />
+
+            <TextView
+                android:id="@+id/distributionTextLine5"
+                style="@style/AppTheme.DistributionText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="@+id/distributionNumberLine5"
+                app:layout_constraintLeft_toRightOf="@+id/distributionNumberLine5"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/distributionNumberLine5" />
+
+        </android.support.constraint.ConstraintLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            android:background="@color/heather" />
+
+
+        <TextView
+            style="@style/AppTheme.RulesBody"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/distribution_of_the_prize_pool_body2" />
+
+        <TextView
+            android:id="@+id/prize_pool_3"
+            style="@style/AppTheme.RulesBody"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/distribution_of_the_prize_pool_body3" />
+
+        <TextView
+            android:id="@+id/prize_pool_4"
+            style="@style/AppTheme.RulesBody"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/distribution_of_the_prize_pool_body4" />
+
+        <TextView
+            android:id="@+id/prize_pool_5"
+            style="@style/AppTheme.RulesBody"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/distribution_of_the_prize_pool_body5" />
+
+        <TextView
+            style="@style/AppTheme.RulesBody"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/distribution_of_the_prize_pool_body6" />
+
+        <TextView
+            style="@style/AppTheme.RulesHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/draw" />
+
+        <TextView
+            style="@style/AppTheme.RulesBody"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/draw_body" />
+
+        <TextView
+            style="@style/AppTheme.RulesHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/payout" />
+
+        <TextView
+            style="@style/AppTheme.RulesBody"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/payout_body1" />
+
+        <TextView
+            style="@style/AppTheme.RulesBody"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/payout_body2" />
+
+        <TextView
+            style="@style/AppTheme.RulesHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/taxes" />
+
+        <TextView
+            style="@style/AppTheme.RulesBody"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/taxes_body" />
+
+        <TextView
+            style="@style/AppTheme.RulesHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/agreement" />
+
+        <TextView
+            style="@style/AppTheme.RulesBody"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/agreement_body" />
+
+    </LinearLayout>
+</ScrollView>

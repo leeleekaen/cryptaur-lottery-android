@@ -51,4 +51,36 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+    <style name="AppTheme.RulesHeader">
+        <item name="android:textColor">@color/heather</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:layout_marginBottom">16dp</item>
+        <item name="android:layout_marginTop">16dp</item>
+    </style>
+
+    <style name="AppTheme.RulesBody">
+        <item name="android:textColor">@color/twilight</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:layout_marginBottom">4dp</item>
+        <item name="android:layout_marginTop">4dp</item>
+    </style>
+
+    <style name="AppTheme.DistributionNumber">
+        <item name="android:background">@drawable/rules_number_bg</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@color/twilight</item>
+        <item name="android:layout_marginLeft">8dp</item>
+        <item name="android:layout_marginTop">12dp</item>
+        <item name="android:layout_marginBottom">12dp</item>
+    </style>
+
+    <style name="AppTheme.DistributionText">
+        <item name="android:textColor">@color/twilight</item>
+        <item name="android:layout_marginLeft">24dp</item>
+        <item name="android:layout_marginRight">16dp</item>
+        <item name="android:textSize">15sp</item>
+    </style>
+
 </resources>

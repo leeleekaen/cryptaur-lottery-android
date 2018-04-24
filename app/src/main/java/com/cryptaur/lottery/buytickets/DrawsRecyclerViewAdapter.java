@@ -14,12 +14,14 @@ import com.cryptaur.lottery.transport.Transport;
 import com.cryptaur.lottery.transport.model.Draw;
 import com.cryptaur.lottery.transport.model.DrawsReply;
 import com.cryptaur.lottery.transport.model.Lottery;
+import com.cryptaur.lottery.util.FilteredDividerItemDecoration;
 import com.cryptaur.lottery.view.LoadingViewHolder;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MyDrawRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class DrawsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
+        implements FilteredDividerItemDecoration.IDecorationFilter {
 
     private final DrawsKeeper drawsKeeper;
     private final List<Draw> draws = new ArrayList<>();
@@ -29,7 +31,7 @@ public class MyDrawRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView
     private final SingleRequest<DrawsReply> requestExecutor;
     private boolean canLoadMore = true;
 
-    public MyDrawRecyclerViewAdapter(Lottery lottery, InteractionListener listener, RefreshListener refreshListener) {
+    public DrawsRecyclerViewAdapter(Lottery lottery, InteractionListener listener, RefreshListener refreshListener) {
         this.drawsKeeper = new DrawsKeeper(lottery);
         mListener = listener;
         requestExecutor = new SingleRequest<>(l -> Transport.INSTANCE.getDraws(drawsKeeper.nextRequest(), l));
@@ -82,6 +84,11 @@ public class MyDrawRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView
     public void refresh() {
         drawsKeeper.reset();
         requestExecutor.executeRequest();
+    }
+
+    @Override
+    public boolean shouldDrawDecorator(int position) {
+        return position < getItemCount();
     }
 
     public interface RefreshListener {

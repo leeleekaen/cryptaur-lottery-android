@@ -42,4 +42,20 @@ public enum Lottery {
     public int getServerId() {
         return ordinal() + 1;
     }
+
+    public double[] getWinShares() {
+        switch (this) {
+            case _4of20:
+                return new double[]{0, 0, 0.25, 0.15, 0.50};
+
+            case _5of36:
+                return new double[]{0, 0, 0.2, 0.1, 0.1, 0.5};
+
+            case _6of42:
+                return new double[]{0, 0, 0.2, 0.1, 0.05, 0.05, 0.5};
+
+            default:
+                throw new RuntimeException("Not implemented for " + name());
+        }
+    }
 }
