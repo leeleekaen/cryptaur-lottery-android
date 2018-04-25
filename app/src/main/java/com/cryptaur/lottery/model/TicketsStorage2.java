@@ -16,12 +16,12 @@ import java.util.TreeSet;
 
 public class TicketsStorage2 implements ITicketStorageRead, GetObjectCallback<CurrentDraws> {
 
-    private final TreeSet<Ticket> playedTickets = new TreeSet<>(Ticket.SortComparator.INSTANCE);
     private final TreeSet<Ticket> activeTickets = new TreeSet<>(Ticket.SortComparator.INSTANCE);
+    private final TreeSet<Ticket> playedTickets = new TreeSet<>(Ticket.SortComparator.INSTANCE);
+    private final TreeSet<Ticket> ticketsToUpdate = new TreeSet<>(Ticket.SortComparator.INSTANCE);
 
     private final LotteryTicketsQueueJoiner joiner;
     private final int latestDraws[] = new int[Lottery.values().length];
-    private final List<Ticket> ticketsToUpdate = new ArrayList<>();
 
     private final int[] maxPlayedDraws = new int[Lottery.values().length];
     private final int[] minLoadedDraws = new int[Lottery.values().length];
@@ -54,6 +54,14 @@ public class TicketsStorage2 implements ITicketStorageRead, GetObjectCallback<Cu
         return false;
     }
 
+    /**
+     * receives LotteryTicketsList (server reply).
+     * if isUpdateRequest is true then updates all tickets (they are expected but not required to be in active/played ticket sets)
+     * else puts the LotteryTicketsList into the joiner, takes all Tickets from the joiner (until null) and puts them into active/played ticket sets
+     *
+     * @param tickets
+     * @param isUpdateRequest
+     */
     public void add(LotteryTicketsList tickets, boolean isUpdateRequest) {
         if (isUpdateRequest && tickets.tickets.size() > 0) {
             for (Ticket ticket : tickets.tickets) {
@@ -76,53 +84,21 @@ public class TicketsStorage2 implements ITicketStorageRead, GetObjectCallback<Cu
         }
     }
 
+    /**
+     * updates ticket that might exist in active or played tickets list
+     *
+     * @param ticket
+     */
     private void update(Ticket ticket) {
-
         if (ticket.isPlayed()) {
             activeTickets.remove(ticket);
-            int indexUpdate = indexOfTicket(ticketsToUpdate, ticket, false);
-            if (indexUpdate >= 0)
-                ticketsToUpdate.remove(indexUpdate);
+            ticketsToUpdate.remove(ticket);
             playedTickets.add(ticket);
             if (maxPlayedDraws[ticket.lottery.ordinal()] < ticket.drawIndex)
                 maxPlayedDraws[ticket.lottery.ordinal()] = ticket.drawIndex;
         } else {
             activeTickets.add(ticket);
         }
-    }
-
-    private int indexOfTicket(List<Ticket> tikets, Ticket ticket, boolean listIsOrdered) {
-        Lottery lottery = ticket.lottery;
-        for (int i = 0; i < tikets.size(); i++) {
-            Ticket check = tikets.get(i);
-            if (check.lottery == lottery) {
-                if (check.index == ticket.index)
-                    return i;
-            }
-            if (listIsOrdered && check.drawIndex < ticket.drawIndex)
-                return -1;
-        }
-        return -1;
-    }
-
-    private Ticket oldTicket(Collection<Ticket> tickets, Ticket ticket, boolean listIsOrdered) {
-        Lottery lottery = ticket.lottery;
-        for (Ticket check : tickets) {
-            if (check.lottery == lottery) {
-                if (check.index == ticket.index) {
-                    return check;
-                }
-                if (listIsOrdered && check.drawIndex < ticket.drawIndex)
-                    return null;
-            }
-
-        }
-
-        return null;
-    }
-
-    public List<TicketsToLoad> getTicketsToLoad() {
-        return joiner.getTicketsToLoad();
     }
 
     public boolean checkCanReturnRequest(TicketsType type, int minAmount) {
@@ -145,6 +121,10 @@ public class TicketsStorage2 implements ITicketStorageRead, GetObjectCallback<Cu
         joiner.reset(values);
     }
 
+    /**
+     * update "isPlayed" flag for the ticket
+     * @param ticket
+     */
     private void updateTicketPlayed(Ticket ticket) {
         int currentDraw = latestDraws[ticket.lottery.ordinal()];
         if (currentDraw > 0)
@@ -152,8 +132,8 @@ public class TicketsStorage2 implements ITicketStorageRead, GetObjectCallback<Cu
     }
 
     @Override
-    public void onRequestResult(CurrentDraws responce) {
-        for (Draw draw : responce.draws) {
+    public void onRequestResult(CurrentDraws draws) {
+        for (Draw draw : draws.draws) {
             latestDraws[draw.lottery.ordinal()] = draw.number;
         }
         for (Ticket activeTicket : activeTickets) {
@@ -162,6 +142,10 @@ public class TicketsStorage2 implements ITicketStorageRead, GetObjectCallback<Cu
                 ticketsToUpdate.add(activeTicket);
             }
         }
+    }
+
+    public List<TicketsToLoad> getTicketsToLoad() {
+        return joiner.getTicketsToLoad();
     }
 
     public List<TicketsToLoad> getTicketsToUpdate() {

@@ -24,12 +24,12 @@ public class Keeper {
     private final SimpleItemKeeper<BigInteger> balanceKeeper;
     private final SimpleItemKeeper<Money> winAmountKeeper = new SimpleItemKeeper<>(WIN_AMOUNT_UPDATE_TIMEOUT, Transport.INSTANCE::getWinAmount);
 
-    private final TicketsRequestJoiner ticketRequestJoiner;
+    private final TicketsKeeper ticketRequestJoiner;
 
     private Keeper(Context context) {
         final Context ctx = context.getApplicationContext();
         balanceKeeper = new SimpleItemKeeper<>(BALANCE_UPDATE_TIMEOUT, listener -> Transport.INSTANCE.getBalance(ctx, listener));
-        ticketRequestJoiner = new TicketsRequestJoiner(this);
+        ticketRequestJoiner = new TicketsKeeper(this);
     }
 
     public static Keeper getInstance(Context context) {

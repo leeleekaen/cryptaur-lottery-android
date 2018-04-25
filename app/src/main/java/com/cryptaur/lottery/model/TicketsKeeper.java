@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @UiThread
-public class TicketsRequestJoiner implements NetworkRequest.NetworkRequestListener<LotteryTicketsList> {
+public class TicketsKeeper implements NetworkRequest.NetworkRequestListener<LotteryTicketsList> {
 
     private final TicketsStorage2 ticketsStorage = new TicketsStorage2(Lottery.values());
     private final List<LotteryTicketDemand> lotteryTicketDemands = new ArrayList<>();
@@ -24,7 +24,7 @@ public class TicketsRequestJoiner implements NetworkRequest.NetworkRequestListen
     private final List<GetObjectCallback<ITicketStorageRead>> listeners = new ArrayList<>();
     private int executingRequests = 0;
 
-    public TicketsRequestJoiner(Keeper keeper) {
+    public TicketsKeeper(Keeper keeper) {
         keeper.addCurrentDrawsListener(ticketsStorage);
     }
 

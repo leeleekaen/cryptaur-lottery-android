@@ -1,6 +1,7 @@
 package com.cryptaur.lottery.model;
 
-import com.cryptaur.lottery.Const;
+import android.support.annotation.Nullable;
+
 import com.cryptaur.lottery.transport.model.Lottery;
 import com.cryptaur.lottery.transport.model.LotteryTicketsList;
 import com.cryptaur.lottery.transport.model.Ticket;
@@ -18,6 +19,11 @@ public class LotteryTicketsQueueJoiner {
         }
     }
 
+    /**
+     * adds tickets reply to corresponding tickets queue
+     *
+     * @param ticketsList
+     */
     public void add(LotteryTicketsList ticketsList) {
         Lottery lottery = ticketsList.lottery;
         for (LotteryTicketsQueue queue : queues) {
@@ -28,6 +34,11 @@ public class LotteryTicketsQueueJoiner {
         }
     }
 
+    /**
+     * @return next ticket;
+     * return null if there is no tickets left or if we should load more tickets for some queue
+     */
+    @Nullable
     public Ticket next() {
         Ticket result = null;
 
@@ -37,7 +48,7 @@ public class LotteryTicketsQueueJoiner {
 
             result = queues.get(0).peek();
             if (result == null) {
-                if (queues.get(0).canLoadMode())
+                if (queues.get(0).canLoadMore())
                     return null;
                 else {
                     queues.remove(0);
@@ -54,7 +65,7 @@ public class LotteryTicketsQueueJoiner {
 
             Ticket pretendent = queue.peek();
             if (pretendent == null) {
-                if (queues.get(i).canLoadMode())
+                if (queues.get(i).canLoadMore())
                     return null;
                 else {
                     queues.remove(i);
@@ -81,7 +92,7 @@ public class LotteryTicketsQueueJoiner {
         List<TicketsToLoad> result = new ArrayList<>();
         for (LotteryTicketsQueue queue : queues) {
             if (queue.shouldLoad()) {
-                result.add(new TicketsToLoad(queue.lottery, queue.getNextLoadStart(), Const.GET_TICKETS_STEP));
+                result.add(queue.nextPaginatorPageRequest());
             }
         }
         return result;
@@ -91,6 +102,11 @@ public class LotteryTicketsQueueJoiner {
         return queues.size() > 0;
     }
 
+    /**
+     * resets this object to initial state;
+     *
+     * @param lotteries -- lotteries that should be loaded/presented
+     */
     public void reset(Lottery[] lotteries) {
         queues.clear();
         for (int i = 0; i < lotteries.length; i++) {
