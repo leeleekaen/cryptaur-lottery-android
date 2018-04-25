@@ -46,20 +46,21 @@
         android:layout_height="1dp"
         android:layout_marginBottom="16dp"
         android:background="@color/paleGray"
-        app:layout_constraintBottom_toTopOf="@+id/availableText" />
+        app:layout_constraintBottom_toTopOf="@+id/buttonMessageText"
+        app:layout_goneMarginBottom="24dp" />
 
     <TextView
-        android:id="@+id/availableText"
+        android:id="@+id/buttonMessageText"
         android:layout_width="wrap_content"
         android:layout_height="17dp"
         android:layout_marginBottom="14dp"
-        android:layout_marginTop="24dp"
         android:text="@string/available__cpt"
         android:textAllCaps="true"
         android:textColor="@color/heather"
         android:textSize="14sp"
         app:layout_constraintBottom_toTopOf="@+id/buyButton"
         app:layout_constraintLeft_toLeftOf="parent"
+        android:visibility="gone"
         app:layout_constraintRight_toRightOf="parent" />
 
     <Button

@@ -42,7 +42,7 @@ public class BuyTicketFragment extends Fragment implements BuyTicketRecyclerView
     private static final String ARG_LOTTERY = "lottery";
     private ViewGroup root;
     private RecyclerView recyclerView;
-    private AvailableViewHolder availableView;
+    private TextView messageText;
     private Button buyButton;
     private InteractionListener mListener;
     private Lottery lottery;
@@ -80,7 +80,7 @@ public class BuyTicketFragment extends Fragment implements BuyTicketRecyclerView
         Keeper.getInstance(root.getContext()).getCurrentDraws(this, false);
 
         recyclerView = root.findViewById(R.id.list);
-        availableView = new AvailableViewHolder(root.findViewById(R.id.availableText));
+        messageText = root.findViewById(R.id.buttonMessageText);
         buyButton = root.findViewById(R.id.buyButton);
         selectNumbersLabel = root.findViewById(R.id.selectNumbers);
         clearButton = root.findViewById(R.id.buttonClear);

@@ -6,8 +6,8 @@ android {
         applicationId "com.cryptaur.lottery"
         minSdkVersion 17
         targetSdkVersion 27
-        versionCode 3
-        versionName "1.0.5_test"
+        versionCode 4
+        versionName "1.0.6_test"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
