@@ -1,10 +1,11 @@
 package com.cryptaur.lottery.buytickets;
 
-import android.graphics.Color;
+import android.graphics.Typeface;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -67,7 +68,10 @@ public class DrawInListViewHolder extends RecyclerView.ViewHolder {
         int start = bld.length();
         bld.append(Strings.toDecimalString(draw.jackpot, 8, 0, ".", ","));
         bld.append(view.getResources().getString(R.string.cpt));
-        ForegroundColorSpan span = new ForegroundColorSpan(Color.WHITE);
+
+        Object span = new StyleSpan(Typeface.BOLD);
+        bld.setSpan(span, start, bld.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        span = new ForegroundColorSpan(0xFF634285);
         bld.setSpan(span, start, bld.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         jackpotView.setText(bld);
     }

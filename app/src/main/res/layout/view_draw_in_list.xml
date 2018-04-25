@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@android:color/white"
+    android:background="@color/paleLavander"
     android:orientation="horizontal">
 
     <android.support.v7.widget.AppCompatTextView
@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="9dp"
-        android:background="@drawable/draw_number_bg"
+        android:background="@drawable/draw_number_bg_white"
         android:gravity="center"
         android:minHeight="30dp"
         android:paddingLeft="15dp"
@@ -112,7 +112,7 @@
         android:layout_marginLeft="16dp"
         android:layout_marginTop="10dp"
         android:text="8 APR, 23:08:01"
-        android:textColor="@color/twilight"
+        android:textColor="@color/heather"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -126,7 +126,7 @@
         android:layout_marginRight="16dp"
         android:layout_marginTop="10dp"
         android:text="@string/jackpot"
-        android:textColor="@color/twilight"
+        android:textColor="@color/heather"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"
