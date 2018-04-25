@@ -1,6 +1,8 @@
 package com.cryptaur.lottery.transport.model;
 
 
+import android.support.annotation.NonNull;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.threeten.bp.Instant;
@@ -18,9 +20,11 @@ public class Draw implements Serializable {
     public final BigInteger reserve;
     public final BigInteger jackpotAdded;
     public final BigInteger reserveAdded;
+    public final BigInteger paid;
     public final int ticketsBought;
     public final long timestamp;
     public final int[] numbers;
+    @NonNull
     private Money ticketPrice;
 
     public Draw(Lottery lottery, JSONObject source) throws JSONException {
@@ -36,8 +40,9 @@ public class Draw implements Serializable {
         reserve = helper.getUnsignedBigInteger("reserve");
         jackpotAdded = helper.getUnsignedBigInteger("jackpotAdded");
         reserveAdded = helper.getUnsignedBigInteger("reserveAdded");
+        paid = helper.getUnsignedBigInteger("payed");
 
-        ticketsBought = helper.getUnsignedBigInteger("ticketPrice").intValue();
+        ticketsBought = source.getInt("ticketsBought");
         numbers = helper.getIntArray("numbers");
 
         BigInteger ticketPrice = helper.getUnsignedBigInteger("ticketPrice");
@@ -49,15 +54,20 @@ public class Draw implements Serializable {
         this(Lottery.ofServerId(source.getInt("lotteryId")), source);
     }
 
+    @NonNull
     public Money getTicketPrice() {
         return ticketPrice;
     }
 
-    public void setTicketPrice(Money ticketPrice) {
+    public void setTicketPrice(@NonNull Money ticketPrice) {
         this.ticketPrice = ticketPrice;
     }
 
     public boolean isPlayed() {
         return numbers != null && numbers.length >= lottery.getNumbersAmount();
+    }
+
+    public BigInteger getCollected() {
+        return ticketPrice.amount.multiply(BigInteger.valueOf(ticketsBought));
     }
 }

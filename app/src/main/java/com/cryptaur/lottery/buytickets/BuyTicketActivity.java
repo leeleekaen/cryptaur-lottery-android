@@ -1,14 +1,19 @@
 package com.cryptaur.lottery.buytickets;
 
-
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 
 import com.cryptaur.lottery.ActivityBase;
+import com.cryptaur.lottery.Const;
 import com.cryptaur.lottery.MyTicketsActivity;
 import com.cryptaur.lottery.R;
 import com.cryptaur.lottery.transport.model.Lottery;
@@ -60,5 +65,23 @@ public class BuyTicketActivity extends ActivityBase {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void doAction(IAction action, @Nullable Fragment fragment) {
+        if (action instanceof ShowDrawDetailsAction) {
+            Fragment f = DrawDetailsFragment.newInstance(((ShowDrawDetailsAction) action).draw);
+            FragmentManager fm = getSupportFragmentManager();
+            FragmentTransaction ft = fm.beginTransaction();
+            ft.add(R.id.fragmentFrame, f);
+            ft.addToBackStack("drawDetails");
+            try {
+                ft.commit();
+            } catch (Exception e) {
+                Log.e(Const.TAG, e.getMessage(), e);
+            }
+            return;
+        }
+        super.doAction(action, fragment);
     }
 }

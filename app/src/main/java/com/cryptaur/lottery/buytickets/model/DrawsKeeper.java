@@ -1,4 +1,4 @@
-package com.cryptaur.lottery.model;
+package com.cryptaur.lottery.buytickets.model;
 
 import com.cryptaur.lottery.transport.model.Draw;
 import com.cryptaur.lottery.transport.model.DrawsReply;

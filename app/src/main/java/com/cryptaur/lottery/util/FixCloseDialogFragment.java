@@ -136,4 +136,9 @@ public abstract class FixCloseDialogFragment extends DialogFragment implements D
         }
     }
 
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
 }

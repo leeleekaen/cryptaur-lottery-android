@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @UiThread
-public class TicketsKeeper implements NetworkRequest.NetworkRequestListener<LotteryTicketsList> {
+class TicketsKeeper implements NetworkRequest.NetworkRequestListener<LotteryTicketsList> {
 
     private final TicketsStorage2 ticketsStorage = new TicketsStorage2(Lottery.values());
     private final List<LotteryTicketDemand> lotteryTicketDemands = new ArrayList<>();

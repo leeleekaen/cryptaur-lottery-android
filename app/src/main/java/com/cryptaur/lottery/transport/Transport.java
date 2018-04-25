@@ -18,6 +18,8 @@ import com.cryptaur.lottery.transport.model.Session;
 import com.cryptaur.lottery.transport.model.Ticket;
 import com.cryptaur.lottery.transport.model.TicketsToLoad;
 import com.cryptaur.lottery.transport.model.Transaction;
+import com.cryptaur.lottery.transport.model.WinTicketReply;
+import com.cryptaur.lottery.transport.model.WinTicketsRequest;
 import com.cryptaur.lottery.transport.request.BaseLotteryRequest;
 import com.cryptaur.lottery.transport.request.BuyTicketRequest;
 import com.cryptaur.lottery.transport.request.GetBalanceRequest;
@@ -27,10 +29,12 @@ import com.cryptaur.lottery.transport.request.GetTheWinRequest;
 import com.cryptaur.lottery.transport.request.GetTicketPriceRequest;
 import com.cryptaur.lottery.transport.request.GetTicketsRequest;
 import com.cryptaur.lottery.transport.request.GetWinAmountRequest;
+import com.cryptaur.lottery.transport.request.GetWinTicketsRequest;
 import com.cryptaur.lottery.transport.request.LoginRequest;
 import com.cryptaur.lottery.transport.request.RefreshSessionRequest;
 
 import java.math.BigInteger;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import okhttp3.OkHttpClient;
@@ -43,7 +47,10 @@ public class Transport implements SessionRefresher.RefresherListener {
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final AtomicInteger requestCounter = new AtomicInteger();
     private final SessionTransport sessionTransport = new SessionTransport();
-    private final OkHttpClient client = new OkHttpClient();
+    private final OkHttpClient client = new OkHttpClient.Builder()
+            .connectTimeout(15, TimeUnit.SECONDS)
+            .readTimeout(15, TimeUnit.SECONDS)
+            .build();
     private final SessionRefresher sessionRefresher = new SessionRefresher(handler, this);
 
     public void initContext(Context context) {
@@ -144,6 +151,10 @@ public class Transport implements SessionRefresher.RefresherListener {
 
     public void getTheWin(Money amount, NetworkRequest.NetworkRequestListener<Transaction> listener) {
         new GetTheWinRequest(amount, sessionTransport.getCurrentSession(), client, new NetworkRequestWrapper<>(listener)).execute();
+    }
+
+    public void getWinTickets(WinTicketsRequest request, NetworkRequest.NetworkRequestListener<WinTicketReply> listener) {
+        new GetWinTicketsRequest(request, client, new NetworkRequestWrapper<>(listener)).execute();
     }
 
     /**

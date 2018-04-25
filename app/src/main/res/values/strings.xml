@@ -69,5 +69,11 @@
     <string name="prize_pool_distribution">Prize pool distribution</string>
     <string name="jackpot2">Jackpot</string>
     <string name="distributionExpl">%d%% of the prize pool of the draw / number of people who guessed %d numbers</string>
+    <!-- END RULES -->
+
+    <string name="numbers_guessed">numbers guessed: %d</string>
+    <string name="win_cpt">Win %s CPT</string>
+    <string name="winners">Winners</string>
+    <string name="drawDetails">LOTTERY\nDRAW\nDATE\nWIN NUMBERS\nTICKETS\nCOLLECTED\nPAID\nTO JACKPOT\nTO RESERVE\nJACKPOT\nRESERVE</string>
 
 </resources>

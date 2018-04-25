@@ -8,13 +8,14 @@ import android.view.ViewGroup;
 
 import com.cryptaur.lottery.InteractionListener;
 import com.cryptaur.lottery.R;
-import com.cryptaur.lottery.model.DrawsKeeper;
+import com.cryptaur.lottery.buytickets.model.DrawsKeeper;
 import com.cryptaur.lottery.model.SingleRequest;
 import com.cryptaur.lottery.transport.Transport;
 import com.cryptaur.lottery.transport.model.Draw;
 import com.cryptaur.lottery.transport.model.DrawsReply;
 import com.cryptaur.lottery.transport.model.Lottery;
 import com.cryptaur.lottery.util.FilteredDividerItemDecoration;
+import com.cryptaur.lottery.util.SimpleViews;
 import com.cryptaur.lottery.view.LoadingViewHolder;
 
 import java.util.ArrayList;
@@ -24,23 +25,24 @@ public class DrawsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
         implements FilteredDividerItemDecoration.IDecorationFilter {
 
     private final DrawsKeeper drawsKeeper;
-    private final List<Draw> draws = new ArrayList<>();
+    private final List<Object> items = new ArrayList<>();
 
     private final InteractionListener mListener;
 
     private final SingleRequest<DrawsReply> requestExecutor;
-    private boolean canLoadMore = true;
 
     public DrawsRecyclerViewAdapter(Lottery lottery, InteractionListener listener, RefreshListener refreshListener) {
         this.drawsKeeper = new DrawsKeeper(lottery);
+        items.add(SimpleViews.LoadMore);
         mListener = listener;
         requestExecutor = new SingleRequest<>(l -> Transport.INSTANCE.getDraws(drawsKeeper.nextRequest(), l));
         requestExecutor.setRequestAbortListener(e -> refreshListener.onRefreshDone());
         requestExecutor.setRequestDoneListener(result -> {
             drawsKeeper.add(result);
-            draws.clear();
-            draws.addAll(drawsKeeper.getDraws());
-            canLoadMore = drawsKeeper.canLoadMore();
+            items.clear();
+            items.addAll(drawsKeeper.getDraws());
+            if (drawsKeeper.canLoadMore())
+                items.add(SimpleViews.LoadMore);
             notifyDataSetChanged();
             refreshListener.onRefreshDone();
         });
@@ -65,18 +67,18 @@ public class DrawsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
         if (holder instanceof LoadingViewHolder) {
             requestExecutor.executeRequest();
         } else if (holder instanceof DrawInListViewHolder) {
-            ((DrawInListViewHolder) holder).setDraw(draws.get(position));
+            ((DrawInListViewHolder) holder).setDraw((Draw) items.get(position));
         }
     }
 
     @Override
     public int getItemCount() {
-        return draws.size() + (canLoadMore ? 1 : 0);
+        return items.size();
     }
 
     @Override
     public int getItemViewType(int position) {
-        if (position < draws.size())
+        if (items.get(position) instanceof Draw)
             return R.layout.view_draw_in_list;
         return R.layout.view_loading;
     }
@@ -88,7 +90,7 @@ public class DrawsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
 
     @Override
     public boolean shouldDrawDecorator(int position) {
-        return position < getItemCount();
+        return items.get(position) instanceof Draw;
     }
 
     public interface RefreshListener {

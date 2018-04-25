@@ -15,14 +15,12 @@ import com.cryptaur.lottery.util.PeriodicTask;
 import com.cryptaur.lottery.util.Strings;
 
 import org.threeten.bp.Instant;
-import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.ZoneId;
 import org.threeten.bp.format.DateTimeFormatter;
 import org.threeten.bp.temporal.ChronoUnit;
 
 import java.math.BigInteger;
 import java.util.Locale;
-import java.util.TimeZone;
 
 public class MyTicketViewHolder extends RecyclerView.ViewHolder implements View.OnAttachStateChangeListener {
     private final ViewGroup view;
@@ -33,7 +31,7 @@ public class MyTicketViewHolder extends RecyclerView.ViewHolder implements View.
     private final TextView timeLeft;
     private final TextView drawNumber;
     private Ticket ticket;
-    private static final DateTimeFormatter dateTimeformat = DateTimeFormatter.ofPattern("dd MMM, hh:mm:ss");
+    public static final DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern("dd MMM, hh:mm:ss");
     private final PeriodicTask updateTimeTask = new PeriodicTask(new Handler(), 1000, false, this::updateTimer);
 
     public MyTicketViewHolder(ViewGroup view) {
@@ -104,7 +102,7 @@ public class MyTicketViewHolder extends RecyclerView.ViewHolder implements View.
                 drawWin.setVisibility(View.GONE);
             }
 
-            String time = dateTimeformat.format(ticket.drawDate.atZone(ZoneId.systemDefault()));
+            String time = dateTimeFormat.format(ticket.drawDate.atZone(ZoneId.systemDefault()));
             drawDate.setText(time);
             drawDate.setVisibility(View.VISIBLE);
             timeLeft.setVisibility(View.GONE);
