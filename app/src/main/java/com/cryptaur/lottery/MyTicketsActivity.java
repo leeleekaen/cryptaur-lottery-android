@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
-import android.support.v7.widget.Toolbar;
 
 import com.cryptaur.lottery.mytickets.MyTicketsPagerAdapter;
 
@@ -17,16 +16,12 @@ public class MyTicketsActivity extends ActivityBase {
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
-    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_tickets);
 
-        toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitle("");
-        setSupportActionBar(toolbar);
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new MyTicketsPagerAdapter(getSupportFragmentManager());
@@ -45,5 +40,6 @@ public class MyTicketsActivity extends ActivityBase {
             int page = intent.getIntExtra(ARG_PAGE, 0);
             mViewPager.setCurrentItem(page, false);
         }
+        setHomeAsUp(true);
     }
 }

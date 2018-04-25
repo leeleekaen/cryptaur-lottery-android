@@ -1,11 +1,15 @@
 package com.cryptaur.lottery;
 
+import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.graphics.drawable.DrawerArrowDrawable;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.TextView;
 
 import com.cryptaur.lottery.controller.WorkflowController;
@@ -22,16 +26,41 @@ import com.cryptaur.lottery.view.WalletViewHolder;
 public abstract class ActivityBase extends AppCompatActivity implements InteractionListener, GetObjectCallback<CurrentDraws> {
 
     private final MenuHelper menuHelper = new MenuHelper(this);
-    WorkflowController workflowController;
+    protected boolean isHomeAsUp = false;
     private WalletViewHolder walletView;
+    DrawerArrowDrawable homeDrawable;
+    private WorkflowController workflowController;
+    private Toolbar toolbar;
+    private boolean isBackPressed;
 
     @Override
     public void setContentView(int layoutResID) {
         super.setContentView(layoutResID);
+
+        toolbar = findViewById(R.id.toolbar);
+        toolbar.setTitle("");
+        setSupportActionBar(toolbar);
+
         TextView walletView = findViewById(R.id.wallet);
         if (walletView != null) {
             this.walletView = new WalletViewHolder(walletView, this);
         }
+
+        homeDrawable = new DrawerArrowDrawable(toolbar.getContext());
+        toolbar.setNavigationIcon(homeDrawable);
+        toolbar.setNavigationOnClickListener(v -> {
+            if (isHomeAsUp) {
+                onBackPressed();
+            } else {
+                MenuDialogFragmentFragment.showDialog(getSupportFragmentManager());
+            }
+        });
+    }
+
+    @Override
+    public void onBackPressed() {
+        isBackPressed = true;
+        super.onBackPressed();
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -52,10 +81,6 @@ public abstract class ActivityBase extends AppCompatActivity implements Interact
                 Intent intent = new Intent(this, MyTicketsActivity.class);
                 intent.putExtra(MyTicketsActivity.ARG_PAGE, 1);
                 startActivity(intent);
-                return true;
-
-            case R.id.menuItem_menu:
-                MenuDialogFragmentFragment.showDialog(getSupportFragmentManager());
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -130,5 +155,42 @@ public abstract class ActivityBase extends AppCompatActivity implements Interact
         Transport.INSTANCE.onResumeActivity();
         Keeper.getInstance(this).addCurrentDrawsListener(this);
         Keeper.getInstance(this).addTicketsListener(menuHelper);
+    }
+
+    public void setHomeAsUp(boolean isHomeAsUp) {
+        if (this.isHomeAsUp != isHomeAsUp) {
+            homeDrawable.setVerticalMirror(false);
+            this.isHomeAsUp = isHomeAsUp;
+            ValueAnimator anim = isHomeAsUp ? ValueAnimator.ofFloat(0, 1) : ValueAnimator.ofFloat(1, 0);
+            anim.addUpdateListener(valueAnimator -> {
+                homeDrawable.setProgress((Float) valueAnimator.getAnimatedValue());
+            });
+            anim.setInterpolator(new DecelerateInterpolator());
+            anim.setDuration(400);
+            anim.start();
+        } else if (isHomeAsUp) {
+            homeDrawable.setVerticalMirror(!isBackPressed);
+            ValueAnimator anim = ValueAnimator.ofFloat(1, -1);
+            anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                boolean part1 = true;
+
+                @Override
+                public void onAnimationUpdate(ValueAnimator animation) {
+                    float val = (float) animation.getAnimatedValue();
+                    if (val < 0) {
+                        val = -val;
+                        if (part1) {
+                            homeDrawable.setVerticalMirror(isBackPressed);
+                            isBackPressed = false;
+                            part1 = false;
+                        }
+                    }
+                    homeDrawable.setProgress(val);
+                }
+            });
+            anim.setInterpolator(new DecelerateInterpolator());
+            anim.setDuration(600);
+            anim.start();
+        }
     }
 }

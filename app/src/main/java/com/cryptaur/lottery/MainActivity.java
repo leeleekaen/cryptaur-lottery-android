@@ -2,7 +2,6 @@ package com.cryptaur.lottery;
 
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
-import android.support.v7.widget.Toolbar;
 import android.widget.TextView;
 
 import com.cryptaur.lottery.adapter.MainLotteryPagerAdapter;
@@ -14,7 +13,7 @@ import com.cryptaur.lottery.util.Strings;
 import java.math.BigInteger;
 
 public class MainActivity extends ActivityBase {
-    private Toolbar toolbar;
+
     private ViewPager lotteryPager;
     private TextView prizePool;
 
@@ -24,9 +23,6 @@ public class MainActivity extends ActivityBase {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitle("");
-        setSupportActionBar(toolbar);
         lotteryPager = findViewById(R.id.lotteryPager);
         prizePool = findViewById(R.id.prizePool);
 

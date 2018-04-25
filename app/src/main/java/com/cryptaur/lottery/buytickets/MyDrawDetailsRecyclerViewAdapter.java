@@ -29,6 +29,7 @@ public class MyDrawDetailsRecyclerViewAdapter extends RecyclerView.Adapter<Recyc
 
     public MyDrawDetailsRecyclerViewAdapter(Draw draw) {
         ticketsKeeper = new WinTicketsKeeper(draw);
+        items.add(draw);
         items.add(SimpleViews.LoadMore);
         requestExecutor = new SingleRequest<>(l -> Transport.INSTANCE.getWinTickets(ticketsKeeper.nextRequest(), l));
         requestExecutor.setRequestDoneListener(result -> {

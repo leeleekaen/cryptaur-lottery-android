@@ -26,8 +26,8 @@ public class Drawables {
         Rect rc = new Rect();
         tp.getTextBounds(text, 0, text.length(), rc);
         c.drawText(text, (width - rc.width()) / 2 - rc.left, (height + rc.height()) / 2, tp);
-        android.graphics.drawable.Drawable drw2 = new BitmapDrawable(resources, bm);
-        drw2.setBounds(0, 0, drw.getIntrinsicWidth(), drw.getIntrinsicHeight());
+        Drawable drw2 = new BitmapDrawable(resources, bm);
+        //drw2.setBounds(0, 0, drw.getIntrinsicWidth(), drw.getIntrinsicHeight());
         return drw2;
     }
 }

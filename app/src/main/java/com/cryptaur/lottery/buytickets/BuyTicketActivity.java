@@ -8,7 +8,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 
@@ -18,13 +17,12 @@ import com.cryptaur.lottery.MyTicketsActivity;
 import com.cryptaur.lottery.R;
 import com.cryptaur.lottery.transport.model.Lottery;
 
-public class BuyTicketActivity extends ActivityBase {
+public class BuyTicketActivity extends ActivityBase implements TabLayout.OnTabSelectedListener {
 
     public static final String ARG_LOTTERY = "lottery";
     private BuyTicketsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
     private Lottery lottery;
-    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,10 +47,8 @@ public class BuyTicketActivity extends ActivityBase {
 
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
-
-        toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitle("");
-        setSupportActionBar(toolbar);
+        tabLayout.addOnTabSelectedListener(this);
+        setHomeAsUp(true);
     }
 
     @Override
@@ -83,5 +79,22 @@ public class BuyTicketActivity extends ActivityBase {
             return;
         }
         super.doAction(action, fragment);
+    }
+
+    @Override
+    public void onTabSelected(TabLayout.Tab tab) {
+        FragmentManager fm = getSupportFragmentManager();
+        if (fm.getBackStackEntryCount() > 0)
+            fm.popBackStack();
+    }
+
+    @Override
+    public void onTabUnselected(TabLayout.Tab tab) {
+
+    }
+
+    @Override
+    public void onTabReselected(TabLayout.Tab tab) {
+
     }
 }
