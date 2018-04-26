@@ -15,6 +15,7 @@ import com.cryptaur.lottery.InteractionListener;
 import com.cryptaur.lottery.R;
 import com.cryptaur.lottery.model.GetObjectCallback;
 import com.cryptaur.lottery.model.Keeper;
+import com.cryptaur.lottery.transport.SessionTransport;
 import com.cryptaur.lottery.transport.Transport;
 import com.cryptaur.lottery.transport.base.NetworkRequest;
 import com.cryptaur.lottery.transport.model.Money;
@@ -58,7 +59,7 @@ public class GetTheWinViewHolder extends RecyclerView.ViewHolder implements View
 
     @Override
     public void onClick(View v) {
-        if (!Transport.INSTANCE.isLoggedIn()) {
+        if (!SessionTransport.INSTANCE.isLoggedIn()) {
             listener.doAction(InteractionListener.Action.Login, null);
         } else {
             Toast.makeText(v.getContext(), R.string.updatingAmountAndFee, Toast.LENGTH_SHORT).show();

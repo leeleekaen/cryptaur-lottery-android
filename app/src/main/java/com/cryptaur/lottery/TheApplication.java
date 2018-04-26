@@ -2,7 +2,7 @@ package com.cryptaur.lottery;
 
 import android.app.Application;
 
-import com.cryptaur.lottery.transport.Transport;
+import com.cryptaur.lottery.transport.SessionTransport;
 import com.jakewharton.threetenabp.AndroidThreeTen;
 
 public class TheApplication extends Application {
@@ -11,6 +11,6 @@ public class TheApplication extends Application {
     public void onCreate() {
         super.onCreate();
         AndroidThreeTen.init(this);
-        Transport.INSTANCE.initContext(getApplicationContext());
+        SessionTransport.INSTANCE.initContext(getApplicationContext());
     }
 }

@@ -11,6 +11,7 @@ import com.cryptaur.lottery.R;
 import com.cryptaur.lottery.model.GetObjectCallback;
 import com.cryptaur.lottery.model.ITicketStorageRead;
 import com.cryptaur.lottery.model.Keeper;
+import com.cryptaur.lottery.transport.SessionTransport;
 import com.cryptaur.lottery.transport.model.Money;
 import com.cryptaur.lottery.transport.model.Ticket;
 import com.cryptaur.lottery.transport.model.TicketsType;
@@ -60,9 +61,6 @@ public class MyTicketRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
             refreshPositions();
             notifyDataSetChanged();
             refreshListener.onRefreshDone();
-            /*if (isPrimary && ticketsType == TicketsType.Played) {
-                responce.onShowPlayedTicketIds(context);
-            }*/
         }
 
         @Override
@@ -81,11 +79,14 @@ public class MyTicketRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
         this.context = context;
         this.listener = listener;
         this.refreshListener = refreshListener;
-        ITicketStorageRead ticketStorage = Keeper.getInstance(context).getTicketsStorage();
-        ticketList.addAll(ticketStorage.getTickets(ticketsType));
-        canLoadMoreTickets = ticketStorage.canLoadMoreTickets(ticketsType);
-        Keeper.getInstance(context).getWinAmount(getTheWinListener, false);
-
+        if (SessionTransport.INSTANCE.getAddress() != null) {
+            ITicketStorageRead ticketStorage = Keeper.getInstance(context).getTicketsStorage();
+            ticketList.addAll(ticketStorage.getTickets(ticketsType));
+            canLoadMoreTickets = ticketStorage.canLoadMoreTickets(ticketsType);
+            Keeper.getInstance(context).getWinAmount(getTheWinListener, false);
+        } else {
+            canLoadMoreTickets = false;
+        }
         refreshPositions();
     }
 

@@ -18,6 +18,7 @@ import com.cryptaur.lottery.login.MenuDialogFragmentFragment;
 import com.cryptaur.lottery.login.PinLoginController;
 import com.cryptaur.lottery.model.GetObjectCallback;
 import com.cryptaur.lottery.model.Keeper;
+import com.cryptaur.lottery.transport.SessionTransport;
 import com.cryptaur.lottery.transport.Transport;
 import com.cryptaur.lottery.transport.model.CurrentDraws;
 import com.cryptaur.lottery.transport.model.TicketsType;
@@ -28,7 +29,7 @@ public abstract class ActivityBase extends AppCompatActivity implements Interact
     private final MenuHelper menuHelper = new MenuHelper(this);
     protected boolean isHomeAsUp = false;
     private WalletViewHolder walletView;
-    DrawerArrowDrawable homeDrawable;
+    private DrawerArrowDrawable homeDrawable;
     private WorkflowController workflowController;
     private Toolbar toolbar;
     private boolean isBackPressed;
@@ -106,13 +107,15 @@ public abstract class ActivityBase extends AppCompatActivity implements Interact
                     workflowController = null;
                     break;
 
-                case RefreshWallet:
+                case Restart:
                     if (walletView != null)
                         walletView.refresh(true);
+                    Intent intent = new Intent(this, MyTicketsActivity.class);
+                    startActivity(intent);
                     break;
 
                 case Login:
-                    if (Transport.INSTANCE.canAuthorizeWithPin(this)) {
+                    if (Transport.INSTANCE.canAuthorizeWithPin()) {
                         workflowController = new PinLoginController(this);
                     } else {
                         workflowController = new InitialLoginController(this);
@@ -123,6 +126,19 @@ public abstract class ActivityBase extends AppCompatActivity implements Interact
                 case UseLoginAndPassword:
                     workflowController = new InitialLoginController(this);
                     workflowController.start();
+                    break;
+
+                case Logout:
+                    SessionTransport.INSTANCE.logout();
+                    Keeper.getInstance(this).clear();
+                    intent = new Intent(this, MainActivity.class);
+                    finish();
+                    startActivity(intent);
+                    break;
+
+                case MyTickets:
+                    intent = new Intent(this, MyTicketsActivity.class);
+                    startActivity(intent);
                     break;
             }
         }
@@ -143,7 +159,7 @@ public abstract class ActivityBase extends AppCompatActivity implements Interact
 
     @Override
     protected void onPause() {
-        Transport.INSTANCE.onPauseActivity();
+        SessionTransport.INSTANCE.onPauseActivity();
         Keeper.getInstance(this).removeTicketsListener(menuHelper);
         Keeper.getInstance(this).removeCurrentDrawsListener(this);
         super.onPause();
@@ -152,7 +168,7 @@ public abstract class ActivityBase extends AppCompatActivity implements Interact
     @Override
     protected void onResume() {
         super.onResume();
-        Transport.INSTANCE.onResumeActivity();
+        SessionTransport.INSTANCE.onResumeActivity();
         Keeper.getInstance(this).addCurrentDrawsListener(this);
         Keeper.getInstance(this).addTicketsListener(menuHelper);
     }

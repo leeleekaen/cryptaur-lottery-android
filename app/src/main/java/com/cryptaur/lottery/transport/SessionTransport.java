@@ -1,58 +1,49 @@
 package com.cryptaur.lottery.transport;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.os.Build;
-import android.preference.PreferenceManager;
-import android.security.keystore.KeyGenParameterSpec;
-import android.security.keystore.KeyProperties;
+import android.os.Handler;
+import android.os.Looper;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.cryptaur.lottery.transport.base.NetworkRequest;
 import com.cryptaur.lottery.transport.model.Login;
 import com.cryptaur.lottery.transport.model.Session;
+import com.cryptaur.lottery.transport.request.BaseLotteryRequest;
 import com.cryptaur.lottery.transport.request.ISessionRequest;
 import com.cryptaur.lottery.transport.request.LoginRequest;
+import com.cryptaur.lottery.transport.request.RefreshSessionRequest;
 
-import java.security.InvalidAlgorithmParameterException;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
-import java.util.UUID;
 
-import static com.cryptaur.lottery.Const.KEY_ADDRESS;
 import static com.cryptaur.lottery.transport.base.NetworkRequest.TAG;
 
-public class SessionTransport {
-    private static final String KEY_ALIAS = "lotteryKeyAlias";
+public class SessionTransport implements SessionRefresher.RefresherListener {
+    public static final SessionTransport INSTANCE = new SessionTransport();
 
-    private static final String KEY_DEVICE_ID = "name";
-    private static final String KEY_USER_NAME = "name";
     private final Queue<NetworkRequest> requestQueue = new LinkedList<>();
+    private final Handler handler = new Handler(Looper.getMainLooper());
+    private final SessionRefresher sessionRefresher = new SessionRefresher(handler, this);
     private NetworkRequest currentRequest;
     private Session currentSession;
+    private SessionStorage storage;
 
-    private Context context;
+
+    public void onResumeActivity() {
+        sessionRefresher.onResumeActivity();
+    }
+
+    public void onPauseActivity() {
+        sessionRefresher.onPauseActivity();
+    }
 
     public void initContext(Context context) {
-        this.context = context.getApplicationContext();
+        this.storage = new SessionStorage(context);
     }
 
-    public String getDeviceId(Context context) {
-        SharedPreferences preferences = context.getSharedPreferences("device", Context.MODE_PRIVATE);
-        if (preferences.contains(KEY_DEVICE_ID)) {
-            return preferences.getString(KEY_DEVICE_ID, null);
-        } else {
-            String value = UUID.randomUUID().toString();
-            preferences.edit().putString(KEY_DEVICE_ID, value).apply();
-            return value;
-        }
-    }
 
     public void doRequest(NetworkRequest request) {
         synchronized (this) {
@@ -93,42 +84,13 @@ public class SessionTransport {
         }
     }
 
-    private KeyPair generateKeypair() {
-        /*
-         * Generate a new EC key pair entry in the Android Keystore by
-         * using the KeyPairGenerator API. The private key can only be
-         * used for signing or verification and only with SHA-256 or
-         * SHA-512 as the message digest.
-         */
-        try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                KeyPairGenerator kpg = KeyPairGenerator.getInstance(
-                        KeyProperties.KEY_ALGORITHM_EC, "AndroidKeyStore");
-                kpg.initialize(new KeyGenParameterSpec.Builder(
-                        KEY_ALIAS,
-                        KeyProperties.PURPOSE_SIGN | KeyProperties.PURPOSE_VERIFY)
-                        .setDigests(KeyProperties.DIGEST_SHA256, KeyProperties.DIGEST_SHA512)
-                        .build());
-                return kpg.generateKeyPair();
-            } else {
-                return null;
-            }
-
-        } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidAlgorithmParameterException e) {
-            Log.d(TAG, e.getMessage(), e);
-        }
-        return null;
-    }
 
     public void onSessionRequestFinishedOk(NetworkRequest request, Session session) {
         if (request instanceof LoginRequest) {
             LoginRequest loginRequest = (LoginRequest) request;
             Login login = loginRequest.getLogin();
             if (login != null && login.password != null && login.password.length() > 0) {
-                PreferenceManager.getDefaultSharedPreferences(loginRequest.getContext())
-                        .edit().putString(KEY_USER_NAME, login.login.toString())
-                        .putString(KEY_ADDRESS, session.address)
-                        .apply();
+                storage.saveLogin(login, session);
             }
         }
         setCurrentSession(session);
@@ -151,17 +113,100 @@ public class SessionTransport {
     public String getAddress() {
         if (currentSession != null)
             return currentSession.address;
-        if (context == null)
-            return null;
-        return PreferenceManager.getDefaultSharedPreferences(context).getString(KEY_ADDRESS, null);
+        return storage == null ? null : storage.getAddress();
     }
 
-    public boolean canAuthorizeWithPin(Context context) {
-        return context.getSharedPreferences("device", Context.MODE_PRIVATE).contains(KEY_DEVICE_ID)
-                && PreferenceManager.getDefaultSharedPreferences(context).contains(KEY_USER_NAME);
+    public boolean canAuthorizeWithPin() {
+        return storage == null ? false : storage.canAuthorizeWithPin();
     }
 
-    public String getUsername(Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context).getString(KEY_USER_NAME, null);
+    public void login(Context context, Login login, @Nullable NetworkRequest.NetworkRequestListener<Session> listener) {
+        if (storage == null)
+            return;
+
+        synchronized (this) {
+            SessionTransport.INSTANCE.clear();
+            String deviceId = storage.getDeviceId();
+            BaseLotteryRequest request = new LoginRequest(context, Transport.INSTANCE.client, login, deviceId, new SessionTransport.NetworkSessionRequestWrapper<>(listener));
+            SessionTransport.INSTANCE.doRequest(request);
+        }
+    }
+
+    public void login(Context context, String pin, @Nullable NetworkRequest.NetworkRequestListener<Session> listener) {
+        if (storage == null)
+            return;
+
+        synchronized (this) {
+            SessionTransport.INSTANCE.clear();
+            String deviceId = storage.getDeviceId();
+            String username = storage.getUsername();
+            Login login = new Login(username, null, pin);
+            BaseLotteryRequest request = new LoginRequest(context, Transport.INSTANCE.client, login, deviceId, new SessionTransport.NetworkSessionRequestWrapper<>(listener));
+            SessionTransport.INSTANCE.doRequest(request);
+        }
+    }
+
+    @Override
+    public void refreshSession() {
+        Log.d(TAG, "refresh session1");
+        synchronized (this) {
+            if (SessionTransport.INSTANCE.getCurrentSession() == null)
+                return;
+
+            Log.d(TAG, "refresh session2");
+            BaseLotteryRequest request = new RefreshSessionRequest(Transport.INSTANCE.client, SessionTransport.INSTANCE.getCurrentSession(),
+                    new SessionTransport.NetworkSessionRequestWrapper<>(null));
+            SessionTransport.INSTANCE.doRequest(request);
+        }
+    }
+
+    public void logout() {
+        currentSession = null;
+        storage.clear();
+    }
+
+    /**
+     * wraps session requests -- requests that change or use sessions
+     */
+    public class NetworkSessionRequestWrapper<T> implements NetworkRequest.NetworkRequestListener<T> {
+        @Nullable
+        private final NetworkRequest.NetworkRequestListener<T> callback;
+
+        public NetworkSessionRequestWrapper(@Nullable NetworkRequest.NetworkRequestListener<T> callback) {
+            this.callback = callback;
+        }
+
+        @Override
+        public void onNetworkRequestStart(NetworkRequest request) {
+            if (callback != null)
+                handler.post(() -> callback.onNetworkRequestStart(request));
+        }
+
+        @Override
+        public void onNetworkRequestDone(NetworkRequest request, T responce) {
+            synchronized (SessionTransport.this) {
+                if (responce instanceof Session) {
+                    INSTANCE.onSessionRequestFinishedOk(request, (Session) responce);
+                    sessionRefresher.postponeRefresh((Session) responce);
+                }
+            }
+            INSTANCE.onNetworkRequestDone();
+            if (callback != null)
+                handler.post(() -> callback.onNetworkRequestDone(request, responce));
+        }
+
+        @Override
+        public void onNetworkRequestError(NetworkRequest request, Exception e) {
+            INSTANCE.onNetworkRequestDone();
+            if (callback != null)
+                handler.post(() -> callback.onNetworkRequestError(request, e));
+        }
+
+        @Override
+        public void onCancel(NetworkRequest request) {
+            INSTANCE.onNetworkRequestDone();
+            if (callback != null)
+                handler.post(() -> callback.onCancel(request));
+        }
     }
 }

@@ -28,7 +28,7 @@ public class Keeper {
 
     private Keeper(Context context) {
         final Context ctx = context.getApplicationContext();
-        balanceKeeper = new SimpleItemKeeper<>(BALANCE_UPDATE_TIMEOUT, listener -> Transport.INSTANCE.getBalance(ctx, listener));
+        balanceKeeper = new SimpleItemKeeper<>(BALANCE_UPDATE_TIMEOUT, listener -> Transport.INSTANCE.getBalance(listener));
         ticketRequestJoiner = new TicketsKeeper(this);
     }
 
@@ -97,5 +97,12 @@ public class Keeper {
 
     public void removeTicketsListener(GetObjectCallback<ITicketStorageRead> listener) {
         ticketRequestJoiner.removeListener(listener);
+    }
+
+    public void clear() {
+        currentDrawsKeeper.clear();
+        balanceKeeper.clear();
+        winAmountKeeper.clear();
+        ticketRequestJoiner.reset();
     }
 }

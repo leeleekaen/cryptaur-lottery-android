@@ -18,6 +18,7 @@ import com.cryptaur.lottery.InteractionListener;
 import com.cryptaur.lottery.R;
 import com.cryptaur.lottery.model.GetObjectCallback;
 import com.cryptaur.lottery.model.Keeper;
+import com.cryptaur.lottery.transport.SessionTransport;
 import com.cryptaur.lottery.transport.Transport;
 import com.cryptaur.lottery.transport.base.NetworkRequest;
 import com.cryptaur.lottery.transport.model.CurrentDraws;
@@ -170,7 +171,7 @@ public class BuyTicketFragment extends Fragment implements BuyTicketRecyclerView
                 break;
 
             case R.id.buyButton:
-                if (!Transport.INSTANCE.isLoggedIn()) {
+                if (!SessionTransport.INSTANCE.isLoggedIn()) {
                     mListener.doAction(InteractionListener.Action.Login, this);
                 } else {
                     if (currentDraw.getTicketPrice().age() < 60_000) {

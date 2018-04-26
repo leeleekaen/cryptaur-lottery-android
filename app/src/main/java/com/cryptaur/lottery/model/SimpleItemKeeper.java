@@ -104,6 +104,10 @@ class SimpleItemKeeper<T> implements NetworkRequest.NetworkRequestListener<T> {
         updateListeners.remove(listener);
     }
 
+    public void clear() {
+        value = null;
+    }
+
     public interface Executor<T> {
         void executeRequest(NetworkRequest.NetworkRequestListener<T> listener);
     }

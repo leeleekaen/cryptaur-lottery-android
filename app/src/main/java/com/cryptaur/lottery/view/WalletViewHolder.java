@@ -9,7 +9,7 @@ import com.cryptaur.lottery.InteractionListener;
 import com.cryptaur.lottery.R;
 import com.cryptaur.lottery.model.GetObjectCallback;
 import com.cryptaur.lottery.model.Keeper;
-import com.cryptaur.lottery.transport.Transport;
+import com.cryptaur.lottery.transport.SessionTransport;
 import com.cryptaur.lottery.util.Strings;
 
 import java.math.BigInteger;
@@ -59,7 +59,7 @@ public class WalletViewHolder implements GetObjectCallback<BigInteger>, View.OnC
 
     @Override
     public void onClick(View v) {
-        if (Transport.INSTANCE.isLoggedIn()) {
+        if (SessionTransport.INSTANCE.isLoggedIn()) {
             refresh(true);
         } else {
             listener.doAction(InteractionListener.Action.Login, null);

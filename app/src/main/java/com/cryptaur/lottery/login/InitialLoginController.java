@@ -7,7 +7,7 @@ import com.cryptaur.lottery.ActivityBase;
 import com.cryptaur.lottery.InteractionListener;
 import com.cryptaur.lottery.R;
 import com.cryptaur.lottery.controller.WorkflowController;
-import com.cryptaur.lottery.transport.Transport;
+import com.cryptaur.lottery.transport.SessionTransport;
 import com.cryptaur.lottery.transport.base.NetworkRequest;
 import com.cryptaur.lottery.transport.model.Login;
 import com.cryptaur.lottery.transport.model.Session;
@@ -42,7 +42,7 @@ public class InitialLoginController implements WorkflowController, NetworkReques
             } else {
                 pin2 = (EnterPinCodeDialogFragment.OnDonePinInput) action;
                 if (pin1.equals(pin2)) {
-                    Transport.INSTANCE.login(activity, new Login(login.login, login.password, pin1.toCharSequence()), this);
+                    SessionTransport.INSTANCE.login(activity, new Login(login.login, login.password, pin1.toCharSequence()), this);
                     if (fragment instanceof EnterPinCodeDialogFragment) {
                         ((EnterPinCodeDialogFragment) fragment).showProgress(true);
                     }
@@ -67,7 +67,7 @@ public class InitialLoginController implements WorkflowController, NetworkReques
     public void onNetworkRequestDone(NetworkRequest request, Session responce) {
         Toast.makeText(activity, "Login OK", Toast.LENGTH_SHORT).show();
         FixCloseDialogFragment.closeDialogFragment(activity.getSupportFragmentManager());
-        activity.doAction(InteractionListener.Action.RefreshWallet, null);
+        activity.doAction(InteractionListener.Action.Restart, null);
         activity.doAction(InteractionListener.Action.FinishWorkflow, null);
     }
 

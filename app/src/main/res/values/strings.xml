@@ -75,5 +75,10 @@
     <string name="win_cpt">Win %s CPT</string>
     <string name="winners">Winners</string>
     <string name="drawDetails">LOTTERY\nDRAW\nDATE\nWIN NUMBERS\nTICKETS\nCOLLECTED\nPAID\nTO JACKPOT\nTO RESERVE\nJACKPOT\nRESERVE</string>
+    <string name="logout">Logout</string>
+    <string name="login">Login</string>
+    <string name="my_tickets">my tickets</string>
+    <string name="change_pin_code">Change pin-code</string>
+    <string name="how_to_play">How to play</string>
 
 </resources>

@@ -8,7 +8,7 @@ import com.cryptaur.lottery.InteractionListener;
 import com.cryptaur.lottery.R;
 import com.cryptaur.lottery.controller.WorkflowController;
 import com.cryptaur.lottery.login.EnterPinCodeDialogFragment.OnDonePinInput;
-import com.cryptaur.lottery.transport.Transport;
+import com.cryptaur.lottery.transport.SessionTransport;
 import com.cryptaur.lottery.transport.base.NetworkRequest;
 import com.cryptaur.lottery.transport.model.Session;
 import com.cryptaur.lottery.util.FixCloseDialogFragment;
@@ -29,7 +29,7 @@ public class PinLoginController implements WorkflowController, NetworkRequest.Ne
     @Override
     public boolean onAction(InteractionListener.IAction action, Fragment fragment) {
         if (action instanceof OnDonePinInput) {
-            Transport.INSTANCE.login(activity, ((OnDonePinInput) action).toCharSequence().toString(), this);
+            SessionTransport.INSTANCE.login(activity, ((OnDonePinInput) action).toCharSequence().toString(), this);
             return true;
         }
 
@@ -45,7 +45,7 @@ public class PinLoginController implements WorkflowController, NetworkRequest.Ne
     public void onNetworkRequestDone(NetworkRequest request, Session responce) {
         Toast.makeText(activity, "Login OK", Toast.LENGTH_SHORT).show();
         FixCloseDialogFragment.closeDialogFragment(activity.getSupportFragmentManager());
-        activity.doAction(InteractionListener.Action.RefreshWallet, null);
+        activity.doAction(InteractionListener.Action.Restart, null);
         activity.doAction(InteractionListener.Action.FinishWorkflow, null);
     }
 

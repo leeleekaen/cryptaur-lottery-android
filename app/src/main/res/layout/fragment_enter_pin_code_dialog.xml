@@ -228,6 +228,8 @@
             android:background="@drawable/btn_transp_primary"
             android:elevation="0dp"
             android:gravity="center_vertical"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
             android:text="Enter by login and password"
             android:textColor="@color/blueGrey"
             app:layout_constraintLeft_toLeftOf="parent"
