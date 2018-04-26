@@ -10,6 +10,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.threeten.bp.Instant;
+import org.threeten.bp.format.DateTimeFormatter;
 
 import java.math.BigInteger;
 
@@ -79,5 +80,34 @@ public class JSONObjectHelper {
     public Instant getInstant(String name) throws JSONException {
         String instantStr = source.getString(name);
         return Instant.parse(instantStr);
+    }
+
+    public JSONObjectHelper put(String name, BigInteger value) throws JSONException {
+        if (value != null) {
+            byte[] bytes = BigIntegers.asUnsignedByteArray(value);
+            String s = Hex.toHexString(bytes);
+            source.put(name, "0x" + s);
+        }
+        return this;
+    }
+
+    public JSONObjectHelper put(String name, Instant time) throws JSONException {
+        source.put(name, DateTimeFormatter.ISO_INSTANT.format(time));
+        return this;
+    }
+
+    public JSONObject getJson() {
+        return source;
+    }
+
+    public JSONObjectHelper put(String name, int[] numbers) throws JSONException {
+        if (numbers != null) {
+            JSONArray arr = new JSONArray();
+            for (int i = 0; i < numbers.length; i++) {
+                arr.put(numbers[i]);
+            }
+            source.put(name, arr);
+        }
+        return this;
     }
 }

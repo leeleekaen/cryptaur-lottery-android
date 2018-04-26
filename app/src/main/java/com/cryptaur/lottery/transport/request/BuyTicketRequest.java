@@ -1,10 +1,10 @@
 package com.cryptaur.lottery.transport.request;
 
 import com.cryptaur.lottery.transport.base.RequestType;
-import com.cryptaur.lottery.transport.model.BuyTicketTransactionObject;
 import com.cryptaur.lottery.transport.model.Session;
 import com.cryptaur.lottery.transport.model.Ticket;
 import com.cryptaur.lottery.transport.model.Transaction;
+import com.cryptaur.lottery.transport.model.TransactionBuyTicket;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -17,12 +17,10 @@ public class BuyTicketRequest extends BaseLotteryRequest<Transaction> {
     private static final String METHOD = "api/buyTickets";
 
     private final Ticket ticket;
-    private final Session session;
 
     public BuyTicketRequest(OkHttpClient client, Ticket ticket, Session session, NetworkRequestListener<Transaction> listener) {
         super(client, listener);
         this.ticket = ticket;
-        this.session = session;
         setAuthString(session.key);
     }
 
@@ -43,6 +41,6 @@ public class BuyTicketRequest extends BaseLotteryRequest<Transaction> {
     @Override
     protected Transaction parseJson(JSONObject source) throws JSONException {
         String hash = source.getString("trxHash");
-        return new Transaction(hash, new BuyTicketTransactionObject(ticket));
+        return new TransactionBuyTicket(hash, ticket);
     }
 }

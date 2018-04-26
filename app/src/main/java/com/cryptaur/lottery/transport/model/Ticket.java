@@ -33,6 +33,10 @@ public class Ticket {
         numbers = helper.getIntArray("numbers");
     }
 
+    public Ticket(JSONObject source) throws JSONException {
+        this(Lottery.ofServerId(source.getInt("lotteryId")), source);
+    }
+
     public Ticket(Lottery lottery, int drawIndex, Instant drawDate, int index, int winLevel, BigInteger winAmount, BigInteger price, int[] numbers) {
         this.lottery = lottery;
         this.drawIndex = drawIndex;
@@ -44,35 +48,6 @@ public class Ticket {
         this.numbers = numbers;
     }
 
-    public static Ticket createTemp(int index) {
-        Lottery lottery = Lottery.values()[(int) (Math.random() * 3)];
-        int[] numbers = new int[lottery.getNumbersAmount()];
-        int maxVal = lottery.getMaxValue();
-        for (int i = 0; i < numbers.length; i++) {
-            numbers[i] = (int) (Math.random() * maxVal) + 1;
-            if (Math.random() > 0.8) {
-                numbers[i] = -numbers[i];
-            }
-        }
-
-        boolean isPlayed = Math.random() > 0.5;
-        long timestamp = (long) (isPlayed ?
-                -Math.random() * 86400_000 * 3 :
-                Math.random() * 68400_000);
-        timestamp += System.currentTimeMillis();
-
-        return new Ticket(
-                lottery,
-                (int) (Math.random() * 10),
-                Instant.ofEpochMilli(timestamp),
-                index,
-                isPlayed ? 2 : -1,
-                BigInteger.TEN,
-                BigInteger.TEN,
-                numbers
-        );
-    }
-
     public static Ticket buyTicket(Draw currentDraw, List<Integer> numbers) {
         int[] numbersArray = new int[numbers.size()];
         for (int i = 0; i < numbersArray.length; i++) {
@@ -80,6 +55,22 @@ public class Ticket {
         }
         return new Ticket(currentDraw.lottery, currentDraw.number, currentDraw.startTime, -1, -1, null,
                 currentDraw.getTicketPrice().amount, numbersArray);
+    }
+
+    public JSONObject toJson() throws JSONException {
+        JSONObject res = new JSONObject();
+        res
+                .put("drawIndex", drawIndex)
+                .put("ticketIndex", index)
+                .put("winLevel", winLevel)
+                .put("lotteryId", lottery.getServerId());
+        JSONObjectHelper helper = new JSONObjectHelper(res);
+        helper
+                .put("drawDate", drawDate)
+                .put("winAmount", winAmount)
+                .put("price", price)
+                .put("numbers", numbers);
+        return helper.getJson();
     }
 
     public boolean isWinNumber(int number) {

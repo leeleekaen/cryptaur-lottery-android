@@ -1,10 +1,10 @@
 package com.cryptaur.lottery.transport.request;
 
 import com.cryptaur.lottery.transport.base.RequestType;
-import com.cryptaur.lottery.transport.model.GetTheWinTransactionObject;
 import com.cryptaur.lottery.transport.model.Money;
 import com.cryptaur.lottery.transport.model.Session;
 import com.cryptaur.lottery.transport.model.Transaction;
+import com.cryptaur.lottery.transport.model.TransactionGetTheWin;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,7 +31,6 @@ public class GetTheWinRequest extends BaseLotteryRequest<Transaction> {
     @Override
     protected Transaction parseJson(JSONObject source) throws JSONException {
         String hash = source.getString("trxHash");
-        GetTheWinTransactionObject trx = new GetTheWinTransactionObject(winAmount, System.currentTimeMillis());
-        return new Transaction(hash, trx);
+        return new TransactionGetTheWin(hash, winAmount);
     }
 }
