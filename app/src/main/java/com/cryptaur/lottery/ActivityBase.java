@@ -12,10 +12,11 @@ import android.view.MenuItem;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.TextView;
 
+import com.cryptaur.lottery.controller.InitialLoginController;
+import com.cryptaur.lottery.controller.PinLoginController;
 import com.cryptaur.lottery.controller.WorkflowController;
-import com.cryptaur.lottery.login.InitialLoginController;
-import com.cryptaur.lottery.login.MenuDialogFragmentFragment;
-import com.cryptaur.lottery.login.PinLoginController;
+import com.cryptaur.lottery.dialog.HowToPlayDialogFragment;
+import com.cryptaur.lottery.dialog.MenuDialogFragment;
 import com.cryptaur.lottery.model.GetObjectCallback;
 import com.cryptaur.lottery.model.Keeper;
 import com.cryptaur.lottery.transport.SessionTransport;
@@ -53,7 +54,7 @@ public abstract class ActivityBase extends AppCompatActivity implements Interact
             if (isHomeAsUp) {
                 onBackPressed();
             } else {
-                MenuDialogFragmentFragment.showDialog(getSupportFragmentManager());
+                MenuDialogFragment.showDialog(getSupportFragmentManager());
             }
         });
     }
@@ -139,6 +140,10 @@ public abstract class ActivityBase extends AppCompatActivity implements Interact
                 case MyTickets:
                     intent = new Intent(this, MyTicketsActivity.class);
                     startActivity(intent);
+                    break;
+
+                case HowToPlay:
+                    HowToPlayDialogFragment.showDialog(getSupportFragmentManager());
                     break;
             }
         }

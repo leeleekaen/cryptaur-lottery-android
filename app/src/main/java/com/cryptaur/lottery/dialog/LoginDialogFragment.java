@@ -1,4 +1,4 @@
-package com.cryptaur.lottery.login;
+package com.cryptaur.lottery.dialog;
 
 
 import android.os.Bundle;
@@ -15,7 +15,7 @@ import com.cryptaur.lottery.util.FixCloseDialogFragment;
 
 import java.io.Serializable;
 
-public class LoginFragment extends FixCloseDialogFragment implements View.OnClickListener {
+public class LoginDialogFragment extends FixCloseDialogFragment implements View.OnClickListener {
 
     private static final String ARG_LOGIN = "login";
 
@@ -27,23 +27,23 @@ public class LoginFragment extends FixCloseDialogFragment implements View.OnClic
     private Button loginButton;
     private Button forgotPasswordButton;
 
-    public LoginFragment() {
+    public LoginDialogFragment() {
     }
 
-    public static LoginFragment showDialog(FragmentManager fm) {
-        return (LoginFragment) showDialog(fm, LoginFragment.class);
+    public static LoginDialogFragment showDialog(FragmentManager fm) {
+        return (LoginDialogFragment) showDialog(fm, LoginDialogFragment.class);
     }
 
-    public static LoginFragment showDialog(FragmentManager fm, LoginAction login) {
+    public static LoginDialogFragment showDialog(FragmentManager fm, LoginAction login) {
         Bundle bundle = new Bundle();
         bundle.putSerializable(ARG_LOGIN, login);
-        return (LoginFragment) showDialog(fm, bundle, LoginFragment.class);
+        return (LoginDialogFragment) showDialog(fm, bundle, LoginDialogFragment.class);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        mRoot = (ViewGroup) inflater.inflate(R.layout.fragment_login, container, false);
+        mRoot = (ViewGroup) inflater.inflate(R.layout.dialog_login, container, false);
         loginLayout = mRoot.findViewById(R.id.loginInputLayout);
         passwordLayout = mRoot.findViewById(R.id.passwordInputLayout);
         loginButton = mRoot.findViewById(R.id.loginButton);

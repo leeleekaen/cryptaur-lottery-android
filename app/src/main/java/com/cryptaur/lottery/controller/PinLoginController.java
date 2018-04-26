@@ -1,4 +1,4 @@
-package com.cryptaur.lottery.login;
+package com.cryptaur.lottery.controller;
 
 import android.support.v4.app.Fragment;
 import android.widget.Toast;
@@ -6,8 +6,8 @@ import android.widget.Toast;
 import com.cryptaur.lottery.ActivityBase;
 import com.cryptaur.lottery.InteractionListener;
 import com.cryptaur.lottery.R;
-import com.cryptaur.lottery.controller.WorkflowController;
-import com.cryptaur.lottery.login.EnterPinCodeDialogFragment.OnDonePinInput;
+import com.cryptaur.lottery.dialog.EnterPinCodeDialogFragment;
+import com.cryptaur.lottery.dialog.EnterPinCodeDialogFragment.OnDonePinInput;
 import com.cryptaur.lottery.transport.SessionTransport;
 import com.cryptaur.lottery.transport.base.NetworkRequest;
 import com.cryptaur.lottery.transport.model.Session;

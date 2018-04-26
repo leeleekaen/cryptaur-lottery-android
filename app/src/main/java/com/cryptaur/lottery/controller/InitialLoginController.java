@@ -1,4 +1,4 @@
-package com.cryptaur.lottery.login;
+package com.cryptaur.lottery.controller;
 
 import android.support.v4.app.Fragment;
 import android.widget.Toast;
@@ -6,7 +6,8 @@ import android.widget.Toast;
 import com.cryptaur.lottery.ActivityBase;
 import com.cryptaur.lottery.InteractionListener;
 import com.cryptaur.lottery.R;
-import com.cryptaur.lottery.controller.WorkflowController;
+import com.cryptaur.lottery.dialog.EnterPinCodeDialogFragment;
+import com.cryptaur.lottery.dialog.LoginDialogFragment;
 import com.cryptaur.lottery.transport.SessionTransport;
 import com.cryptaur.lottery.transport.base.NetworkRequest;
 import com.cryptaur.lottery.transport.model.Login;
@@ -16,7 +17,7 @@ import com.cryptaur.lottery.util.FixCloseDialogFragment;
 public class InitialLoginController implements WorkflowController, NetworkRequest.NetworkRequestListener<Session> {
 
     private final ActivityBase activity;
-    private LoginFragment.LoginAction login;
+    private LoginDialogFragment.LoginAction login;
     private EnterPinCodeDialogFragment.OnDonePinInput pin1;
     private EnterPinCodeDialogFragment.OnDonePinInput pin2;
 
@@ -26,13 +27,13 @@ public class InitialLoginController implements WorkflowController, NetworkReques
 
     @Override
     public void start() {
-        LoginFragment.showDialog(activity.getSupportFragmentManager());
+        LoginDialogFragment.showDialog(activity.getSupportFragmentManager());
     }
 
     @Override
     public boolean onAction(InteractionListener.IAction action, Fragment fragment) {
-        if (action instanceof LoginFragment.LoginAction) {
-            this.login = (LoginFragment.LoginAction) action;
+        if (action instanceof LoginDialogFragment.LoginAction) {
+            this.login = (LoginDialogFragment.LoginAction) action;
             EnterPinCodeDialogFragment.showDialog(activity.getSupportFragmentManager(), R.string.createPinCode, false);
             return true;
         } else if (action instanceof EnterPinCodeDialogFragment.OnDonePinInput) {
@@ -75,7 +76,7 @@ public class InitialLoginController implements WorkflowController, NetworkReques
     public void onNetworkRequestError(NetworkRequest request, Exception e) {
         Toast.makeText(activity, "Error logging in: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         pin1 = pin2 = null;
-        LoginFragment.showDialog(activity.getSupportFragmentManager(), login);
+        LoginDialogFragment.showDialog(activity.getSupportFragmentManager(), login);
     }
 
     @Override

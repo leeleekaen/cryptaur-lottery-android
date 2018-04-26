@@ -1,4 +1,4 @@
-package com.cryptaur.lottery.login;
+package com.cryptaur.lottery.dialog;
 
 import android.app.Fragment;
 import android.content.res.Resources;
@@ -61,7 +61,7 @@ public class EnterPinCodeDialogFragment extends FixCloseDialogFragment implement
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        mRoot = (ViewGroup) inflater.inflate(R.layout.fragment_enter_pin_code_dialog, container, false);
+        mRoot = (ViewGroup) inflater.inflate(R.layout.dialog_enter_pin_code, container, false);
         messageView = mRoot.findViewById(R.id.enterAccountLabel);
         progress = mRoot.findViewById(R.id.progressLayout);
         digitImageButtons[0] = mRoot.findViewById(R.id.pinDigit1);

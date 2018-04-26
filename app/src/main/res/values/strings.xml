@@ -41,6 +41,15 @@
     <string name="ticket">Ticket</string>
     <string name="draw_archive">Draw Archive</string>
     <string name="rules">Rules</string>
+    <string name="numbers_guessed">numbers guessed: %d</string>
+    <string name="win_cpt">Win %s CPT</string>
+    <string name="winners">Winners</string>
+    <string name="drawDetails">LOTTERY\nDRAW\nDATE\nWIN NUMBERS\nTICKETS\nCOLLECTED\nPAID\nTO JACKPOT\nTO RESERVE\nJACKPOT\nRESERVE</string>
+    <string name="logout">Logout</string>
+    <string name="login">Login</string>
+    <string name="my_tickets">my tickets</string>
+    <string name="change_pin_code">Change pin-code</string>
+    <string name="how_to_play">How to play</string>
 
     <!-- RULES -->
     <string name="participation">Participation</string>
@@ -71,14 +80,24 @@
     <string name="distributionExpl">%d%% of the prize pool of the draw / number of people who guessed %d numbers</string>
     <!-- END RULES -->
 
-    <string name="numbers_guessed">numbers guessed: %d</string>
-    <string name="win_cpt">Win %s CPT</string>
-    <string name="winners">Winners</string>
-    <string name="drawDetails">LOTTERY\nDRAW\nDATE\nWIN NUMBERS\nTICKETS\nCOLLECTED\nPAID\nTO JACKPOT\nTO RESERVE\nJACKPOT\nRESERVE</string>
-    <string name="logout">Logout</string>
-    <string name="login">Login</string>
-    <string name="my_tickets">my tickets</string>
-    <string name="change_pin_code">Change pin-code</string>
-    <string name="how_to_play">How to play</string>
+    <!-- How to play -->
+    <string name="rules_of_ticket_purchase">Rules of ticket purchase</string>
+    <string name="rules_of_ticket_purchase_body" formatted="false">Choose a lottery, fill it in and buy a ticket.
+\n\nThe number of tickets that can be bought is unlimited.
+\n\nOne hour before the drawing the tickets purchase for this edition is suspended.
+\n\nTo view the statistics on purchased tickets, you need to enter the number of the cryptowallet from which you bought the tickets in section "My Tickets".</string>
+    <string name="time_of_drawing_lots">Time of drawing lots</string>
+    <string name="time_of_drawing_lots_body">Drawing lots are held every 154 hours. The remaining time until the next lottery is indicated in the form of a countdown timer in each draw.</string>
+    <string name="rules_draw_body">Each draw has its own unique serial number (identifier), according to which it can be found in the \"Statistics\" section.</string>
+    <string name="lottery_broadcasting">Lottery broadcasting</string>
+    <string name="lottery_broadcasting_body">Lottery broadcasting (numbers come up) can be viewed by going to the section of the desired lottery during the period when the countdown timer has reset.</string>
+    <string name="how_to_check">How to check the ticket and get a win</string>
+    <string name="how_to_check_body">After the drawing the system automatically determines winning tickets. The winner of the lottery is responsible for the cost of GAS for getting wins.
+\n\nThe lottery organizer is responsible for the lottery costs.
+\n\nThe history of all drawing lots and payments made can be found in the "Statistics" section of each lottery.
+\n\nYou can check your winning tickets in section "My Tickets" by entering the number of the cryptowallet from which the lottery tickets were paid.</string>
+
+    <!-- END HowToPlay -->
+
 
 </resources>

@@ -1,4 +1,4 @@
-package com.cryptaur.lottery.login;
+package com.cryptaur.lottery.dialog;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
@@ -15,7 +15,7 @@ import com.cryptaur.lottery.transport.SessionTransport;
 import com.cryptaur.lottery.util.FixCloseDialogFragment;
 import com.cryptaur.lottery.view.WalletViewHolder;
 
-public class MenuDialogFragmentFragment extends FixCloseDialogFragment implements View.OnClickListener {
+public class MenuDialogFragment extends FixCloseDialogFragment implements View.OnClickListener {
 
     private ViewGroup mRoot;
     private WalletViewHolder wallet;
@@ -28,18 +28,18 @@ public class MenuDialogFragmentFragment extends FixCloseDialogFragment implement
     private View closeButton;
 
 
-    public MenuDialogFragmentFragment() {
+    public MenuDialogFragment() {
     }
 
-    public static MenuDialogFragmentFragment showDialog(FragmentManager fm) {
-        return (MenuDialogFragmentFragment) showDialog(fm, MenuDialogFragmentFragment.class);
+    public static MenuDialogFragment showDialog(FragmentManager fm) {
+        return (MenuDialogFragment) showDialog(fm, MenuDialogFragment.class);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        mRoot = (ViewGroup) inflater.inflate(R.layout.fragment_menu_dialog, container, false);
+        mRoot = (ViewGroup) inflater.inflate(R.layout.dialog_menu_dialog, container, false);
         wallet = new WalletViewHolder(mRoot.findViewById(R.id.wallet), mListener);
         avatarView = mRoot.findViewById(R.id.avatar);
         addressView = mRoot.findViewById(R.id.address);
