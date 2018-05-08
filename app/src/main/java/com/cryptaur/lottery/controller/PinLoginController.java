@@ -1,5 +1,8 @@
 package com.cryptaur.lottery.controller;
 
+import android.app.AlertDialog;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v4.app.Fragment;
 import android.widget.Toast;
 
@@ -10,6 +13,7 @@ import com.cryptaur.lottery.dialog.EnterPinCodeDialogFragment;
 import com.cryptaur.lottery.dialog.EnterPinCodeDialogFragment.OnDonePinInput;
 import com.cryptaur.lottery.transport.SessionTransport;
 import com.cryptaur.lottery.transport.base.NetworkRequest;
+import com.cryptaur.lottery.transport.exception.ServerException;
 import com.cryptaur.lottery.transport.model.Session;
 import com.cryptaur.lottery.util.FixCloseDialogFragment;
 
@@ -51,12 +55,19 @@ public class PinLoginController implements WorkflowController, NetworkRequest.Ne
 
     @Override
     public void onNetworkRequestError(NetworkRequest request, Exception e) {
-        Toast.makeText(activity, "Error logging in: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        //Toast.makeText(activity, "Error logging in: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         Fragment fragment = FixCloseDialogFragment.findDialogFragment(activity.getSupportFragmentManager());
         if (fragment instanceof EnterPinCodeDialogFragment) {
             ((EnterPinCodeDialogFragment) fragment).resetPinInput();
         } else
             EnterPinCodeDialogFragment.showDialog(activity.getSupportFragmentManager(), R.string.enter_your_pin_code_to_login, true);
+
+        final boolean isServerError = e instanceof ServerException;
+        new Handler(Looper.getMainLooper()).postDelayed(() ->
+                new AlertDialog.Builder(activity).setTitle(R.string.error)
+                        .setMessage(isServerError ? R.string.errorLoggingIn : R.string.networkError)
+                        .setPositiveButton(android.R.string.ok, (dialog, which) -> dialog.dismiss())
+                        .show(), 200);
     }
 
     @Override

@@ -100,6 +100,8 @@
     <string name="buy_ticket_includes_fee">Buying ticket includes transaction fee.</string>
     <string name="you_need">You need approx.</string>
     <string name="cpt_to_buy">CPT to buy ticket</string>
+    <string name="errorLoggingIn">Error logging in. Please, try again.</string>
+    <string name="networkError">Error connecting to the server. Please, check your Internet connection and try again.</string>
 
     <!-- END HowToPlay -->
 

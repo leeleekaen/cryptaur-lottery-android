@@ -1,5 +1,8 @@
 package com.cryptaur.lottery.controller;
 
+import android.app.AlertDialog;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v4.app.Fragment;
 import android.widget.Toast;
 
@@ -10,6 +13,7 @@ import com.cryptaur.lottery.dialog.EnterPinCodeDialogFragment;
 import com.cryptaur.lottery.dialog.LoginDialogFragment;
 import com.cryptaur.lottery.transport.SessionTransport;
 import com.cryptaur.lottery.transport.base.NetworkRequest;
+import com.cryptaur.lottery.transport.exception.ServerException;
 import com.cryptaur.lottery.transport.model.Login;
 import com.cryptaur.lottery.transport.model.Session;
 import com.cryptaur.lottery.util.FixCloseDialogFragment;
@@ -74,9 +78,15 @@ public class InitialLoginController implements WorkflowController, NetworkReques
 
     @Override
     public void onNetworkRequestError(NetworkRequest request, Exception e) {
-        Toast.makeText(activity, "Error logging in: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         pin1 = pin2 = null;
         LoginDialogFragment.showDialog(activity.getSupportFragmentManager(), login);
+
+        final boolean isServerError = e instanceof ServerException;
+        new Handler(Looper.getMainLooper()).postDelayed(() ->
+                new AlertDialog.Builder(activity).setTitle(R.string.error)
+                        .setMessage(isServerError ? R.string.errorLoggingIn : R.string.networkError)
+                        .setPositiveButton(android.R.string.ok, (dialog, which) -> dialog.dismiss())
+                        .show(), 200);
     }
 
     @Override
