@@ -196,9 +196,10 @@ public class BuyTicketFragment extends Fragment implements BuyTicketRecyclerView
                                         StringBuilder bld = new StringBuilder();
                                         BigInteger min = currentDraw.getTicketPrice().amount.multiply(BigInteger.valueOf(12)).divide(BigInteger.valueOf(10));
                                         bld.append(res.getString(R.string.buy_ticket_includes_fee))
-                                                .append(res.getString(R.string.you_need))
+                                                .append("\n")
+                                                .append(res.getString(R.string.you_need)).append(" ")
                                                 .append(Strings.toDecimalString(min, 8, 0, ".", "."))
-                                                .append(getString(R.string.cpt_to_buy));
+                                                .append(" ").append(getString(R.string.cpt_to_buy));
 
                                         new AlertDialog.Builder(root.getContext())
                                                 .setTitle(R.string.error)

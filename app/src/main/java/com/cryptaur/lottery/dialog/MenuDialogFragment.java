@@ -78,6 +78,7 @@ public class MenuDialogFragment extends FixCloseDialogFragment implements View.O
                     mListener.doAction(InteractionListener.Action.Login, this);
                 else
                     mListener.doAction(InteractionListener.Action.Logout, this);
+                dismiss();
                 break;
 
             case R.id.changePinCodeButton:

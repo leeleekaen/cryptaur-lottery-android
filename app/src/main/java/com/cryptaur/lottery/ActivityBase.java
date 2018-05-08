@@ -115,9 +115,7 @@ public abstract class ActivityBase extends AppCompatActivity implements Interact
                     if (this instanceof BuyTicketActivity) {
 
                     } else {
-                        Intent intent = new Intent(this, MainActivity.class);
-                        finish();
-                        startActivity(intent);
+                        recreate();
                     }
                     break;
 
@@ -138,13 +136,11 @@ public abstract class ActivityBase extends AppCompatActivity implements Interact
                 case Logout:
                     SessionTransport.INSTANCE.logout();
                     Keeper.getInstance(this).clear();
-                    Intent intent = new Intent(this, MainActivity.class);
-                    finish();
-                    startActivity(intent);
+                    recreate();
                     break;
 
                 case MyTickets:
-                    intent = new Intent(this, MyTicketsActivity.class);
+                    Intent intent = new Intent(this, MyTicketsActivity.class);
                     startActivity(intent);
                     break;
 
