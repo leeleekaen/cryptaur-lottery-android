@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.AppCompatCheckedTextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="100dp"
+    android:layout_height="100dp"
+    android:background="@drawable/bg_buy_ticket_number"
+    android:gravity="center"
+    android:textAlignment="gravity"
+    android:textColor="@color/buy_ticket_number"
+    android:textSize="44sp">
+
+</android.support.v7.widget.AppCompatCheckedTextView>
