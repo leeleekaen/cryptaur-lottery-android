@@ -33,6 +33,9 @@ public class PinLoginController implements WorkflowController, NetworkRequest.Ne
     @Override
     public boolean onAction(InteractionListener.IAction action, Fragment fragment) {
         if (action instanceof OnDonePinInput) {
+            if (fragment instanceof EnterPinCodeDialogFragment) {
+                ((EnterPinCodeDialogFragment) fragment).showProgress(true);
+            }
             SessionTransport.INSTANCE.login(activity, ((OnDonePinInput) action).toCharSequence().toString(), this);
             return true;
         }
@@ -59,6 +62,7 @@ public class PinLoginController implements WorkflowController, NetworkRequest.Ne
         Fragment fragment = FixCloseDialogFragment.findDialogFragment(activity.getSupportFragmentManager());
         if (fragment instanceof EnterPinCodeDialogFragment) {
             ((EnterPinCodeDialogFragment) fragment).resetPinInput();
+            ((EnterPinCodeDialogFragment) fragment).showProgress(false);
         } else
             EnterPinCodeDialogFragment.showDialog(activity.getSupportFragmentManager(), R.string.enter_your_pin_code_to_login, true);
 
