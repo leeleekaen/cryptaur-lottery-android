@@ -102,6 +102,7 @@
     <string name="cpt_to_buy">CPT to buy ticket</string>
     <string name="errorLoggingIn">Error logging in. Please, try again.</string>
     <string name="networkError">Error connecting to the server. Please, check your Internet connection and try again.</string>
+    <string name="your_wallet_doesnt_have_enough_cpt">Your wallet doesn\'t have enough CPT to buy a ticket. Click here to go to the Cryptaur wallet.</string>
 
     <!-- END HowToPlay -->
 

@@ -1,5 +1,7 @@
 package com.cryptaur.lottery;
 
+import java.math.BigInteger;
+
 public interface Const {
     String TAG = "CryptLottery";
     //String SERVER_URL = "https://lottery.cryptaur.com";
@@ -11,4 +13,8 @@ public interface Const {
     String KEY_LATEST_PLAYED_VIEWED_INDICES = "viewedIndices";
 
     int GET_TICKETS_STEP = 10;
+
+    BigInteger CPT_BASE = BigInteger.valueOf(100_000_000);
+
+    String URL_CRYPTAUR_WALLET = "https://wallet.cryptaur.com/investor/login";
 }

@@ -2,7 +2,9 @@ package com.cryptaur.lottery.buytickets;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -15,6 +17,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.cryptaur.lottery.Const;
 import com.cryptaur.lottery.InteractionListener;
 import com.cryptaur.lottery.R;
 import com.cryptaur.lottery.model.GetObjectCallback;
@@ -46,13 +49,13 @@ public class BuyTicketFragment extends Fragment implements BuyTicketRecyclerView
     private static final String ARG_LOTTERY = "lottery";
     private ViewGroup root;
     private RecyclerView recyclerView;
-    private TextView messageText;
     private Button buyButton;
     private InteractionListener mListener;
     private Lottery lottery;
     private Draw currentDraw;
     private Button clearButton;
     private TextView selectNumbersLabel;
+    private TextView bottomMessageText;
     private BuyTicketRecyclerViewAdapter adapter;
 
     private boolean noAddress = false;
@@ -86,10 +89,10 @@ public class BuyTicketFragment extends Fragment implements BuyTicketRecyclerView
         Keeper.getInstance(root.getContext()).getCurrentDraws(this, false);
 
         recyclerView = root.findViewById(R.id.list);
-        messageText = root.findViewById(R.id.buttonMessageText);
         buyButton = root.findViewById(R.id.buyButton);
         selectNumbersLabel = root.findViewById(R.id.selectNumbers);
         clearButton = root.findViewById(R.id.buttonClear);
+        bottomMessageText = root.findViewById(R.id.bottomMessageText);
 
         recyclerView.setLayoutManager(new GridLayoutManager(context, 6));
         adapter = new BuyTicketRecyclerViewAdapter(lottery, this);
@@ -99,8 +102,13 @@ public class BuyTicketFragment extends Fragment implements BuyTicketRecyclerView
         recyclerView.setAdapter(adapter);
 
         clearButton.setOnClickListener(this);
-        buyButton.setOnClickListener(this);
+        buyButton.setOnClickListener(this::onBuyTicketButtonPressed);
+        bottomMessageText.setOnClickListener(this);
+
+        buyButton.setVisibility(View.VISIBLE);
+        bottomMessageText.setVisibility(View.GONE);
         noAddress = SessionTransport.INSTANCE.getAddress() == null;
+
         fillControls();
         return root;
     }
@@ -138,6 +146,7 @@ public class BuyTicketFragment extends Fragment implements BuyTicketRecyclerView
                 String text = Strings.toDecimalString(currentDraw.getTicketPrice().amount, 8, 0, ".", ",");
                 text = buyButton.getResources().getString(R.string.buy_for__cpt, text);
                 buyButton.setText(text);
+                checkBalance();
             }
             buyButton.setEnabled(noAddress || adapter.isFilled());
         }
@@ -145,6 +154,31 @@ public class BuyTicketFragment extends Fragment implements BuyTicketRecyclerView
             String selectLabel = selectNumbersLabel.getResources().getString(R.string.select_d_numbers, lottery.getNumbersAmount());
             selectNumbersLabel.setText(selectLabel);
         }
+    }
+
+    private void checkBalance() {
+        Keeper.getInstance(buyButton.getContext()).getBalance(new GetObjectCallback<BigInteger>() {
+            @Override
+            public void onRequestResult(BigInteger responce) {
+                if (responce.compareTo(currentDraw.getTicketPrice().amount) < 0) {
+                    buyButton.setVisibility(View.GONE);
+                    bottomMessageText.setVisibility(View.VISIBLE);
+                } else {
+                    buyButton.setVisibility(View.VISIBLE);
+                    bottomMessageText.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onNetworkRequestError(Exception e) {
+
+            }
+
+            @Override
+            public void onCancel() {
+
+            }
+        }, false);
     }
 
     @Override
@@ -189,51 +223,56 @@ public class BuyTicketFragment extends Fragment implements BuyTicketRecyclerView
                     adapter.clear();
                 break;
 
-            case R.id.buyButton:
-                if (!SessionTransport.INSTANCE.isLoggedIn()) {
-                    mListener.doAction(InteractionListener.Action.Login, this);
-                } else {
-                    if (currentDraw.getTicketPrice().age() < 60_000 && currentDraw.getTicketPrice().fee != null) {
-                        showBuyTicketDialog();
-                    } else {
-                        Toast.makeText(v.getContext(), R.string.updatingTicketFee, Toast.LENGTH_SHORT).show();
-                        Keeper.getInstance(v.getContext()).updateTicketFee(currentDraw, new GetObjectCallback<Money>() {
-                            @Override
-                            public void onRequestResult(Money responce) {
-                                showBuyTicketDialog();
-                            }
-
-                            @Override
-                            public void onNetworkRequestError(Exception e) {
-                                if (e instanceof ServerException) {
-                                    ServerException se = (ServerException) e;
-                                    if (se.errorCode == 400) {
-                                        Resources res = root.getResources();
-                                        StringBuilder bld = new StringBuilder();
-                                        BigInteger min = currentDraw.getTicketPrice().amount.multiply(BigInteger.valueOf(12)).divide(BigInteger.valueOf(10));
-                                        bld.append(res.getString(R.string.buy_ticket_includes_fee))
-                                                .append("\n")
-                                                .append(res.getString(R.string.you_need)).append(" ")
-                                                .append(Strings.toDecimalString(min, 8, 0, ".", "."))
-                                                .append(" ").append(getString(R.string.cpt_to_buy));
-
-                                        new AlertDialog.Builder(root.getContext())
-                                                .setTitle(R.string.error)
-                                                .setMessage(bld)
-                                                .setPositiveButton(android.R.string.ok, (dialog, which) -> dialog.dismiss())
-                                                .show();
-                                    }
-                                } else
-                                    Toast.makeText(v.getContext(), R.string.errorUpdatingTicketFee, Toast.LENGTH_SHORT).show();
-                            }
-
-                            @Override
-                            public void onCancel() {
-                            }
-                        });
-                    }
-                }
+            case R.id.bottomMessageText:
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(Const.URL_CRYPTAUR_WALLET));
+                startActivity(intent);
                 break;
+        }
+    }
+
+    private void onBuyTicketButtonPressed(View v) {
+        if (!SessionTransport.INSTANCE.isLoggedIn()) {
+            mListener.doAction(InteractionListener.Action.Login, this);
+        } else {
+            if (currentDraw.getTicketPrice().age() < 60_000 && currentDraw.getTicketPrice().fee != null) {
+                showBuyTicketDialog();
+            } else {
+                Toast.makeText(v.getContext(), R.string.updatingTicketFee, Toast.LENGTH_SHORT).show();
+                Keeper.getInstance(v.getContext()).updateTicketFee(currentDraw, new GetObjectCallback<Money>() {
+                    @Override
+                    public void onRequestResult(Money responce) {
+                        showBuyTicketDialog();
+                    }
+
+                    @Override
+                    public void onNetworkRequestError(Exception e) {
+                        if (e instanceof ServerException) {
+                            ServerException se = (ServerException) e;
+                            if (se.errorCode == 400) {
+                                Resources res = root.getResources();
+                                StringBuilder bld = new StringBuilder();
+                                BigInteger min = currentDraw.getTicketPrice().amount.multiply(BigInteger.valueOf(12)).divide(BigInteger.valueOf(10));
+                                bld.append(res.getString(R.string.buy_ticket_includes_fee))
+                                        .append("\n")
+                                        .append(res.getString(R.string.you_need)).append(" ")
+                                        .append(Strings.toDecimalString(min, 8, 0, ".", "."))
+                                        .append(" ").append(getString(R.string.cpt_to_buy));
+
+                                new AlertDialog.Builder(root.getContext())
+                                        .setTitle(R.string.error)
+                                        .setMessage(bld)
+                                        .setPositiveButton(android.R.string.ok, (dialog, which) -> dialog.dismiss())
+                                        .show();
+                            }
+                        } else
+                            Toast.makeText(v.getContext(), R.string.errorUpdatingTicketFee, Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onCancel() {
+                    }
+                });
+            }
         }
     }
 
