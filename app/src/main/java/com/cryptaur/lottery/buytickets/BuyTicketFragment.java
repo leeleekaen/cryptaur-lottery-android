@@ -2,6 +2,7 @@ package com.cryptaur.lottery.buytickets;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -21,6 +22,7 @@ import com.cryptaur.lottery.model.Keeper;
 import com.cryptaur.lottery.transport.SessionTransport;
 import com.cryptaur.lottery.transport.Transport;
 import com.cryptaur.lottery.transport.base.NetworkRequest;
+import com.cryptaur.lottery.transport.exception.ServerException;
 import com.cryptaur.lottery.transport.model.CurrentDraws;
 import com.cryptaur.lottery.transport.model.Draw;
 import com.cryptaur.lottery.transport.model.Lottery;
@@ -29,6 +31,7 @@ import com.cryptaur.lottery.transport.model.Ticket;
 import com.cryptaur.lottery.transport.model.Transaction;
 import com.cryptaur.lottery.util.Strings;
 
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Locale;
 
@@ -174,7 +177,7 @@ public class BuyTicketFragment extends Fragment implements BuyTicketRecyclerView
                 if (!SessionTransport.INSTANCE.isLoggedIn()) {
                     mListener.doAction(InteractionListener.Action.Login, this);
                 } else {
-                    if (currentDraw.getTicketPrice().age() < 60_000) {
+                    if (currentDraw.getTicketPrice().age() < 60_000 && currentDraw.getTicketPrice().fee != null) {
                         showBuyTicketDialog();
                     } else {
                         Toast.makeText(v.getContext(), R.string.updatingTicketFee, Toast.LENGTH_SHORT).show();
@@ -186,7 +189,25 @@ public class BuyTicketFragment extends Fragment implements BuyTicketRecyclerView
 
                             @Override
                             public void onNetworkRequestError(Exception e) {
-                                Toast.makeText(v.getContext(), R.string.errorUpdatingTicketFee, Toast.LENGTH_SHORT).show();
+                                if (e instanceof ServerException) {
+                                    ServerException se = (ServerException) e;
+                                    if (se.errorCode == 400) {
+                                        Resources res = root.getResources();
+                                        StringBuilder bld = new StringBuilder();
+                                        BigInteger min = currentDraw.getTicketPrice().amount.multiply(BigInteger.valueOf(12)).divide(BigInteger.valueOf(10));
+                                        bld.append(res.getString(R.string.buy_ticket_includes_fee))
+                                                .append(res.getString(R.string.you_need))
+                                                .append(Strings.toDecimalString(min, 8, 0, ".", "."))
+                                                .append(getString(R.string.cpt_to_buy));
+
+                                        new AlertDialog.Builder(root.getContext())
+                                                .setTitle(R.string.error)
+                                                .setMessage(bld)
+                                                .setPositiveButton(android.R.string.ok, (dialog, which) -> dialog.dismiss())
+                                                .show();
+                                    }
+                                } else
+                                    Toast.makeText(v.getContext(), R.string.errorUpdatingTicketFee, Toast.LENGTH_SHORT).show();
                             }
 
                             @Override
@@ -208,12 +229,16 @@ public class BuyTicketFragment extends Fragment implements BuyTicketRecyclerView
             if (i < numbers.size() - 1)
                 strBuilder.append(", ");
         }
+        BigInteger total = currentDraw.getTicketPrice().amount.add(currentDraw.getTicketPrice().fee);
         strBuilder.append(" for ")
                 .append(Strings.toDecimalString(currentDraw.getTicketPrice().amount, 8, 0, ".", ","))
                 .append(" CPT?\n")
-                .append("Transaction fee :")
+                .append("Transaction fee: ")
                 .append(Strings.toDecimalString(currentDraw.getTicketPrice().fee, 8, 0, ".", ","))
-                .append(" CPT.");
+                .append(" CPT.\n")
+                .append("Total: ")
+                .append(Strings.toDecimalString(total, 8, 0, ".", ","))
+                .append(" CPT.\n");
 
         new AlertDialog.Builder(getActivity())
                 .setTitle("Buy ticket?")
@@ -232,7 +257,8 @@ public class BuyTicketFragment extends Fragment implements BuyTicketRecyclerView
     @Override
     public void onNetworkRequestDone(NetworkRequest request, Transaction responce) {
         Toast.makeText(root.getContext(), R.string.boughtTicket, Toast.LENGTH_SHORT).show();
-        mListener.doAction(InteractionListener.Action.CloseThisFragment, this);
+        if (mListener != null)
+            mListener.doAction(InteractionListener.Action.CloseThisFragment, this);
     }
 
     @Override

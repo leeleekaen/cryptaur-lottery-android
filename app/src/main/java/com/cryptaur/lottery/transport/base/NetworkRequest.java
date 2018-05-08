@@ -97,7 +97,7 @@ public abstract class NetworkRequest<Result> implements Runnable {
         try {
             String responceStr = postRequest(method, requestType, requestBody);
             if (status != 200) {
-                handleException(new Exception("status: " + status));
+                handleException(parseException(responceStr, status));
                 return;
             }
 
@@ -125,6 +125,8 @@ public abstract class NetworkRequest<Result> implements Runnable {
     }
 
     protected abstract Result parse(String source, int status) throws IOException, JSONException;
+
+    protected abstract Exception parseException(String responceStr, int code);
 
     public void cancel() {
         cancelled = true;

@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.TextView;
 
+import com.cryptaur.lottery.buytickets.BuyTicketActivity;
 import com.cryptaur.lottery.controller.InitialLoginController;
 import com.cryptaur.lottery.controller.PinLoginController;
 import com.cryptaur.lottery.controller.WorkflowController;
@@ -111,8 +112,13 @@ public abstract class ActivityBase extends AppCompatActivity implements Interact
                 case Restart:
                     if (walletView != null)
                         walletView.refresh(true);
-                    Intent intent = new Intent(this, MyTicketsActivity.class);
-                    startActivity(intent);
+                    if (this instanceof BuyTicketActivity) {
+
+                    } else {
+                        Intent intent = new Intent(this, MainActivity.class);
+                        finish();
+                        startActivity(intent);
+                    }
                     break;
 
                 case Login:
@@ -132,7 +138,7 @@ public abstract class ActivityBase extends AppCompatActivity implements Interact
                 case Logout:
                     SessionTransport.INSTANCE.logout();
                     Keeper.getInstance(this).clear();
-                    intent = new Intent(this, MainActivity.class);
+                    Intent intent = new Intent(this, MainActivity.class);
                     finish();
                     startActivity(intent);
                     break;

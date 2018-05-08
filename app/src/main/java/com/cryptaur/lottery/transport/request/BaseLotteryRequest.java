@@ -78,6 +78,22 @@ public abstract class BaseLotteryRequest<Result> extends NetworkRequest<Result> 
             return parseJson(null);
     }
 
+    /*
+    "ErrorCode":400,"ErrorMessage":"One or more errors occurred. (gas required exceeds allowance or always failing transaction)"}
+     */
+
+    @Override
+    protected Exception parseException(String responceStr, int code) {
+        try {
+            JSONObject obj = new JSONObject(responceStr);
+            int errCode = obj.getInt("ErrorCode");
+            String message = obj.getString("ErrorMessage");
+            return new ServerException(errCode, message);
+        } catch (Exception e) {
+            return new ServerException(code, "status: " + code);
+        }
+    }
+
     public void setAuthString(String authString) {
         this.authString = authString;
     }

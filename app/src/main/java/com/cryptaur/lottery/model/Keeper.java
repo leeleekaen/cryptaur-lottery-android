@@ -76,7 +76,7 @@ public class Keeper {
     }
 
     public void updateTicketFee(Draw currentDraw, @Nullable GetObjectCallback<Money> listener) {
-        Transport.INSTANCE.getTicketFee(currentDraw.lottery, new TicketFeeUpdater(currentDraw, listener));
+        Transport.INSTANCE.getTicketFee(currentDraw, new TicketFeeUpdater(currentDraw, listener));
     }
 
     public void getWinAmount(GetObjectCallback<Money> listener, boolean forceUpdate) {

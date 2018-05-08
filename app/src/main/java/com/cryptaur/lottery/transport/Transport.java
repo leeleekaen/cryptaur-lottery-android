@@ -6,9 +6,9 @@ import android.support.annotation.Nullable;
 
 import com.cryptaur.lottery.transport.base.NetworkRequest;
 import com.cryptaur.lottery.transport.model.CurrentDraws;
+import com.cryptaur.lottery.transport.model.Draw;
 import com.cryptaur.lottery.transport.model.DrawsReply;
 import com.cryptaur.lottery.transport.model.DrawsRequest;
-import com.cryptaur.lottery.transport.model.Lottery;
 import com.cryptaur.lottery.transport.model.LotteryTicketsList;
 import com.cryptaur.lottery.transport.model.Money;
 import com.cryptaur.lottery.transport.model.Ticket;
@@ -65,8 +65,13 @@ public class Transport {
         return SessionTransport.INSTANCE.canAuthorizeWithPin();
     }
 
-    public void getTicketFee(Lottery lottery, NetworkRequest.NetworkRequestListener<Money> listener) {
-        new GetTicketPriceRequest(lottery, client, new NetworkRequestWrapper<>(listener)).execute();
+    public void getTicketFee(Draw draw, NetworkRequest.NetworkRequestListener<Money> listener) {
+        String address = SessionTransport.INSTANCE.getAddress();
+        if (address == null) {
+            listener.onCancel(new GetTicketPriceRequest(draw, address, client, listener));
+            return;
+        }
+        new GetTicketPriceRequest(draw, address, client, new NetworkRequestWrapper<>(listener)).execute();
     }
 
     public void getTickets(TicketsToLoad toLoad, NetworkRequest.NetworkRequestListener<LotteryTicketsList> listener) {

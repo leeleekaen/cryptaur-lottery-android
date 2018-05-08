@@ -9,11 +9,9 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
-import android.view.MenuItem;
 
 import com.cryptaur.lottery.ActivityBase;
 import com.cryptaur.lottery.Const;
-import com.cryptaur.lottery.MyTicketsActivity;
 import com.cryptaur.lottery.R;
 import com.cryptaur.lottery.transport.model.Lottery;
 
@@ -49,18 +47,6 @@ public class BuyTicketActivity extends ActivityBase implements TabLayout.OnTabSe
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
         tabLayout.addOnTabSelectedListener(this);
         setHomeAsUp(true);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menuItem_uncheckedTickets:
-                Intent intent = new Intent(this, MyTicketsActivity.class);
-                intent.putExtra(MyTicketsActivity.ARG_PAGE, 1);
-                startActivity(intent);
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override

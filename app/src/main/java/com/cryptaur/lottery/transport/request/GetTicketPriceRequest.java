@@ -1,8 +1,8 @@
 package com.cryptaur.lottery.transport.request;
 
 import com.cryptaur.lottery.transport.base.RequestType;
+import com.cryptaur.lottery.transport.model.Draw;
 import com.cryptaur.lottery.transport.model.JSONObjectHelper;
-import com.cryptaur.lottery.transport.model.Lottery;
 import com.cryptaur.lottery.transport.model.Money;
 
 import org.json.JSONException;
@@ -15,16 +15,18 @@ import okhttp3.OkHttpClient;
 
 public class GetTicketPriceRequest extends BaseLotteryRequest<Money> {
     private static final String METHOD = "api/getTicketPrice/";
-    final Lottery lottery;
+    private final Draw draw;
+    private final String address;
 
-    public GetTicketPriceRequest(Lottery lottery, OkHttpClient client, NetworkRequestListener<Money> listener) {
+    public GetTicketPriceRequest(Draw draw, String address, OkHttpClient client, NetworkRequestListener<Money> listener) {
         super(client, listener);
-        this.lottery = lottery;
+        this.draw = draw;
+        this.address = address;
     }
 
     @Override
     protected void execRequest() throws JSONException {
-        String method = String.format(Locale.US, "%s%d", METHOD, lottery.getServerId());
+        String method = String.format(Locale.US, "%s%d/%d/%s", METHOD, draw.lottery.getServerId(), draw.number, address);
         execSimpleRequest(method, RequestType.Get, null);
     }
 
