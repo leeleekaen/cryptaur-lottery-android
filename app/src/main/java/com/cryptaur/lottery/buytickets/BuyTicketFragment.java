@@ -55,6 +55,8 @@ public class BuyTicketFragment extends Fragment implements BuyTicketRecyclerView
     private TextView selectNumbersLabel;
     private BuyTicketRecyclerViewAdapter adapter;
 
+    private boolean noAddress = false;
+
     public BuyTicketFragment() {
     }
 
@@ -91,15 +93,25 @@ public class BuyTicketFragment extends Fragment implements BuyTicketRecyclerView
 
         recyclerView.setLayoutManager(new GridLayoutManager(context, 6));
         adapter = new BuyTicketRecyclerViewAdapter(lottery, this);
+        if (savedInstanceState != null) {
+            adapter.loadFromBundle(savedInstanceState);
+        }
         recyclerView.setAdapter(adapter);
 
         clearButton.setOnClickListener(this);
         buyButton.setOnClickListener(this);
-
+        noAddress = SessionTransport.INSTANCE.getAddress() == null;
         fillControls();
         return root;
     }
 
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (adapter != null) {
+            adapter.saveToBundle(outState);
+        }
+    }
 
     @Override
     public void onAttach(Context context) {
@@ -119,11 +131,15 @@ public class BuyTicketFragment extends Fragment implements BuyTicketRecyclerView
     }
 
     private void fillControls() {
-        if (currentDraw != null && buyButton != null) {
-            String text = Strings.toDecimalString(currentDraw.getTicketPrice().amount, 8, 0, ".", ",");
-            text = buyButton.getResources().getString(R.string.buy_for__cpt, text);
-            buyButton.setText(text);
-
+        if (buyButton != null) {
+            if (noAddress) {
+                buyButton.setText(R.string.login);
+            } else if (currentDraw != null) {
+                String text = Strings.toDecimalString(currentDraw.getTicketPrice().amount, 8, 0, ".", ",");
+                text = buyButton.getResources().getString(R.string.buy_for__cpt, text);
+                buyButton.setText(text);
+            }
+            buyButton.setEnabled(noAddress || adapter.isFilled());
         }
         if (selectNumbersLabel != null) {
             String selectLabel = selectNumbersLabel.getResources().getString(R.string.select_d_numbers, lottery.getNumbersAmount());
@@ -133,7 +149,7 @@ public class BuyTicketFragment extends Fragment implements BuyTicketRecyclerView
 
     @Override
     public void onNumbersChanged(List<Integer> numbers, boolean filled) {
-        buyButton.setEnabled(filled);
+        buyButton.setEnabled(noAddress || filled);
         if (filled) {
             Keeper.getInstance(root.getContext()).updateTicketFee(currentDraw, null);
         }

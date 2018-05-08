@@ -1,5 +1,6 @@
 package com.cryptaur.lottery.buytickets;
 
+import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +20,8 @@ public class BuyTicketRecyclerViewAdapter extends RecyclerView.Adapter<BuyTicket
     private final NumbersListener mListener;
     private final List<Integer> checkedNumbers = new ArrayList<>(6);
 
+    public static final String KEY_SELECTED_NUMBERS = "selectedNumbers";
+
     public BuyTicketRecyclerViewAdapter(Lottery lottery, NumbersListener listener) {
         this.lottery = lottery;
         mListener = listener;
@@ -33,7 +36,9 @@ public class BuyTicketRecyclerViewAdapter extends RecyclerView.Adapter<BuyTicket
 
     @Override
     public void onBindViewHolder(final NumberViewHolder holder, int position) {
-        holder.setNumber(position + 1);
+        int number = position + 1;
+        holder.setNumber(number);
+        holder.mView.setChecked(checkedNumbers.contains(number));
     }
 
     @Override
@@ -48,6 +53,10 @@ public class BuyTicketRecyclerViewAdapter extends RecyclerView.Adapter<BuyTicket
     public void clear() {
         checkedNumbers.clear();
         notifyDataSetChanged();
+    }
+
+    public boolean isFilled() {
+        return checkedNumbers.size() == lottery.getNumbersAmount();
     }
 
     public interface NumbersListener {
@@ -82,6 +91,25 @@ public class BuyTicketRecyclerViewAdapter extends RecyclerView.Adapter<BuyTicket
                 checkedNumbers.add(number);
             }
             mListener.onNumbersChanged(checkedNumbers, checkedNumbers.size() == lottery.getNumbersAmount());
+        }
+    }
+
+    public void saveToBundle(Bundle bundle) {
+        int[] numbers = new int[checkedNumbers.size()];
+        for (int i = 0; i < numbers.length; i++) {
+            numbers[i] = checkedNumbers.get(i);
+        }
+
+        bundle.putIntArray(KEY_SELECTED_NUMBERS, numbers);
+    }
+
+    public void loadFromBundle(Bundle bundle) {
+        if (bundle.containsKey(KEY_SELECTED_NUMBERS)) {
+            int[] numbers = bundle.getIntArray(KEY_SELECTED_NUMBERS);
+            checkedNumbers.clear();
+            for (int i = 0; i < numbers.length; i++) {
+                checkedNumbers.add(numbers[i]);
+            }
         }
     }
 }

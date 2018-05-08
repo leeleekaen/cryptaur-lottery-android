@@ -12,7 +12,6 @@ import android.view.MenuItem;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.TextView;
 
-import com.cryptaur.lottery.buytickets.BuyTicketActivity;
 import com.cryptaur.lottery.controller.InitialLoginController;
 import com.cryptaur.lottery.controller.PinLoginController;
 import com.cryptaur.lottery.controller.WorkflowController;
@@ -112,11 +111,7 @@ public abstract class ActivityBase extends AppCompatActivity implements Interact
                 case Restart:
                     if (walletView != null)
                         walletView.refresh(true);
-                    if (this instanceof BuyTicketActivity) {
-
-                    } else {
-                        recreate();
-                    }
+                    recreate();
                     break;
 
                 case Login:
