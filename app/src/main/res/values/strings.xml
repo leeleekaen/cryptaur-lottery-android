@@ -96,6 +96,8 @@
 \n\nThe lottery organizer is responsible for the lottery costs.
 \n\nThe history of all drawing lots and payments made can be found in the "Statistics" section of each lottery.
 \n\nYou can check your winning tickets in section "My Tickets" by entering the number of the cryptowallet from which the lottery tickets were paid.</string>
+    <!-- END HowToPlay -->
+
     <string name="error">Error</string>
     <string name="buy_ticket_includes_fee">Buying ticket includes transaction fee.</string>
     <string name="you_need">You need approx.</string>
@@ -103,8 +105,12 @@
     <string name="errorLoggingIn">Error logging in. Please, try again.</string>
     <string name="networkError">Error connecting to the server. Please, check your Internet connection and try again.</string>
     <string name="your_wallet_doesnt_have_enough_cpt">Your wallet doesn\'t have enough CPT to buy a ticket. Click here to go to the Cryptaur wallet.</string>
-
-    <!-- END HowToPlay -->
+    <string name="failedToByTicket">Failed to buy ticket for draw</string>
+    <string name="lottery">lottery</string>
+    <string name="numbers">Numbers:</string>
+    <string name="failedToGetTheWin">Failed to Get the Win transaction for</string>
+    <string name="pleaseTryAgain">Please, try again</string>
+    <string name="transactionfailed">Transaction failed</string>
 
 
 </resources>

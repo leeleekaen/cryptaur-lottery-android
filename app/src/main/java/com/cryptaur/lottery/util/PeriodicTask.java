@@ -11,6 +11,12 @@ public class PeriodicTask {
     private boolean shouldRun;
     private boolean canRun;
 
+    /**
+     * @param handler      -- handler to be run on
+     * @param timeout      -- timeout to repeat task
+     * @param isThreadSafe -- set to true if setRunning can be run on threads other then handler's thread
+     * @param runnable     -- task that will be executed
+     */
     public PeriodicTask(Handler handler, long timeout, boolean isThreadSafe, Runnable runnable) {
         this.handler = handler;
         this.runnable = runnable;
@@ -43,6 +49,15 @@ public class PeriodicTask {
         this.canRun = canRun;
     }
 
+    public void scheduleToRun() {
+        setShouldRun(true);
+        updateRunState();
+    }
+
+    public boolean isRunning() {
+        return running;
+    }
+
     private void run() {
         if (shouldRun & canRun) {
             runnable.run();
@@ -57,7 +72,7 @@ public class PeriodicTask {
         if (isThreadSafe) {
             if (this.running != running)
                 synchronized (this) {
-                    running = true;
+                    this.running = running;
                 }
         } else {
             this.running = running;

@@ -57,6 +57,7 @@ public class BuyTicketFragment extends Fragment implements BuyTicketRecyclerView
     private TextView selectNumbersLabel;
     private TextView bottomMessageText;
     private BuyTicketRecyclerViewAdapter adapter;
+    private View progressLayout;
 
     private boolean noAddress = false;
 
@@ -93,6 +94,7 @@ public class BuyTicketFragment extends Fragment implements BuyTicketRecyclerView
         selectNumbersLabel = root.findViewById(R.id.selectNumbers);
         clearButton = root.findViewById(R.id.buttonClear);
         bottomMessageText = root.findViewById(R.id.bottomMessageText);
+        progressLayout = root.findViewById(R.id.progressLayout);
 
         recyclerView.setLayoutManager(new GridLayoutManager(context, 6));
         adapter = new BuyTicketRecyclerViewAdapter(lottery, this);
@@ -209,6 +211,7 @@ public class BuyTicketFragment extends Fragment implements BuyTicketRecyclerView
     }
 
     private void doBuyTicket() {
+        progressLayout.setVisibility(View.VISIBLE);
         List<Integer> numbers = adapter.getCheckedNumbers();
         Ticket ticket = Ticket.buyTicket(currentDraw, numbers);
         Transport.INSTANCE.buyTicket(ticket, this);
@@ -237,15 +240,18 @@ public class BuyTicketFragment extends Fragment implements BuyTicketRecyclerView
             if (currentDraw.getTicketPrice().age() < 60_000 && currentDraw.getTicketPrice().fee != null) {
                 showBuyTicketDialog();
             } else {
+                progressLayout.setVisibility(View.VISIBLE);
                 Toast.makeText(v.getContext(), R.string.updatingTicketFee, Toast.LENGTH_SHORT).show();
                 Keeper.getInstance(v.getContext()).updateTicketFee(currentDraw, new GetObjectCallback<Money>() {
                     @Override
                     public void onRequestResult(Money responce) {
+                        progressLayout.setVisibility(View.GONE);
                         showBuyTicketDialog();
                     }
 
                     @Override
                     public void onNetworkRequestError(Exception e) {
+                        progressLayout.setVisibility(View.GONE);
                         if (e instanceof ServerException) {
                             ServerException se = (ServerException) e;
                             if (se.errorCode == 400) {
@@ -270,6 +276,7 @@ public class BuyTicketFragment extends Fragment implements BuyTicketRecyclerView
 
                     @Override
                     public void onCancel() {
+                        progressLayout.setVisibility(View.GONE);
                     }
                 });
             }
@@ -312,6 +319,7 @@ public class BuyTicketFragment extends Fragment implements BuyTicketRecyclerView
 
     @Override
     public void onNetworkRequestDone(NetworkRequest request, Transaction responce) {
+        progressLayout.setVisibility(View.GONE);
         Toast.makeText(root.getContext(), R.string.boughtTicket, Toast.LENGTH_SHORT).show();
         if (mListener != null)
             mListener.doAction(InteractionListener.Action.CloseThisFragment, this);
@@ -319,11 +327,13 @@ public class BuyTicketFragment extends Fragment implements BuyTicketRecyclerView
 
     @Override
     public void onNetworkRequestError(NetworkRequest request, Exception e) {
+        progressLayout.setVisibility(View.GONE);
         Toast.makeText(root.getContext(), R.string.requestError, Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onCancel(NetworkRequest request) {
+        progressLayout.setVisibility(View.GONE);
         Toast.makeText(root.getContext(), R.string.requestCancelled, Toast.LENGTH_SHORT).show();
     }
 }

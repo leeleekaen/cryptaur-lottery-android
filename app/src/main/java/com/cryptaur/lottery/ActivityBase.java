@@ -4,6 +4,7 @@ import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.drawable.DrawerArrowDrawable;
 import android.support.v7.widget.Toolbar;
@@ -17,12 +18,19 @@ import com.cryptaur.lottery.controller.PinLoginController;
 import com.cryptaur.lottery.controller.WorkflowController;
 import com.cryptaur.lottery.dialog.HowToPlayDialogFragment;
 import com.cryptaur.lottery.dialog.MenuDialogFragment;
+import com.cryptaur.lottery.model.ActionShowTransactionFailed;
+import com.cryptaur.lottery.model.CPT;
 import com.cryptaur.lottery.model.GetObjectCallback;
 import com.cryptaur.lottery.model.Keeper;
 import com.cryptaur.lottery.transport.SessionTransport;
 import com.cryptaur.lottery.transport.Transport;
 import com.cryptaur.lottery.transport.model.CurrentDraws;
+import com.cryptaur.lottery.transport.model.Money;
+import com.cryptaur.lottery.transport.model.Ticket;
 import com.cryptaur.lottery.transport.model.TicketsType;
+import com.cryptaur.lottery.transport.model.Transaction;
+import com.cryptaur.lottery.transport.model.TransactionBuyTicket;
+import com.cryptaur.lottery.transport.model.TransactionGetTheWin;
 import com.cryptaur.lottery.view.WalletViewHolder;
 
 public abstract class ActivityBase extends AppCompatActivity implements InteractionListener, GetObjectCallback<CurrentDraws> {
@@ -143,6 +151,8 @@ public abstract class ActivityBase extends AppCompatActivity implements Interact
                     HowToPlayDialogFragment.showDialog(getSupportFragmentManager());
                     break;
             }
+        } else if (action instanceof ActionShowTransactionFailed) {
+            showTransactionFailed(((ActionShowTransactionFailed) action).transaction);
         }
     }
 
@@ -210,5 +220,34 @@ public abstract class ActivityBase extends AppCompatActivity implements Interact
             anim.setDuration(600);
             anim.start();
         }
+    }
+
+    private void showTransactionFailed(Transaction transaction) {
+        StringBuilder message = new StringBuilder();
+        if (transaction instanceof TransactionBuyTicket) {
+            Ticket ticket = ((TransactionBuyTicket) transaction).ticket;
+            message.append(getString(R.string.failedToByTicket)).append(ticket.drawIndex)
+                    .append(", ").append(getString(R.string.lottery)).append(" ").append(ticket.lottery.displayName())
+                    .append("\n").append(getString(R.string.numbers));
+            int[] numbers = ticket.numbers;
+            for (int i = 0; i < numbers.length; i++) {
+                if (i > 0)
+                    message.append(", ");
+                message.append(numbers[i]);
+            }
+        } else if (transaction instanceof TransactionGetTheWin) {
+            Money amount = ((TransactionGetTheWin) transaction).winAmount;
+            message.append(getString(R.string.failedToGetTheWin))
+                    .append(CPT.toDecimalString(amount.amount, 0))
+                    .append(" ")
+                    .append(getString(R.string.cpt))
+                    .append("\n").append(getString(R.string.pleaseTryAgain));
+        }
+
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.transactionfailed)
+                .setMessage(message)
+                .setPositiveButton(android.R.string.ok, (dialog, which) -> dialog.dismiss())
+                .show();
     }
 }

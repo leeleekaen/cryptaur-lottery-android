@@ -6,6 +6,7 @@ import android.widget.TextView;
 
 import com.cryptaur.lottery.adapter.MainLotteryPagerAdapter;
 import com.cryptaur.lottery.model.Keeper;
+import com.cryptaur.lottery.model.TransactionKeeper;
 import com.cryptaur.lottery.transport.model.CurrentDraws;
 import com.cryptaur.lottery.transport.model.Lottery;
 import com.cryptaur.lottery.util.Strings;
@@ -55,10 +56,12 @@ public class MainActivity extends ActivityBase {
     @Override
     protected void onResume() {
         super.onResume();
+        TransactionKeeper.INSTANCE.onActivityResume(this);
     }
 
     @Override
     protected void onPause() {
+        TransactionKeeper.INSTANCE.onActivityPause();
         super.onPause();
     }
 }

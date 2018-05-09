@@ -1,10 +1,16 @@
 package com.cryptaur.lottery.transport.model;
 
+import java.util.Locale;
+
 public enum Lottery {
     _4of20, _5of36, _6of42;
 
     public static Lottery ofServerId(int id) {
         return values()[id - 1];
+    }
+
+    public String displayName() {
+        return String.format(Locale.getDefault(), "%dx%d", getNumbersAmount(), getMaxValue());
     }
 
     public int getNumbersAmount() {

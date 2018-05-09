@@ -4,6 +4,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.Nullable;
 
+import com.cryptaur.lottery.model.TransactionKeeper;
 import com.cryptaur.lottery.transport.base.NetworkRequest;
 import com.cryptaur.lottery.transport.model.CurrentDraws;
 import com.cryptaur.lottery.transport.model.Draw;
@@ -14,9 +15,11 @@ import com.cryptaur.lottery.transport.model.Money;
 import com.cryptaur.lottery.transport.model.Ticket;
 import com.cryptaur.lottery.transport.model.TicketsToLoad;
 import com.cryptaur.lottery.transport.model.Transaction;
+import com.cryptaur.lottery.transport.model.TransactionState;
 import com.cryptaur.lottery.transport.model.WinTicketReply;
 import com.cryptaur.lottery.transport.model.WinTicketsRequest;
 import com.cryptaur.lottery.transport.request.BuyTicketRequest;
+import com.cryptaur.lottery.transport.request.CheckTransactionStateRequest;
 import com.cryptaur.lottery.transport.request.GetBalanceRequest;
 import com.cryptaur.lottery.transport.request.GetCurrentLotteriesRequest;
 import com.cryptaur.lottery.transport.request.GetDrawsRequest;
@@ -35,22 +38,19 @@ import okhttp3.OkHttpClient;
 public class Transport {
 
     public static final Transport INSTANCE = new Transport();
-    private final Handler handler = new Handler(Looper.getMainLooper());
-    private final AtomicInteger requestCounter = new AtomicInteger();
     final OkHttpClient client = new OkHttpClient.Builder()
             .connectTimeout(15, TimeUnit.SECONDS)
             .readTimeout(15, TimeUnit.SECONDS)
             .build();
-
+    private final Handler handler = new Handler(Looper.getMainLooper());
+    private final AtomicInteger requestCounter = new AtomicInteger();
 
     public void getLotteries(@Nullable NetworkRequest.NetworkRequestListener<CurrentDraws> listener) {
         new GetCurrentLotteriesRequest(client, new NetworkRequestWrapper<>(listener)).execute();
     }
 
-
-
     public void buyTicket(Ticket ticket, NetworkRequest.NetworkRequestListener<Transaction> listener) {
-        new BuyTicketRequest(client, ticket, SessionTransport.INSTANCE.getCurrentSession(), new NetworkRequestWrapper<>(listener)).execute();
+        new BuyTicketRequest(client, ticket, SessionTransport.INSTANCE.getCurrentSession(), new TransactionRequestWrapper<>(listener)).execute();
     }
 
     public void getBalance(NetworkRequest.NetworkRequestListener<BigInteger> listener) {
@@ -96,11 +96,15 @@ public class Transport {
     }
 
     public void getTheWin(Money amount, NetworkRequest.NetworkRequestListener<Transaction> listener) {
-        new GetTheWinRequest(amount, SessionTransport.INSTANCE.getCurrentSession(), client, new NetworkRequestWrapper<>(listener)).execute();
+        new GetTheWinRequest(amount, SessionTransport.INSTANCE.getCurrentSession(), client, new TransactionRequestWrapper<>(listener)).execute();
     }
 
     public void getWinTickets(WinTicketsRequest request, NetworkRequest.NetworkRequestListener<WinTicketReply> listener) {
         new GetWinTicketsRequest(request, client, new NetworkRequestWrapper<>(listener)).execute();
+    }
+
+    public void getTransactionState(Transaction transaction, NetworkRequest.NetworkRequestListener<TransactionState> listener) {
+        new CheckTransactionStateRequest(transaction, client, new NetworkRequestWrapper<>(listener)).execute();
     }
 
     /**
@@ -143,4 +147,15 @@ public class Transport {
         }
     }
 
+    private class TransactionRequestWrapper<T extends Transaction> extends NetworkRequestWrapper<T> {
+        public TransactionRequestWrapper(@Nullable NetworkRequest.NetworkRequestListener<T> callback) {
+            super(callback);
+        }
+
+        @Override
+        public void onNetworkRequestDone(NetworkRequest request, T responce) {
+            TransactionKeeper.INSTANCE.onNewTransaction(responce);
+            super.onNetworkRequestDone(request, responce);
+        }
+    }
 }
