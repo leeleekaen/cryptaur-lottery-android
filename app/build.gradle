@@ -1,4 +1,9 @@
 apply plugin: 'com.android.application'
+apply plugin: 'io.fabric'
+
+repositories {
+    maven { url 'https://maven.fabric.io/public' }
+}
 
 android {
     compileSdkVersion 27
@@ -6,8 +11,8 @@ android {
         applicationId "com.cryptaur.lottery"
         minSdkVersion 17
         targetSdkVersion 27
-        versionCode 4
-        versionName "1.0.9_test"
+        versionCode 5
+        versionName "1.0.13_cr_test"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
@@ -46,6 +51,10 @@ dependencies {
     implementation 'com.jakewharton.threetenabp:threetenabp:1.0.4'
     implementation 'com.squareup.okhttp3:okhttp:3.10.0'
     implementation 'io.paperdb:paperdb:2.6'
+
+    compile('com.crashlytics.sdk.android:crashlytics:2.9.2@aar') {
+        transitive = true;
+    }
 
     implementation 'com.android.support:recyclerview-v7:27.1.1'
     testImplementation 'junit:junit:4.12'
