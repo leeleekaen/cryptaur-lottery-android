@@ -1,5 +1,8 @@
 package com.cryptaur.lottery.model;
 
+import android.support.annotation.Nullable;
+
+import com.cryptaur.lottery.transport.SessionTransport;
 import com.cryptaur.lottery.transport.model.DrawId;
 import com.cryptaur.lottery.transport.model.DrawIds;
 import com.cryptaur.lottery.transport.model.Lottery;
@@ -19,12 +22,28 @@ public class DrawTicketsStorage {
     private final HashMap<String, int[]> cashedDrawTicketCounts = new HashMap<>();
     private DrawIds latestShownDrawIdsForPlayedTickets;
 
+    private String book;
+
+    private String keyLatestShownDrawIdsForPlayedTickets;
+
+    public DrawTicketsStorage() {
+        SessionTransport.INSTANCE.addOnAddressChangedListener(addr -> {
+            book = addr == null ? null : BOOK + addr;
+            keyLatestShownDrawIdsForPlayedTickets = addr == null ? null : KEY_LATEST_SHOWN_DRAW_IDS_FOR_PLAYED_TICKETS + addr;
+            cashedDrawTicketCounts.clear();
+            latestShownDrawIdsForPlayedTickets = null;
+        });
+    }
+
     public void saveDrawTickets(Lottery lottery, int drawIndex, int tickets, int winTickets) {
+        if (book == null)
+            return;
+
         String key = lotteryCountKey(lottery, drawIndex);
         int stored[] = getDrawTickets(key);
 
         if (stored == null || stored[0] != tickets || stored[1] != winTickets) {
-            Paper.book(BOOK).write(key, new int[]{tickets, winTickets});
+            Paper.book(book).write(key, new int[]{tickets, winTickets});
         }
     }
 
@@ -39,9 +58,11 @@ public class DrawTicketsStorage {
     }
 
     private int[] getDrawTickets(String key) {
+        if (book == null)
+            return null;
         if (cashedDrawTicketCounts.containsKey(key))
             return cashedDrawTicketCounts.get(key);
-        int[] value = Paper.book(BOOK).read(key, null);
+        int[] value = Paper.book(book).read(key, null);
 
         if (value != null) {
             cashedDrawTicketCounts.put(key, value);
@@ -53,13 +74,18 @@ public class DrawTicketsStorage {
         return String.format(Locale.US, "count_%s_%d", lottery.displayName(), drawIndex);
     }
 
+    @Nullable
     public DrawIds getLatestShownDrawIdsForPlayedTickets() {
+        if (keyLatestShownDrawIdsForPlayedTickets == null)
+            return null;
         if (latestShownDrawIdsForPlayedTickets != null)
             return latestShownDrawIdsForPlayedTickets;
         return latestShownDrawIdsForPlayedTickets = Paper.book().read(KEY_LATEST_SHOWN_DRAW_IDS_FOR_PLAYED_TICKETS);
     }
 
     public void saveLatestShownDrawIdsForPlayedTickets(DrawIds ids) {
+        if (keyLatestShownDrawIdsForPlayedTickets == null)
+            return;
         DrawIds stored = getLatestShownDrawIdsForPlayedTickets();
 
         if (stored != null) {

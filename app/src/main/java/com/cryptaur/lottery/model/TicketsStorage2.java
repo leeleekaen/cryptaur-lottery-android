@@ -15,6 +15,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.TreeSet;
 
+import static com.cryptaur.lottery.Const.GET_TICKETS_STEP;
+
 public class TicketsStorage2 implements ITicketStorageRead {
 
     private final TreeSet<Ticket> activeTickets = new TreeSet<>(Ticket.SortComparator.INSTANCE);
@@ -198,7 +200,7 @@ public class TicketsStorage2 implements ITicketStorageRead {
                 }
             }
             if (amount > 0) {
-                result.add(new TicketsToLoad(lottery, 0, amount + 10));
+                result.add(new TicketsToLoad(lottery, 0, amount + GET_TICKETS_STEP));
             }
         }
         return result;

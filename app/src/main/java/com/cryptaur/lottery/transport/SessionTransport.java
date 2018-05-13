@@ -6,6 +6,7 @@ import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.cryptaur.lottery.model.CallbackList;
 import com.cryptaur.lottery.transport.base.NetworkRequest;
 import com.cryptaur.lottery.transport.model.Login;
 import com.cryptaur.lottery.transport.model.Session;
@@ -31,6 +32,8 @@ public class SessionTransport implements SessionRefresher.RefresherListener {
     private Session currentSession;
     private SessionStorage storage;
 
+    private CallbackList<OnAddressChangedListener> onAddressChangedListeners = new CallbackList<>();
+    private String currentAddress;
 
     public void onResumeActivity() {
         sessionRefresher.onResumeActivity();
@@ -42,8 +45,8 @@ public class SessionTransport implements SessionRefresher.RefresherListener {
 
     public void initContext(Context context) {
         this.storage = new SessionStorage(context);
+        currentAddress = storage.getAddress();
     }
-
 
     public void doRequest(NetworkRequest request) {
         synchronized (this) {
@@ -92,6 +95,8 @@ public class SessionTransport implements SessionRefresher.RefresherListener {
             if (login != null && login.password != null && login.password.length() > 0) {
                 storage.saveLogin(login, session);
             }
+            if (session.address != null)
+                setCurrentAddress(session.address);
         }
         setCurrentSession(session);
     }
@@ -163,6 +168,28 @@ public class SessionTransport implements SessionRefresher.RefresherListener {
     public void logout() {
         currentSession = null;
         storage.clear();
+        setCurrentAddress(null);
+    }
+
+    private void setCurrentAddress(String currentAddress) {
+        String oldAddress = this.currentAddress;
+        this.currentAddress = currentAddress;
+        if (currentAddress == null) {
+            if (oldAddress != null)
+                onAddressChangedListeners.notifyAllCallbacks(callback -> callback.onAddressChanged(currentAddress));
+        } else {
+            if (!currentAddress.equals(oldAddress))
+                onAddressChangedListeners.notifyAllCallbacks(callback -> callback.onAddressChanged(currentAddress));
+        }
+    }
+
+    public void addOnAddressChangedListener(OnAddressChangedListener listener) {
+        onAddressChangedListeners.add(listener);
+        listener.onAddressChanged(currentAddress);
+    }
+
+    public void removeOnAddressChangedListener(OnAddressChangedListener listener) {
+        onAddressChangedListeners.remove(listener);
     }
 
     /**
@@ -208,5 +235,10 @@ public class SessionTransport implements SessionRefresher.RefresherListener {
             if (callback != null)
                 handler.post(() -> callback.onCancel(request));
         }
+    }
+
+
+    public interface OnAddressChangedListener {
+        void onAddressChanged(String newAddress);
     }
 }

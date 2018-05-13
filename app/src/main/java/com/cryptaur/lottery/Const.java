@@ -12,7 +12,7 @@ public interface Const {
     String KEY_ADDRESS = "address";
     String KEY_LATEST_PLAYED_VIEWED_INDICES = "viewedIndices";
 
-    int GET_TICKETS_STEP = 10;
+    int GET_TICKETS_STEP = 20;
 
     BigInteger CPT_BASE = BigInteger.valueOf(100_000_000);
 

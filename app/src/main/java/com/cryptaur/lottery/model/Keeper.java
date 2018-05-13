@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
 
+import com.cryptaur.lottery.transport.SessionTransport;
 import com.cryptaur.lottery.transport.Transport;
 import com.cryptaur.lottery.transport.model.CurrentDraws;
 import com.cryptaur.lottery.transport.model.Draw;
@@ -11,6 +12,8 @@ import com.cryptaur.lottery.transport.model.Money;
 import com.cryptaur.lottery.transport.model.TicketsType;
 
 import java.math.BigInteger;
+
+import static com.cryptaur.lottery.Const.GET_TICKETS_STEP;
 
 public class Keeper {
     public static final long DRAWS_UPDATE_TIMEOUT = 600_000; // 10 mins
@@ -29,7 +32,12 @@ public class Keeper {
     private Keeper(Context context) {
         currentDrawsKeeper.addOnPlayedDrawsChangedListener((oldPlayedDrawIds, newPlayedDrawIds, currentDraws) -> {
             ticketsKeeper.reset();
-            updateTickets(TicketsType.Played, 10, null);
+            updateTickets(TicketsType.Played, GET_TICKETS_STEP, null);
+        });
+        SessionTransport.INSTANCE.addOnAddressChangedListener(newAddress -> {
+            ticketsKeeper.reset();
+            if (newAddress != null)
+                updateTickets(TicketsType.Played, GET_TICKETS_STEP, null);
         });
     }
 

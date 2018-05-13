@@ -28,6 +28,7 @@ public class SessionStorage {
     private static final String KEY_USER_NAME = "name";
     private Context context;
 
+
     public SessionStorage(Context context) {
         this.context = context;
     }
