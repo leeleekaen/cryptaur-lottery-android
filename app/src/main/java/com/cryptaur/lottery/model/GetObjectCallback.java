@@ -1,8 +1,6 @@
 package com.cryptaur.lottery.model;
 
-public interface GetObjectCallback<T> {
-    void onRequestResult(T responce);
-
+public interface GetObjectCallback<T> extends SimpleGetObjectCallback<T> {
     void onNetworkRequestError(Exception e);
 
     void onCancel();

@@ -8,7 +8,7 @@ public interface InteractionListener {
     void doAction(IAction action, @Nullable Fragment fragment);
 
     enum Action implements IAction {
-        CloseThisFragment, ForgotPasswordAction, UseLoginAndPassword, FinishWorkflow, Restart, Login, Logout, MyTickets, HowToPlay
+        CloseThisFragment, ForgotPasswordAction, UseLoginAndPassword, FinishWorkflow, Restart, Login, Logout, MyTickets, InvalidateOptionsMenu, HowToPlay
     }
 
     interface IAction {

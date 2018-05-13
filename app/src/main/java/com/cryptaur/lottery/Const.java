@@ -5,7 +5,7 @@ import java.math.BigInteger;
 public interface Const {
     String TAG = "CryptLottery";
     //String SERVER_URL = "https://lottery.cryptaur.com";
-    boolean USE_TEST_SERVER = BuildConfig.DEBUG || true;
+    boolean USE_TEST_SERVER = BuildConfig.DEBUG || false;
     String SERVER_URL = USE_TEST_SERVER ? "http://192.168.4.199:24892/" : "https://lottery-3.cryptaur.com/";
     String AUTH_URL = "https://lottery-1.cryptaur.com/";
 

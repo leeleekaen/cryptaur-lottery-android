@@ -13,23 +13,24 @@ import com.cryptaur.lottery.transport.model.TicketsType;
 import java.math.BigInteger;
 
 public class Keeper {
-    private static final long DRAWS_UPDATE_TIMEOUT = 600_000; // 10 mins
-    private static final long BALANCE_UPDATE_TIMEOUT = 600_000; // 10 mins
-    private static final long WIN_AMOUNT_UPDATE_TIMEOUT = 600_000; // 10 mins
+    public static final long DRAWS_UPDATE_TIMEOUT = 600_000; // 10 mins
+    public static final long BALANCE_UPDATE_TIMEOUT = 600_000; // 10 mins
+    public static final long WIN_AMOUNT_UPDATE_TIMEOUT = 600_000; // 10 mins
 
     private static volatile Keeper keeper;
 
-    private final SimpleItemKeeper<CurrentDraws> currentDrawsKeeper
-            = new SimpleItemKeeper<>(DRAWS_UPDATE_TIMEOUT, Transport.INSTANCE::getLotteries);
-    private final SimpleItemKeeper<BigInteger> balanceKeeper;
+    public final CurrentDrawsKeeper currentDrawsKeeper = new CurrentDrawsKeeper();
+    private final SimpleItemKeeper<BigInteger> balanceKeeper = new SimpleItemKeeper<>(BALANCE_UPDATE_TIMEOUT, Transport.INSTANCE::getBalance);
     private final SimpleItemKeeper<Money> winAmountKeeper = new SimpleItemKeeper<>(WIN_AMOUNT_UPDATE_TIMEOUT, Transport.INSTANCE::getWinAmount);
 
-    private final TicketsKeeper ticketRequestJoiner;
+    private final TicketsKeeper ticketsKeeper = new TicketsKeeper(this);
+    public final DrawTicketsKeeper drawTicketsKeeper = new DrawTicketsKeeper(this, ticketsKeeper);
 
     private Keeper(Context context) {
-        final Context ctx = context.getApplicationContext();
-        balanceKeeper = new SimpleItemKeeper<>(BALANCE_UPDATE_TIMEOUT, listener -> Transport.INSTANCE.getBalance(listener));
-        ticketRequestJoiner = new TicketsKeeper(this);
+        currentDrawsKeeper.addOnPlayedDrawsChangedListener((oldPlayedDrawIds, newPlayedDrawIds, currentDraws) -> {
+            ticketsKeeper.reset();
+            updateTickets(TicketsType.Played, 10, null);
+        });
     }
 
     public static Keeper getInstance(Context context) {
@@ -43,10 +44,6 @@ public class Keeper {
             }
         }
         return local;
-    }
-
-    public int getUncheckedTicketsAmount() {
-        return 1;
     }
 
     @UiThread
@@ -64,45 +61,37 @@ public class Keeper {
     }
 
     public ITicketStorageRead getTicketsStorage() {
-        return ticketRequestJoiner.getTicketsStorage();
+        return ticketsKeeper.getTicketsStorage();
     }
 
     public void updateTickets(TicketsType type, int minAmount, final GetObjectCallback<ITicketStorageRead> listener) {
-        ticketRequestJoiner.requestTicketStorage(type, minAmount, listener);
+        ticketsKeeper.requestTicketStorage(type, minAmount, listener);
     }
 
     public void refreshTickets() {
-        ticketRequestJoiner.reset();
+        ticketsKeeper.reset();
     }
 
     public void updateTicketFee(Draw currentDraw, @Nullable GetObjectCallback<Money> listener) {
         Transport.INSTANCE.getTicketFee(currentDraw, new TicketFeeUpdater(currentDraw, listener));
     }
 
-    public void getWinAmount(GetObjectCallback<Money> listener, boolean forceUpdate) {
+    public void getWinAmount(SimpleGetObjectCallback<Money> listener, boolean forceUpdate) {
         winAmountKeeper.requestValue(listener, forceUpdate);
     }
 
-    public void addCurrentDrawsListener(GetObjectCallback<CurrentDraws> listener) {
-        currentDrawsKeeper.addListener(listener);
-    }
-
-    public void removeCurrentDrawsListener(GetObjectCallback<CurrentDraws> listener) {
-        currentDrawsKeeper.removeListener(listener);
-    }
-
-    public void addTicketsListener(GetObjectCallback<ITicketStorageRead> listener) {
-        ticketRequestJoiner.addListener(listener);
+    public void addTicketsListener(SimpleGetObjectCallback<ITicketStorageRead> listener) {
+        ticketsKeeper.addListener(listener);
     }
 
     public void removeTicketsListener(GetObjectCallback<ITicketStorageRead> listener) {
-        ticketRequestJoiner.removeListener(listener);
+        ticketsKeeper.removeListener(listener);
     }
 
     public void clear() {
         currentDrawsKeeper.clear();
         balanceKeeper.clear();
         winAmountKeeper.clear();
-        ticketRequestJoiner.reset();
+        ticketsKeeper.reset();
     }
 }

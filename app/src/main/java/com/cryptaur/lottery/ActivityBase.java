@@ -27,7 +27,6 @@ import com.cryptaur.lottery.transport.Transport;
 import com.cryptaur.lottery.transport.model.CurrentDraws;
 import com.cryptaur.lottery.transport.model.Money;
 import com.cryptaur.lottery.transport.model.Ticket;
-import com.cryptaur.lottery.transport.model.TicketsType;
 import com.cryptaur.lottery.transport.model.Transaction;
 import com.cryptaur.lottery.transport.model.TransactionBuyTicket;
 import com.cryptaur.lottery.transport.model.TransactionGetTheWin;
@@ -150,6 +149,10 @@ public abstract class ActivityBase extends AppCompatActivity implements Interact
                 case HowToPlay:
                     HowToPlayDialogFragment.showDialog(getSupportFragmentManager());
                     break;
+
+                case InvalidateOptionsMenu:
+                    invalidateOptionsMenu();
+                    break;
             }
         } else if (action instanceof ActionShowTransactionFailed) {
             showTransactionFailed(((ActionShowTransactionFailed) action).transaction);
@@ -158,7 +161,7 @@ public abstract class ActivityBase extends AppCompatActivity implements Interact
 
     @Override
     public void onRequestResult(CurrentDraws responce) {
-        Keeper.getInstance(this).updateTickets(TicketsType.Played, 10, null);
+
     }
 
     @Override
@@ -172,8 +175,8 @@ public abstract class ActivityBase extends AppCompatActivity implements Interact
     @Override
     protected void onPause() {
         SessionTransport.INSTANCE.onPauseActivity();
-        Keeper.getInstance(this).removeTicketsListener(menuHelper);
-        Keeper.getInstance(this).removeCurrentDrawsListener(this);
+        Keeper.getInstance(this).currentDrawsKeeper.removeListener(this);
+        menuHelper.onActivityPause();
         super.onPause();
     }
 
@@ -181,8 +184,8 @@ public abstract class ActivityBase extends AppCompatActivity implements Interact
     protected void onResume() {
         super.onResume();
         SessionTransport.INSTANCE.onResumeActivity();
-        Keeper.getInstance(this).addCurrentDrawsListener(this);
-        Keeper.getInstance(this).addTicketsListener(menuHelper);
+        Keeper.getInstance(this).currentDrawsKeeper.addListener(this);
+        menuHelper.onActivityResume();
     }
 
     public void setHomeAsUp(boolean isHomeAsUp) {

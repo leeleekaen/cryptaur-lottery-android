@@ -7,17 +7,19 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-import com.cryptaur.lottery.model.GetObjectCallback;
-import com.cryptaur.lottery.model.ITicketStorageRead;
+import com.cryptaur.lottery.model.CurrentDrawsKeeper;
+import com.cryptaur.lottery.model.DrawTicketsKeeper;
+import com.cryptaur.lottery.model.Keeper;
+import com.cryptaur.lottery.transport.model.CurrentDraws;
+import com.cryptaur.lottery.transport.model.DrawIds;
 import com.cryptaur.lottery.util.Drawables;
 
 import java.util.Locale;
 
-public class MenuHelper implements GetObjectCallback<ITicketStorageRead> {
+public class MenuHelper implements DrawTicketsKeeper.OnLatestDrawsTicketsUpdatedListener, CurrentDrawsKeeper.OnPlayedDrawsChangedListener {
 
     private final Activity activity;
 
-    private int unshownTicketsAmount = 0;
 
     public MenuHelper(Activity activity) {
         this.activity = activity;
@@ -29,30 +31,43 @@ public class MenuHelper implements GetObjectCallback<ITicketStorageRead> {
     }
 
     public void onPrepareOptionsMenu(Menu menu) {
+        //CurrentDraws currentDraws = Keeper.getInstance(activity).currentDrawsKeeper.getCurrentDraws();
+
+        int unshownTicketsAmount = Keeper.getInstance(activity).drawTicketsKeeper.getUnshownTicketsCount();
+
         MenuItem item = menu.findItem(R.id.menuItem_uncheckedTickets);
 
-        //if (unshownTicketsAmount > 0) {
-        String amountStr = unshownTicketsAmount < 10 ?
-                String.format(Locale.getDefault(), "%d", unshownTicketsAmount)
-                : "9+";
-        Drawable drw = Drawables.createDrawableWithText(activity.getResources(), amountStr, R.drawable.ic_badge, Color.WHITE);
-        item.setIcon(drw);
-        /*} else {
+
+        if (unshownTicketsAmount > 0) {
+            String amountStr = unshownTicketsAmount < 10 ?
+                    String.format(Locale.getDefault(), "%d", unshownTicketsAmount)
+                    : "9+";
+            Drawable drw = Drawables.createDrawableWithText(activity.getResources(), amountStr, R.drawable.ic_badge, Color.WHITE);
+            item.setIcon(drw);
+            item.setVisible(true);
+        } else {
             item.setVisible(false);
-        }*/
+        }
+    }
+
+    public void onActivityResume() {
+        Keeper.getInstance(activity).drawTicketsKeeper.addListener(this);
+        Keeper.getInstance(activity).currentDrawsKeeper.addOnPlayedDrawsChangedListener(this);
+        activity.invalidateOptionsMenu();
+    }
+
+    public void onActivityPause() {
+        Keeper.getInstance(activity).drawTicketsKeeper.removeListener(this);
+        Keeper.getInstance(activity).currentDrawsKeeper.removeOnPlayedDrawsChangedListener(this);
     }
 
     @Override
-    public void onRequestResult(ITicketStorageRead responce) {
+    public void onLatestDrawsTicketsUpdated(CurrentDraws currentDraws) {
+        activity.invalidateOptionsMenu();
     }
 
     @Override
-    public void onNetworkRequestError(Exception e) {
-
-    }
-
-    @Override
-    public void onCancel() {
-
+    public void onPlayedDrawsChanged(DrawIds oldPlayedDrawIds, DrawIds newPlayedDrawIds, CurrentDraws currentDraws) {
+        activity.invalidateOptionsMenu();
     }
 }

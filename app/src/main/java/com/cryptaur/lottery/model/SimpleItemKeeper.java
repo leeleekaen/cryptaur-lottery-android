@@ -10,11 +10,11 @@ import java.util.List;
 @UiThread
 class SimpleItemKeeper<T> implements NetworkRequest.NetworkRequestListener<T> {
 
-    private final List<GetObjectCallback<T>> dynamicCallbacks = new ArrayList<>();
-    private final List<GetObjectCallback<T>> updateListeners = new ArrayList<>();
+    private final List<SimpleGetObjectCallback<T>> dynamicCallbacks = new ArrayList<>();
+    private final List<SimpleGetObjectCallback<T>> updateListeners = new ArrayList<>();
     private final long valueTimeout;
     private final Executor<T> executor;
-    private T value;
+    protected T value;
     private boolean executingRequest;
     private long responceTimestamp;
 
@@ -23,7 +23,7 @@ class SimpleItemKeeper<T> implements NetworkRequest.NetworkRequestListener<T> {
         this.executor = executor;
     }
 
-    private void addDynamicCallback(GetObjectCallback<T> callback) {
+    private void addDynamicCallback(SimpleGetObjectCallback<T> callback) {
         if (!dynamicCallbacks.contains(callback))
             dynamicCallbacks.add(callback);
     }
@@ -50,7 +50,10 @@ class SimpleItemKeeper<T> implements NetworkRequest.NetworkRequestListener<T> {
     public void onNetworkRequestError(NetworkRequest request, Exception e) {
         executingRequest = false;
         for (int i = 0; i < dynamicCallbacks.size(); i++) {
-            dynamicCallbacks.get(i).onNetworkRequestError(e);
+            SimpleGetObjectCallback<T> callback = dynamicCallbacks.get(i);
+            if (callback instanceof GetObjectCallback) {
+                ((GetObjectCallback) callback).onNetworkRequestError(e);
+            }
         }
         dynamicCallbacks.clear();
     }
@@ -59,7 +62,10 @@ class SimpleItemKeeper<T> implements NetworkRequest.NetworkRequestListener<T> {
     public void onCancel(NetworkRequest request) {
         executingRequest = false;
         for (int i = 0; i < dynamicCallbacks.size(); i++) {
-            dynamicCallbacks.get(i).onCancel();
+            SimpleGetObjectCallback<T> callback = dynamicCallbacks.get(i);
+            if (callback instanceof GetObjectCallback) {
+                ((GetObjectCallback) callback).onCancel();
+            }
         }
         dynamicCallbacks.clear();
     }
@@ -77,7 +83,7 @@ class SimpleItemKeeper<T> implements NetworkRequest.NetworkRequestListener<T> {
     }
 
     @UiThread
-    public void requestValue(final GetObjectCallback<T> listener, boolean forceUpdate) {
+    public void requestValue(final SimpleGetObjectCallback<T> listener, boolean forceUpdate) {
         if (executingRequest) {
             addDynamicCallback(listener);
         } else {
@@ -93,7 +99,7 @@ class SimpleItemKeeper<T> implements NetworkRequest.NetworkRequestListener<T> {
         }
     }
 
-    public void addListener(GetObjectCallback<T> listener) {
+    public void addListener(SimpleGetObjectCallback<T> listener) {
         if (!updateListeners.contains(listener))
             updateListeners.add(listener);
         if (value != null)

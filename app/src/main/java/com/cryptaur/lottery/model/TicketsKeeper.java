@@ -6,6 +6,7 @@ import android.support.annotation.UiThread;
 
 import com.cryptaur.lottery.transport.Transport;
 import com.cryptaur.lottery.transport.base.NetworkRequest;
+import com.cryptaur.lottery.transport.model.CurrentDraws;
 import com.cryptaur.lottery.transport.model.Lottery;
 import com.cryptaur.lottery.transport.model.LotteryTicketsList;
 import com.cryptaur.lottery.transport.model.TicketsToLoad;
@@ -19,40 +20,50 @@ import java.util.List;
 class TicketsKeeper implements NetworkRequest.NetworkRequestListener<LotteryTicketsList> {
 
     private final TicketsStorage2 ticketsStorage = new TicketsStorage2(Lottery.values());
-    private final List<LotteryTicketDemand> lotteryTicketDemands = new ArrayList<>();
+    private final List<LotteryTicketsDemand> lotteryTicketDemands = new ArrayList<>();
     private final List<TicketsToLoad> updateRequests = new ArrayList<>();
-    private final List<GetObjectCallback<ITicketStorageRead>> listeners = new ArrayList<>();
+    private final List<SimpleGetObjectCallback<ITicketStorageRead>> listeners = new ArrayList<>();
     private int executingRequests = 0;
 
     public TicketsKeeper(Keeper keeper) {
-        keeper.addCurrentDrawsListener(ticketsStorage);
+        keeper.currentDrawsKeeper.addListener(ticketsStorage::onCurrentDrawsUpdated);
     }
 
-    public void requestTicketStorage(TicketsType type, int minAmount, @Nullable GetObjectCallback<ITicketStorageRead> listener) {
+    public void onCurrentDrawsUpdated(CurrentDraws draws) {
+        ticketsStorage.onCurrentDrawsUpdated(draws);
+    }
+
+    public void requestTicketStorage(TicketsType type, int minAmount, @Nullable SimpleGetObjectCallback<ITicketStorageRead> listener) {
         if (executingRequests > 0) {
-            lotteryTicketDemands.add(new LotteryTicketDemand(type, minAmount, listener));
+            lotteryTicketDemands.add(new LotteryTicketsDemandByType(type, minAmount, listener));
             return;
         }
 
-        List<TicketsToLoad> updateRequests = ticketsStorage.getTicketsToUpdate();
-        if (updateRequests != null && updateRequests.size() > 0) {
-            this.updateRequests.addAll(updateRequests);
-            executingRequests += updateRequests.size();
-            for (TicketsToLoad updateRequest : updateRequests) {
-                Transport.INSTANCE.getTickets(updateRequest, this);
-            }
-        }
+        runTicketsUpdate();
 
         if (ticketsStorage.checkCanReturnRequest(type, minAmount)) {
             if (listener != null)
                 listener.onRequestResult(ticketsStorage);
         } else {
-            LotteryTicketDemand demand = new LotteryTicketDemand(type, minAmount, listener);
+            LotteryTicketsDemand demand = new LotteryTicketsDemandByType(type, minAmount, listener);
             lotteryTicketDemands.add(demand);
             if (!runRequests()) {
                 if (listener != null)
                     listener.onRequestResult(ticketsStorage);
                 lotteryTicketDemands.remove(demand);
+            }
+        }
+    }
+
+    void runTicketsUpdate() {
+        if (executingRequests == 0) {
+            List<TicketsToLoad> updateRequests = ticketsStorage.getTicketsToUpdate();
+            if (updateRequests != null && updateRequests.size() > 0) {
+                this.updateRequests.addAll(updateRequests);
+                executingRequests += updateRequests.size();
+                for (TicketsToLoad updateRequest : updateRequests) {
+                    Transport.INSTANCE.getTickets(updateRequest, this);
+                }
             }
         }
     }
@@ -71,20 +82,21 @@ class TicketsKeeper implements NetworkRequest.NetworkRequestListener<LotteryTick
             return;
 
         for (int i = 0; i < lotteryTicketDemands.size(); i++) {
-            LotteryTicketDemand demand = lotteryTicketDemands.get(i);
-            if (ticketsStorage.checkCanReturnRequest(demand.type, demand.minAmount)) {
+            LotteryTicketsDemand demand = lotteryTicketDemands.get(i);
+            if (ticketsStorage.checkCanReturnRequest(demand)) {
                 if (demand.listener != null)
                     demand.listener.onRequestResult(ticketsStorage);
                 lotteryTicketDemands.remove(i--);
             }
         }
+
         if (executingRequests == 0 && lotteryTicketDemands.size() > 0) {
             if (!runRequests()) {
                 failAllDemands(new Exception("no requests run with existing demands"));
             }
         }
         if (executingRequests == 0)
-            for (GetObjectCallback<ITicketStorageRead> listener : listeners) {
+            for (SimpleGetObjectCallback<ITicketStorageRead> listener : listeners) {
                 listener.onRequestResult(ticketsStorage);
             }
     }
@@ -102,9 +114,9 @@ class TicketsKeeper implements NetworkRequest.NetworkRequestListener<LotteryTick
         --executingRequests;
         removeUpdateRequest(request);
         if (executingRequests == 0) {
-            for (LotteryTicketDemand demand : lotteryTicketDemands) {
-                if (demand.listener != null)
-                    demand.listener.onCancel();
+            for (LotteryTicketsDemand demand : lotteryTicketDemands) {
+                if (demand.listener instanceof GetObjectCallback)
+                    ((GetObjectCallback) demand.listener).onCancel();
             }
         }
     }
@@ -123,7 +135,7 @@ class TicketsKeeper implements NetworkRequest.NetworkRequestListener<LotteryTick
     /**
      * @return true if at leas one request run
      */
-    private boolean runRequests() {
+    boolean runRequests() {
         List<TicketsToLoad> ticketsToLoad = ticketsStorage.getTicketsToLoad();
         if (ticketsToLoad != null && ticketsToLoad.size() != 0) {
             for (TicketsToLoad toLoad : ticketsToLoad) {
@@ -136,10 +148,14 @@ class TicketsKeeper implements NetworkRequest.NetworkRequestListener<LotteryTick
         }
     }
 
+    public boolean isExecutingRequests() {
+        return executingRequests > 0;
+    }
+
     private void failAllDemands(@NonNull Exception e) {
-        for (LotteryTicketDemand demand : lotteryTicketDemands) {
-            if (demand.listener != null)
-                demand.listener.onNetworkRequestError(e);
+        for (LotteryTicketsDemand demand : lotteryTicketDemands) {
+            if (demand.listener instanceof GetObjectCallback)
+                ((GetObjectCallback) demand.listener).onNetworkRequestError(e);
         }
         lotteryTicketDemands.clear();
     }
@@ -148,7 +164,7 @@ class TicketsKeeper implements NetworkRequest.NetworkRequestListener<LotteryTick
         ticketsStorage.reset(Lottery.values());
     }
 
-    public void addListener(GetObjectCallback<ITicketStorageRead> listener) {
+    public void addListener(SimpleGetObjectCallback<ITicketStorageRead> listener) {
         if (!listeners.contains(listener)) {
             listeners.add(listener);
         }
@@ -159,16 +175,8 @@ class TicketsKeeper implements NetworkRequest.NetworkRequestListener<LotteryTick
         listeners.remove(listener);
     }
 
-    private static class LotteryTicketDemand {
-        public final TicketsType type;
-        public final int minAmount;
-        final GetObjectCallback<ITicketStorageRead> listener;
+    public void requestTicketStorage(Lottery lottery, int drawNumber, SimpleGetObjectCallback<ITicketStorageRead> simpleGetObjectCallback) {
 
-        public LotteryTicketDemand(TicketsType type, int minAmount, GetObjectCallback<ITicketStorageRead> listener) {
-            this.type = type;
-            this.minAmount = minAmount;
-            this.listener = listener;
-        }
     }
 }
 

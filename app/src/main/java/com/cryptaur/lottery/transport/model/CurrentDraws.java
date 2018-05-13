@@ -28,12 +28,23 @@ public class CurrentDraws {
         return lotteries;
     }
 
-    public BigInteger getTotalJackpot(){
+    public BigInteger getTotalJackpot() {
         BigInteger jackpot = BigInteger.ZERO;
 
         for (Draw draw : draws) {
             jackpot = jackpot.add(draw.jackpot);
         }
         return jackpot;
+    }
+
+    public DrawIds latestPlayedDraws() {
+        DrawIds result = new DrawIds();
+
+        for (Draw draw : draws) {
+            if (draw.number > 1)
+                result.add(new DrawId(draw.lottery, draw.number - 1));
+        }
+
+        return result;
     }
 }

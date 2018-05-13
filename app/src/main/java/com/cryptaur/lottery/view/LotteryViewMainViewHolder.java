@@ -157,13 +157,13 @@ public class LotteryViewMainViewHolder implements GetObjectCallback<CurrentDraws
     public void onViewAttachedToWindow(View v) {
         handler.post(updateTimerRunnable);
         attached = true;
-        Keeper.getInstance(view.getContext()).addCurrentDrawsListener(this);
+        Keeper.getInstance(view.getContext()).currentDrawsKeeper.addListener(this);
     }
 
     @Override
     public void onViewDetachedFromWindow(View v) {
         attached = false;
-        Keeper.getInstance(view.getContext()).removeCurrentDrawsListener(this);
+        Keeper.getInstance(view.getContext()).currentDrawsKeeper.removeListener(this);
     }
 
     @Override

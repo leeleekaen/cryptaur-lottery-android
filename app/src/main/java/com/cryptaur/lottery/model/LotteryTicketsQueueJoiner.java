@@ -113,4 +113,12 @@ public class LotteryTicketsQueueJoiner {
             queues.add(new LotteryTicketsQueue(lotteries[i]));
         }
     }
+
+    public boolean canLoadMoreTickets(Lottery lottery) {
+        for (LotteryTicketsQueue queue : queues) {
+            if (queue.lottery == lottery)
+                return true;
+        }
+        return false;
+    }
 }

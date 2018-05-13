@@ -11,6 +11,7 @@ import com.cryptaur.lottery.R;
 import com.cryptaur.lottery.model.GetObjectCallback;
 import com.cryptaur.lottery.model.ITicketStorageRead;
 import com.cryptaur.lottery.model.Keeper;
+import com.cryptaur.lottery.model.SimpleGetObjectCallback;
 import com.cryptaur.lottery.transport.SessionTransport;
 import com.cryptaur.lottery.transport.model.Money;
 import com.cryptaur.lottery.transport.model.Ticket;
@@ -33,25 +34,20 @@ public class MyTicketRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
     private int loadMorePosition = -1;
     private int itemAmount = 0;
     private final RefreshListener refreshListener;
-    private final GetObjectCallback<Money> getTheWinListener = new GetObjectCallback<Money>() {
+    private final SimpleGetObjectCallback<Money> getTheWinListener = new SimpleGetObjectCallback<Money>() {
         @Override
         public void onRequestResult(Money responce) {
             winAmount = responce.amount;
             refreshPositions();
             notifyDataSetChanged();
         }
-
-        @Override
-        public void onNetworkRequestError(Exception e) {
-
-        }
-
-        @Override
-        public void onCancel() {
-
-        }
     };
+
+    /**
+     * it is true when list with this adapter is primary in paginator (visible to user)
+     */
     private boolean isPrimary = false;
+
     private final GetObjectCallback<ITicketStorageRead> getTicketsListener = new GetObjectCallback<ITicketStorageRead>() {
         @Override
         public void onRequestResult(ITicketStorageRead responce) {
@@ -61,6 +57,10 @@ public class MyTicketRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
             refreshPositions();
             notifyDataSetChanged();
             refreshListener.onRefreshDone();
+            if (isPrimary && ticketsType == TicketsType.Played) {
+                Keeper.getInstance(context).drawTicketsKeeper.updateLatestShownDrawIdsForPlayedTickets();
+                listener.doAction(InteractionListener.Action.InvalidateOptionsMenu, null);
+            }
         }
 
         @Override
@@ -149,6 +149,9 @@ public class MyTicketRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
 
     public void setPrimary(boolean isPrimary) {
         this.isPrimary = isPrimary;
+        if (isPrimary && ticketsType == TicketsType.Played) {
+            Keeper.getInstance(context).drawTicketsKeeper.updateLatestShownDrawIdsForPlayedTickets();
+        }
     }
 
     public interface RefreshListener {

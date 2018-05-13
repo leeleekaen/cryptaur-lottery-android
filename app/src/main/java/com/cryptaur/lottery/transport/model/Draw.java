@@ -7,12 +7,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.threeten.bp.Instant;
 
-import java.io.Serializable;
 import java.math.BigInteger;
 
-public class Draw implements Serializable {
-    public final Lottery lottery;
-    public final int number;
+public class Draw extends DrawId {
     public final Instant startTime;
     public final LotteryState lotteryState;
     public final DrawState drawState;
@@ -28,10 +25,10 @@ public class Draw implements Serializable {
     private Money ticketPrice;
 
     public Draw(Lottery lottery, JSONObject source) throws JSONException {
-        this.lottery = lottery;
+        super(lottery, source.getInt("number"));
         timestamp = System.currentTimeMillis();
         JSONObjectHelper helper = new JSONObjectHelper(source);
-        number = source.getInt("number");
+
         startTime = helper.getInstant("date");
         lotteryState = LotteryState.valueOfCaseInsensitive(helper.getStringNullable("state"));
 
