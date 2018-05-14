@@ -15,6 +15,8 @@ import com.cryptaur.lottery.transport.SessionTransport;
 import com.cryptaur.lottery.util.FixCloseDialogFragment;
 import com.cryptaur.lottery.view.WalletViewHolder;
 
+import java.util.Locale;
+
 public class MenuDialogFragment extends FixCloseDialogFragment implements View.OnClickListener {
 
     private ViewGroup mRoot;
@@ -51,7 +53,7 @@ public class MenuDialogFragment extends FixCloseDialogFragment implements View.O
 
         String address = SessionTransport.INSTANCE.getAddress();
         avatarView.setImageResource(address == null ? R.drawable.ic_avatar : R.drawable.ic_avatar_filled);
-        addressView.setText(address == null ? "" : address);
+        addressView.setText(shortAddress(address));
 
         myTicketsButton.setEnabled(address != null);
         changePinCodeButton.setEnabled(address != null);
@@ -99,5 +101,13 @@ public class MenuDialogFragment extends FixCloseDialogFragment implements View.O
                 dismiss();
                 break;
         }
+    }
+
+    private final String shortAddress(String address) {
+        if (address == null)
+            return "";
+        if (address.length() < 14)
+            return address;
+        return String.format(Locale.US, "%s...%s", address.substring(0, 6), address.substring(address.length() - 6));
     }
 }
