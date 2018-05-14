@@ -242,7 +242,7 @@ public abstract class ActivityBase extends AppCompatActivity implements Interact
         } else if (transaction instanceof TransactionGetTheWin) {
             Money amount = ((TransactionGetTheWin) transaction).winAmount;
             message.append(getString(R.string.failedToGetTheWin))
-                    .append(CPT.toDecimalString(amount.amount, 0))
+                    .append(CPT.toDecimalString(amount.amount))
                     .append(" ")
                     .append(getString(R.string.cpt))
                     .append("\n").append(getString(R.string.pleaseTryAgain));

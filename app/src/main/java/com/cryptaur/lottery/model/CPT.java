@@ -8,4 +8,8 @@ public class CPT {
     public static String toDecimalString(BigInteger amount, int minDigitsAfterPoint) {
         return Strings.toDecimalString(amount, 8, minDigitsAfterPoint, ".", ",");
     }
+
+    public static String toDecimalString(BigInteger amount) {
+        return Strings.toDecimalString(amount, 8, 0, ".", ",");
+    }
 }

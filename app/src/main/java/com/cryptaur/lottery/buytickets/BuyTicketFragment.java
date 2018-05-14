@@ -20,6 +20,7 @@ import android.widget.Toast;
 import com.cryptaur.lottery.Const;
 import com.cryptaur.lottery.InteractionListener;
 import com.cryptaur.lottery.R;
+import com.cryptaur.lottery.model.CPT;
 import com.cryptaur.lottery.model.GetObjectCallback;
 import com.cryptaur.lottery.model.Keeper;
 import com.cryptaur.lottery.transport.SessionTransport;
@@ -32,7 +33,6 @@ import com.cryptaur.lottery.transport.model.Lottery;
 import com.cryptaur.lottery.transport.model.Money;
 import com.cryptaur.lottery.transport.model.Ticket;
 import com.cryptaur.lottery.transport.model.Transaction;
-import com.cryptaur.lottery.util.Strings;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -145,7 +145,7 @@ public class BuyTicketFragment extends Fragment implements BuyTicketRecyclerView
             if (noAddress) {
                 buyButton.setText(R.string.login);
             } else if (currentDraw != null) {
-                String text = Strings.toDecimalString(currentDraw.getTicketPrice().amount, 8, 0, ".", ",");
+                String text = CPT.toDecimalString(currentDraw.getTicketPrice().amount);
                 text = buyButton.getResources().getString(R.string.buy_for__cpt, text);
                 buyButton.setText(text);
                 checkBalance();
@@ -261,7 +261,7 @@ public class BuyTicketFragment extends Fragment implements BuyTicketRecyclerView
                                 bld.append(res.getString(R.string.buy_ticket_includes_fee))
                                         .append("\n")
                                         .append(res.getString(R.string.you_need)).append(" ")
-                                        .append(Strings.toDecimalString(min, 8, 0, ".", "."))
+                                        .append(CPT.toDecimalString(min))
                                         .append(" ").append(getString(R.string.cpt_to_buy));
 
                                 new AlertDialog.Builder(root.getContext())
@@ -294,13 +294,13 @@ public class BuyTicketFragment extends Fragment implements BuyTicketRecyclerView
         }
         BigInteger total = currentDraw.getTicketPrice().amount.add(currentDraw.getTicketPrice().fee);
         strBuilder.append(" for ")
-                .append(Strings.toDecimalString(currentDraw.getTicketPrice().amount, 8, 0, ".", ","))
+                .append(CPT.toDecimalString(currentDraw.getTicketPrice().amount))
                 .append(" CPT?\n")
                 .append("Transaction fee: ")
-                .append(Strings.toDecimalString(currentDraw.getTicketPrice().fee, 8, 0, ".", ","))
+                .append(CPT.toDecimalString(currentDraw.getTicketPrice().fee))
                 .append(" CPT.\n")
                 .append("Total: ")
-                .append(Strings.toDecimalString(total, 8, 0, ".", ","))
+                .append(CPT.toDecimalString(total))
                 .append(" CPT.\n");
 
         new AlertDialog.Builder(getActivity())

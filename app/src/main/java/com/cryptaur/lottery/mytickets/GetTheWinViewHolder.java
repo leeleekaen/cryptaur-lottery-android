@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.cryptaur.lottery.InteractionListener;
 import com.cryptaur.lottery.R;
+import com.cryptaur.lottery.model.CPT;
 import com.cryptaur.lottery.model.GetObjectCallback;
 import com.cryptaur.lottery.model.Keeper;
 import com.cryptaur.lottery.transport.SessionTransport;
@@ -20,7 +21,6 @@ import com.cryptaur.lottery.transport.Transport;
 import com.cryptaur.lottery.transport.base.NetworkRequest;
 import com.cryptaur.lottery.transport.model.Money;
 import com.cryptaur.lottery.transport.model.Transaction;
-import com.cryptaur.lottery.util.Strings;
 
 import java.math.BigInteger;
 
@@ -85,7 +85,7 @@ public class GetTheWinViewHolder extends RecyclerView.ViewHolder implements View
     @Override
     public void onRequestResult(Money responce) {
         this.winAmount = responce;
-        String amount = Strings.toDecimalString(responce.amount, 8, 0, ".", ",");
+        String amount = CPT.toDecimalString(responce.amount);
         amount = view.getResources().getString(R.string._CPT, amount);
         winAmountView.setText(amount);
     }
@@ -116,13 +116,13 @@ public class GetTheWinViewHolder extends RecyclerView.ViewHolder implements View
         StringBuilder strBuilder = new StringBuilder();
         BigInteger net = winAmount.amount.subtract(winAmount.fee);
         strBuilder.append("Total win amount: ")
-                .append(Strings.toDecimalString(winAmount.amount, 8, 0, ".", ","))
+                .append(CPT.toDecimalString(winAmount.amount))
                 .append(" CPT\n")
                 .append("Transaction fee: ")
-                .append(Strings.toDecimalString(winAmount.fee, 8, 0, ".", ","))
+                .append(CPT.toDecimalString(winAmount.fee))
                 .append(" CPT\n")
                 .append("You will get: ")
-                .append(Strings.toDecimalString(net, 8, 0, ".", ","))
+                .append(CPT.toDecimalString(net))
                 .append(" CPT\n")
                 .append("Proceed?");
 

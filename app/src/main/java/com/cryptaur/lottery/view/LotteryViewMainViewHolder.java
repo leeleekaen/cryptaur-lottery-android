@@ -14,12 +14,12 @@ import android.widget.TextView;
 import com.cryptaur.lottery.Const;
 import com.cryptaur.lottery.R;
 import com.cryptaur.lottery.buytickets.BuyTicketActivity;
+import com.cryptaur.lottery.model.CPT;
 import com.cryptaur.lottery.model.GetObjectCallback;
 import com.cryptaur.lottery.model.Keeper;
 import com.cryptaur.lottery.transport.model.CurrentDraws;
 import com.cryptaur.lottery.transport.model.Draw;
 import com.cryptaur.lottery.transport.model.Lottery;
-import com.cryptaur.lottery.util.Strings;
 
 import org.threeten.bp.Instant;
 import org.threeten.bp.temporal.ChronoUnit;
@@ -101,8 +101,8 @@ public class LotteryViewMainViewHolder implements GetObjectCallback<CurrentDraws
         draw = currentDraws.getDraw(lottery);
         if (draw == null)
             return;
-        String jackPotSize = Strings.toDecimalString(draw.jackpot, 8, 3, ".", ",");
-        String ticketPrice = Strings.toDecimalString(draw.getTicketPrice().amount, 8, 0, ".", ",");
+        String jackPotSize = CPT.toDecimalString(draw.jackpot);
+        String ticketPrice = CPT.toDecimalString(draw.getTicketPrice().amount);
         Resources res = view.getResources();
         drawNumberView.setText(res.getString(R.string.draw_number, draw.number));
 

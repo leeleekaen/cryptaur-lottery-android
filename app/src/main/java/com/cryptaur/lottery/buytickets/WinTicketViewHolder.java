@@ -6,8 +6,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.cryptaur.lottery.R;
+import com.cryptaur.lottery.model.CPT;
 import com.cryptaur.lottery.transport.model.WinTicket;
-import com.cryptaur.lottery.util.Strings;
 
 public class WinTicketViewHolder extends RecyclerView.ViewHolder {
 
@@ -29,7 +29,7 @@ public class WinTicketViewHolder extends RecyclerView.ViewHolder {
 
         String numbersGuessed = res.getString(R.string.numbers_guessed, ticket.winLevel);
 
-        String winAmount = Strings.toDecimalString(ticket.winAmount, 8, 0, ".", ",");
+        String winAmount = CPT.toDecimalString(ticket.winAmount);
         winAmount = res.getString(R.string.win_cpt, winAmount);
 
         addressView.setText(ticket.playerAddress);

@@ -5,9 +5,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.cryptaur.lottery.R;
+import com.cryptaur.lottery.model.CPT;
 import com.cryptaur.lottery.mytickets.MyTicketViewHolder;
 import com.cryptaur.lottery.transport.model.Draw;
-import com.cryptaur.lottery.util.Strings;
 
 import org.threeten.bp.ZoneId;
 
@@ -39,12 +39,12 @@ public class DrawDetailsViewHolder extends RecyclerView.ViewHolder {
         }
         builder.append("\n");
         builder.append(String.format(locale, "%d\n", draw.ticketsBought))
-                .append(Strings.toDecimalString(draw.getCollected(), 8, 3, ".", ",")).append('\n')
-                .append(Strings.toDecimalString(draw.paid, 8, 3, ".", ",")).append('\n')
-                .append(Strings.toDecimalString(draw.jackpotAdded, 8, 3, ".", ",")).append('\n')
-                .append(Strings.toDecimalString(draw.reserveAdded, 8, 3, ".", ",")).append('\n')
-                .append(Strings.toDecimalString(draw.jackpot, 8, 3, ".", ",")).append('\n')
-                .append(Strings.toDecimalString(draw.reserve, 8, 3, ".", ","));
+                .append(CPT.toDecimalString(draw.getCollected())).append('\n')
+                .append(CPT.toDecimalString(draw.paid)).append('\n')
+                .append(CPT.toDecimalString(draw.jackpotAdded)).append('\n')
+                .append(CPT.toDecimalString(draw.reserveAdded)).append('\n')
+                .append(CPT.toDecimalString(draw.jackpot)).append('\n')
+                .append(CPT.toDecimalString(draw.reserve));
 
         drawDetails.setText(builder);
     }

@@ -7,10 +7,10 @@ import android.widget.TextView;
 
 import com.cryptaur.lottery.InteractionListener;
 import com.cryptaur.lottery.R;
+import com.cryptaur.lottery.model.CPT;
 import com.cryptaur.lottery.model.GetObjectCallback;
 import com.cryptaur.lottery.model.Keeper;
 import com.cryptaur.lottery.transport.SessionTransport;
-import com.cryptaur.lottery.util.Strings;
 
 import java.math.BigInteger;
 
@@ -42,7 +42,7 @@ public class WalletViewHolder implements GetObjectCallback<BigInteger>, View.OnC
 
     @Override
     public void onRequestResult(BigInteger responce) {
-        String amount = Strings.toDecimalString(responce, 8, 0, ".", ",");
+        String amount = CPT.toDecimalString(responce);
         amount = view.getResources().getString(R.string._CPT, amount);
         view.setText(amount);
     }

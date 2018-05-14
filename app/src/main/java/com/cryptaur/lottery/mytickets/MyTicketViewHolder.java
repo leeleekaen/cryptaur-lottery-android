@@ -9,11 +9,11 @@ import android.widget.TextView;
 
 import com.cryptaur.lottery.R;
 import com.cryptaur.lottery.TheApplication;
+import com.cryptaur.lottery.model.CPT;
 import com.cryptaur.lottery.transport.model.Lottery;
 import com.cryptaur.lottery.transport.model.Ticket;
 import com.cryptaur.lottery.transport.model.TransactionBuyTicket;
 import com.cryptaur.lottery.util.PeriodicTask;
-import com.cryptaur.lottery.util.Strings;
 
 import org.threeten.bp.Instant;
 import org.threeten.bp.ZoneId;
@@ -105,7 +105,7 @@ public class MyTicketViewHolder extends RecyclerView.ViewHolder implements View.
 
         if (ticket.isPlayed()) {
             if (ticket.winAmount != null && ticket.winAmount.compareTo(BigInteger.ZERO) > 0) {
-                String winText = Strings.toDecimalString(ticket.winAmount, 8, 0, ".", ",");
+                String winText = CPT.toDecimalString(ticket.winAmount);
                 winText = view.getResources().getString(R.string.won_cpt, winText);
                 drawWin.setText(winText);
                 drawWin.setVisibility(View.VISIBLE);

@@ -5,11 +5,11 @@ import android.support.v4.view.ViewPager;
 import android.widget.TextView;
 
 import com.cryptaur.lottery.adapter.MainLotteryPagerAdapter;
+import com.cryptaur.lottery.model.CPT;
 import com.cryptaur.lottery.model.Keeper;
 import com.cryptaur.lottery.model.TransactionKeeper;
 import com.cryptaur.lottery.transport.model.CurrentDraws;
 import com.cryptaur.lottery.transport.model.Lottery;
-import com.cryptaur.lottery.util.Strings;
 
 import java.math.BigInteger;
 
@@ -40,7 +40,7 @@ public class MainActivity extends ActivityBase {
     public void onRequestResult(CurrentDraws responce) {
         super.onRequestResult(responce);
         BigInteger jackpot = responce.getTotalJackpot();
-        String jackpotStr = Strings.toDecimalString(jackpot, 8, 0, ".", ",");
+        String jackpotStr = CPT.toDecimalString(jackpot);
         jackpotStr = getResources().getString(R.string._CPT, jackpotStr);
         prizePool.setText(jackpotStr);
     }

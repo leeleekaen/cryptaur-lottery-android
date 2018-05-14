@@ -12,8 +12,8 @@ import android.widget.TextView;
 
 import com.cryptaur.lottery.InteractionListener;
 import com.cryptaur.lottery.R;
+import com.cryptaur.lottery.model.CPT;
 import com.cryptaur.lottery.transport.model.Draw;
-import com.cryptaur.lottery.util.Strings;
 
 import org.threeten.bp.ZoneId;
 import org.threeten.bp.format.DateTimeFormatter;
@@ -66,7 +66,7 @@ public class DrawInListViewHolder extends RecyclerView.ViewHolder {
         SpannableStringBuilder bld = new SpannableStringBuilder();
         bld.append(view.getResources().getString(R.string.jackpot)).append(" ");
         int start = bld.length();
-        bld.append(Strings.toDecimalString(draw.jackpot, 8, 0, ".", ","));
+        bld.append(CPT.toDecimalString(draw.jackpot));
         bld.append(view.getResources().getString(R.string.cpt));
 
         Object span = new StyleSpan(Typeface.BOLD);
