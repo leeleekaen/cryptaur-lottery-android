@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Handler;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,9 +22,6 @@ import com.cryptaur.lottery.transport.model.CurrentDraws;
 import com.cryptaur.lottery.transport.model.Draw;
 import com.cryptaur.lottery.transport.model.Lottery;
 import com.cryptaur.lottery.util.Strings;
-
-import org.threeten.bp.Instant;
-import org.threeten.bp.temporal.ChronoUnit;
 
 import java.util.Locale;
 
@@ -114,7 +112,7 @@ public class LotteryViewMainViewHolder implements GetObjectCallback<CurrentDraws
 
     private void updateTimer() {
         if (draw != null) {
-            long secondsToDraw = Instant.now().until(draw.startTime, ChronoUnit.SECONDS);
+            long secondsToDraw = draw.secondsToDraw();
             if (secondsToDraw > 0) {
                 String time = Strings.formatInterval(secondsToDraw, view.getContext()).toUpperCase(Locale.getDefault());
                 timeLeftView.setText(view.getResources().getString(R.string.time_left_, time));
@@ -137,6 +135,16 @@ public class LotteryViewMainViewHolder implements GetObjectCallback<CurrentDraws
                         update(true);
                     }
                 }
+            }
+
+            Resources res = view.getResources();
+            if (secondsToDraw < Const.STOP_TICKET_SELL_INTERVAL_SEC) {
+                buyButtonView.setText(res.getString(R.string.ticketSaleIsOver, draw.number));
+                buyButtonView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+            } else {
+                String ticketPrice = CPT.toDecimalString(draw.getTicketPrice().amount);
+                buyButtonView.setText(res.getString(R.string.buy_ticket_for, ticketPrice));
+                buyButtonView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
             }
         }
     }

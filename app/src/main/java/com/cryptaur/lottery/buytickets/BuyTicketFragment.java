@@ -10,6 +10,8 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -164,10 +166,26 @@ public class BuyTicketFragment extends Fragment implements BuyTicketRecyclerView
             public void onRequestResult(BigInteger responce) {
                 if (responce.compareTo(currentDraw.getTicketPrice().amount) < 0) {
                     buyButton.setVisibility(View.GONE);
+                    bottomMessageText.setText(R.string.your_wallet_doesnt_have_enough_cpt);
                     bottomMessageText.setVisibility(View.VISIBLE);
+                    bottomMessageText.setOnClickListener(BuyTicketFragment.this);
+                    bottomMessageText.setBackgroundResource(R.drawable.btn_transp_primary);
+                    bottomMessageText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+                    bottomMessageText.setGravity(Gravity.LEFT);
                 } else {
-                    buyButton.setVisibility(View.VISIBLE);
-                    bottomMessageText.setVisibility(View.GONE);
+                    bottomMessageText.setOnClickListener(null);
+                    long toDraw = currentDraw.secondsToDraw();
+                    if (toDraw < Const.STOP_TICKET_SELL_INTERVAL_SEC) {
+                        bottomMessageText.setText(root.getResources().getString(R.string.ticketSaleIsOver, currentDraw.number));
+                        bottomMessageText.setVisibility(View.VISIBLE);
+                        bottomMessageText.setBackground(null);
+                        bottomMessageText.setGravity(Gravity.CENTER_HORIZONTAL);
+                        bottomMessageText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
+                        buyButton.setVisibility(View.GONE);
+                    } else {
+                        buyButton.setVisibility(View.VISIBLE);
+                        bottomMessageText.setVisibility(View.GONE);
+                    }
                 }
             }
 

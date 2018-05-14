@@ -12,6 +12,8 @@ public interface Const {
     String KEY_ADDRESS = "address";
     String KEY_LATEST_PLAYED_VIEWED_INDICES = "viewedIndices";
 
+    long STOP_TICKET_SELL_INTERVAL_SEC = USE_TEST_SERVER ? 20 * 60 : 60 * 60;
+
     int GET_TICKETS_STEP = 10;
 
     BigInteger CPT_BASE = BigInteger.valueOf(100_000_000);

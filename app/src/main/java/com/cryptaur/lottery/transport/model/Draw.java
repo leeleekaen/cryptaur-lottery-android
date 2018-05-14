@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.threeten.bp.Instant;
+import org.threeten.bp.temporal.ChronoUnit;
 
 import java.math.BigInteger;
 
@@ -66,5 +67,9 @@ public class Draw extends DrawId {
 
     public BigInteger getCollected() {
         return ticketPrice.amount.multiply(BigInteger.valueOf(ticketsBought));
+    }
+
+    public long secondsToDraw() {
+        return Instant.now().until(startTime, ChronoUnit.SECONDS);
     }
 }
