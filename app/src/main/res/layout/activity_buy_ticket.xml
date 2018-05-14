@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="@color/paleLavander"
     android:fitsSystemWindows="true"
-    tools:context=".MyTicketsActivity">
+    tools:context=".mytickets.MyTicketsActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"

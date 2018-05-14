@@ -87,7 +87,7 @@ public class BuyTicketFragment extends Fragment implements BuyTicketRecyclerView
         root = (ViewGroup) inflater.inflate(R.layout.fragment_buy_ticket, container, false);
         Context context = root.getContext();
 
-        Keeper.getInstance(root.getContext()).getCurrentDraws(this, false);
+        Keeper.INSTANCE.getCurrentDraws(this, false);
 
         recyclerView = root.findViewById(R.id.list);
         buyButton = root.findViewById(R.id.buyButton);
@@ -159,7 +159,7 @@ public class BuyTicketFragment extends Fragment implements BuyTicketRecyclerView
     }
 
     private void checkBalance() {
-        Keeper.getInstance(buyButton.getContext()).getBalance(new GetObjectCallback<BigInteger>() {
+        Keeper.INSTANCE.getBalance(new GetObjectCallback<BigInteger>() {
             @Override
             public void onRequestResult(BigInteger responce) {
                 if (responce.compareTo(currentDraw.getTicketPrice().amount) < 0) {
@@ -187,7 +187,7 @@ public class BuyTicketFragment extends Fragment implements BuyTicketRecyclerView
     public void onNumbersChanged(List<Integer> numbers, boolean filled) {
         buyButton.setEnabled(noAddress || filled);
         if (filled) {
-            Keeper.getInstance(root.getContext()).updateTicketFee(currentDraw, null);
+            Keeper.INSTANCE.updateTicketFee(currentDraw, null);
         }
     }
 
@@ -215,7 +215,7 @@ public class BuyTicketFragment extends Fragment implements BuyTicketRecyclerView
         List<Integer> numbers = adapter.getCheckedNumbers();
         Ticket ticket = Ticket.buyTicket(currentDraw, numbers);
         Transport.INSTANCE.buyTicket(ticket, this);
-        Keeper.getInstance(root.getContext()).refreshTickets();
+        Keeper.INSTANCE.refreshTickets(false);
     }
 
     @Override
@@ -242,7 +242,7 @@ public class BuyTicketFragment extends Fragment implements BuyTicketRecyclerView
             } else {
                 progressLayout.setVisibility(View.VISIBLE);
                 Toast.makeText(v.getContext(), R.string.updatingTicketFee, Toast.LENGTH_SHORT).show();
-                Keeper.getInstance(v.getContext()).updateTicketFee(currentDraw, new GetObjectCallback<Money>() {
+                Keeper.INSTANCE.updateTicketFee(currentDraw, new GetObjectCallback<Money>() {
                     @Override
                     public void onRequestResult(Money responce) {
                         progressLayout.setVisibility(View.GONE);
@@ -321,8 +321,10 @@ public class BuyTicketFragment extends Fragment implements BuyTicketRecyclerView
     public void onNetworkRequestDone(NetworkRequest request, Transaction responce) {
         progressLayout.setVisibility(View.GONE);
         Toast.makeText(root.getContext(), R.string.boughtTicket, Toast.LENGTH_SHORT).show();
-        if (mListener != null)
+        if (mListener != null) {
             mListener.doAction(InteractionListener.Action.CloseThisFragment, this);
+            mListener.doAction(InteractionListener.Action.MyTickets, this);
+        }
     }
 
     @Override

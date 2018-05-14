@@ -37,7 +37,7 @@ public class WalletViewHolder implements GetObjectCallback<BigInteger>, View.OnC
     }
 
     public void refresh(boolean force) {
-        Keeper.getInstance(view.getContext()).getBalance(this, force);
+        Keeper.INSTANCE.getBalance(this, force);
     }
 
     @Override

@@ -111,6 +111,7 @@
     <string name="failedToGetTheWin">Failed to Get the Win transaction for</string>
     <string name="pleaseTryAgain">Please, try again</string>
     <string name="transactionfailed">Transaction failed</string>
+    <string name="pending_transaction">PENDING\nTRANSACTION</string>
 
 
 </resources>

@@ -33,7 +33,7 @@ public class MenuHelper implements DrawTicketsKeeper.OnLatestDrawsTicketsUpdated
     public void onPrepareOptionsMenu(Menu menu) {
         //CurrentDraws currentDraws = Keeper.getInstance(activity).currentDrawsKeeper.getCurrentDraws();
 
-        int unshownTicketsAmount = Keeper.getInstance(activity).drawTicketsKeeper.getUnshownTicketsCount();
+        int unshownTicketsAmount = Keeper.INSTANCE.drawTicketsKeeper.getUnshownTicketsCount();
 
         MenuItem item = menu.findItem(R.id.menuItem_uncheckedTickets);
 
@@ -51,14 +51,14 @@ public class MenuHelper implements DrawTicketsKeeper.OnLatestDrawsTicketsUpdated
     }
 
     public void onActivityResume() {
-        Keeper.getInstance(activity).drawTicketsKeeper.addListener(this);
-        Keeper.getInstance(activity).currentDrawsKeeper.addOnPlayedDrawsChangedListener(this);
+        Keeper.INSTANCE.drawTicketsKeeper.addListener(this);
+        Keeper.INSTANCE.currentDrawsKeeper.addOnPlayedDrawsChangedListener(this);
         activity.invalidateOptionsMenu();
     }
 
     public void onActivityPause() {
-        Keeper.getInstance(activity).drawTicketsKeeper.removeListener(this);
-        Keeper.getInstance(activity).currentDrawsKeeper.removeOnPlayedDrawsChangedListener(this);
+        Keeper.INSTANCE.drawTicketsKeeper.removeListener(this);
+        Keeper.INSTANCE.currentDrawsKeeper.removeOnPlayedDrawsChangedListener(this);
     }
 
     @Override

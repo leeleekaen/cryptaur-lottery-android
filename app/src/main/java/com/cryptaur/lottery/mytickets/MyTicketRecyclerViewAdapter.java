@@ -1,6 +1,7 @@
 package com.cryptaur.lottery.mytickets;
 
 import android.content.Context;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
@@ -12,10 +13,12 @@ import com.cryptaur.lottery.model.GetObjectCallback;
 import com.cryptaur.lottery.model.ITicketStorageRead;
 import com.cryptaur.lottery.model.Keeper;
 import com.cryptaur.lottery.model.SimpleGetObjectCallback;
+import com.cryptaur.lottery.model.TransactionKeeper;
 import com.cryptaur.lottery.transport.SessionTransport;
 import com.cryptaur.lottery.transport.model.Money;
 import com.cryptaur.lottery.transport.model.Ticket;
 import com.cryptaur.lottery.transport.model.TicketsType;
+import com.cryptaur.lottery.transport.model.TransactionBuyTicket;
 import com.cryptaur.lottery.view.LoadingViewHolder;
 
 import java.math.BigInteger;
@@ -26,19 +29,22 @@ public class MyTicketRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
 
     private final InteractionListener listener;
     private final TicketsType ticketsType;
-    private final List<Ticket> ticketList = new ArrayList<>();
+    private final List<Object> items = new ArrayList<>();
     private final Context context;
-    private BigInteger winAmount;
-    private boolean canLoadMoreTickets;
-    private int getTheWinPosition = -1;
-    private int loadMorePosition = -1;
-    private int itemAmount = 0;
     private final RefreshListener refreshListener;
+    private final Handler handler = new Handler();
+    private BigInteger winAmount;
     private final SimpleGetObjectCallback<Money> getTheWinListener = new SimpleGetObjectCallback<Money>() {
         @Override
         public void onRequestResult(Money responce) {
             winAmount = responce.amount;
-            refreshPositions();
+            if (winAmount != null && winAmount.equals(BigInteger.ZERO))
+                winAmount = null;
+            else {
+                if (items.size() == 0 || items.get(0) != SimpleValues.Win) {
+                    items.add(0, SimpleValues.Win);
+                }
+            }
             notifyDataSetChanged();
         }
     };
@@ -51,14 +57,21 @@ public class MyTicketRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
     private final GetObjectCallback<ITicketStorageRead> getTicketsListener = new GetObjectCallback<ITicketStorageRead>() {
         @Override
         public void onRequestResult(ITicketStorageRead responce) {
-            ticketList.clear();
-            ticketList.addAll(responce.getTickets(ticketsType));
-            canLoadMoreTickets = responce.canLoadMoreTickets(ticketsType);
-            refreshPositions();
+            items.clear();
+            if (winAmount != null) {
+                items.add(SimpleValues.Win);
+            }
+            if (ticketsType == TicketsType.Active) {
+                items.addAll(TransactionKeeper.INSTANCE.getTicketTransactions());
+            }
+            items.addAll(responce.getTickets(ticketsType));
+            if (responce.canLoadMoreTickets(ticketsType)) {
+                items.add(SimpleValues.LoadMore);
+            }
             notifyDataSetChanged();
             refreshListener.onRefreshDone();
             if (isPrimary && ticketsType == TicketsType.Played) {
-                Keeper.getInstance(context).drawTicketsKeeper.updateLatestShownDrawIdsForPlayedTickets();
+                Keeper.INSTANCE.drawTicketsKeeper.updateLatestShownDrawIdsForPlayedTickets();
                 listener.doAction(InteractionListener.Action.InvalidateOptionsMenu, null);
             }
         }
@@ -80,14 +93,15 @@ public class MyTicketRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
         this.listener = listener;
         this.refreshListener = refreshListener;
         if (SessionTransport.INSTANCE.getAddress() != null) {
-            ITicketStorageRead ticketStorage = Keeper.getInstance(context).getTicketsStorage();
-            ticketList.addAll(ticketStorage.getTickets(ticketsType));
-            canLoadMoreTickets = ticketStorage.canLoadMoreTickets(ticketsType);
-            Keeper.getInstance(context).getWinAmount(getTheWinListener, false);
-        } else {
-            canLoadMoreTickets = false;
+            if (ticketsType == TicketsType.Active) {
+                items.addAll(TransactionKeeper.INSTANCE.getTicketTransactions());
+            }
+            ITicketStorageRead ticketStorage = Keeper.INSTANCE.getTicketsStorage();
+            items.addAll(ticketStorage.getTickets(ticketsType));
+            if (ticketStorage.canLoadMoreTickets(ticketsType))
+                items.add(SimpleValues.LoadMore);
+            Keeper.INSTANCE.getWinAmount(getTheWinListener, false);
         }
-        refreshPositions();
     }
 
     @Override
@@ -109,49 +123,51 @@ public class MyTicketRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
     @Override
     public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof MyTicketViewHolder) {
-            boolean win = winAmount != null && winAmount.compareTo(BigInteger.ZERO) > 0;
-            ((MyTicketViewHolder) holder).setTicket(ticketList.get(position - (win ? 1 : 0)));
+            Object item = items.get(position);
+            if (item instanceof Ticket) {
+                ((MyTicketViewHolder) holder).setTicket((Ticket) item);
+            } else if (item instanceof TransactionBuyTicket) {
+                ((MyTicketViewHolder) holder).setTicketTransaction((TransactionBuyTicket) item);
+            }
         } else if (holder instanceof LoadingViewHolder) {
-            Keeper.getInstance(context).updateTickets(ticketsType, ticketList.size() + Const.GET_TICKETS_STEP, getTicketsListener);
+            int amount = items.size() + Const.GET_TICKETS_STEP;
+            handler.post(() -> Keeper.INSTANCE.updateTickets(ticketsType, amount, getTicketsListener));
         }
     }
 
     @Override
     public int getItemViewType(int position) {
-        if (position == getTheWinPosition)
+        Object item = items.get(position);
+        if (item instanceof Ticket || item instanceof TransactionBuyTicket) {
+            return R.layout.view_my_ticket;
+        } else if (item == SimpleValues.Win) {
             return R.layout.view_get_the_win;
-        if (position == loadMorePosition)
+        } else
             return R.layout.view_loading;
-        return R.layout.view_my_ticket;
     }
 
     @Override
     public int getItemCount() {
-        return itemAmount;
-    }
-
-    private void refreshPositions() {
-        boolean win = winAmount != null && winAmount.compareTo(BigInteger.ZERO) > 0;
-        getTheWinPosition = win ? 0 : -1;
-        itemAmount = ticketList.size() + (win ? 1 : 0) + (canLoadMoreTickets ? 1 : 0);
-        loadMorePosition = canLoadMoreTickets ? itemAmount - 1 : -1;
+        return items.size();
     }
 
     public void fullRefresh() {
         winAmount = null;
-        ticketList.clear();
-        refreshPositions();
         notifyDataSetChanged();
-        Keeper.getInstance(context).refreshTickets();
-        Keeper.getInstance(context).updateTickets(ticketsType, Const.GET_TICKETS_STEP, getTicketsListener);
-        Keeper.getInstance(context).getWinAmount(getTheWinListener, true);
+        Keeper.INSTANCE.refreshTickets(true);
+        Keeper.INSTANCE.updateTickets(ticketsType, Const.GET_TICKETS_STEP, getTicketsListener);
+        Keeper.INSTANCE.getWinAmount(getTheWinListener, true);
     }
 
     public void setPrimary(boolean isPrimary) {
         this.isPrimary = isPrimary;
         if (isPrimary && ticketsType == TicketsType.Played) {
-            Keeper.getInstance(context).drawTicketsKeeper.updateLatestShownDrawIdsForPlayedTickets();
+            Keeper.INSTANCE.drawTicketsKeeper.updateLatestShownDrawIdsForPlayedTickets();
         }
+    }
+
+    private enum SimpleValues {
+        Win, LoadMore
     }
 
     public interface RefreshListener {

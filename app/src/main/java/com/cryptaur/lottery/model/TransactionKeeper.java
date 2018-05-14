@@ -2,14 +2,17 @@ package com.cryptaur.lottery.model;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.NonNull;
 
 import com.cryptaur.lottery.ActivityBase;
 import com.cryptaur.lottery.transport.Transport;
 import com.cryptaur.lottery.transport.base.NetworkRequest;
 import com.cryptaur.lottery.transport.model.Transaction;
+import com.cryptaur.lottery.transport.model.TransactionBuyTicket;
 import com.cryptaur.lottery.transport.model.TransactionState;
 import com.cryptaur.lottery.util.PeriodicTask;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TransactionKeeper {
@@ -47,7 +50,7 @@ public class TransactionKeeper {
         public void onCancel(NetworkRequest request) {
         }
     };
-    private final PeriodicTask updateTask = new PeriodicTask(new Handler(Looper.getMainLooper()), 30_000, true, this::doUpdateTransactions);
+    private final PeriodicTask updateTask = new PeriodicTask(new Handler(Looper.getMainLooper()), 30_000, true, this::scheduledUpdateTransaction);
 
     public void onNewTransaction(Transaction transaction) {
         TransactionStorage.INSTANCE.addTransaction(transaction);
@@ -73,7 +76,27 @@ public class TransactionKeeper {
         updateTask.setCanRun(false);
     }
 
-    private void doUpdateTransactions() {
+    private void scheduledUpdateTransaction() {
+        doUpdateTransactions();
+        if (!Keeper.INSTANCE.ticketsKeeper.isExecutingRequests()) {
+            Keeper.INSTANCE.refreshTickets(false);
+        }
+    }
+
+    @NonNull
+    public List<TransactionBuyTicket> getTicketTransactions() {
+        List<Transaction> transactions = TransactionStorage.INSTANCE.getTransactions();
+        List<TransactionBuyTicket> result = new ArrayList<>();
+
+        for (Transaction transaction : transactions) {
+            if (transaction instanceof TransactionBuyTicket) {
+                result.add((TransactionBuyTicket) transaction);
+            }
+        }
+        return result;
+    }
+
+    public void doUpdateTransactions() {
         List<Transaction> transactions = TransactionStorage.INSTANCE.getTransactions();
         if (transactions.size() == 0) {
             updateTask.setShouldRun(false);

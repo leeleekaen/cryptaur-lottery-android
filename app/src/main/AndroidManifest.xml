@@ -22,7 +22,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MyTicketsActivity"
+            android:name=".mytickets.MyTicketsActivity"
             android:label="@string/title_activity_my_tickets"
             android:theme="@style/AppTheme" />
         <activity

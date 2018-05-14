@@ -1,6 +1,8 @@
 package com.cryptaur.lottery;
 
 import android.app.Application;
+import android.os.Handler;
+import android.os.Looper;
 
 import com.crashlytics.android.Crashlytics;
 import com.cryptaur.lottery.model.TransactionKeeper;
@@ -11,6 +13,8 @@ import io.fabric.sdk.android.Fabric;
 import io.paperdb.Paper;
 
 public class TheApplication extends Application {
+
+    public static final Handler HANDLER = new Handler(Looper.getMainLooper());
 
     @Override
     public void onCreate() {

@@ -22,6 +22,7 @@ import com.cryptaur.lottery.model.ActionShowTransactionFailed;
 import com.cryptaur.lottery.model.CPT;
 import com.cryptaur.lottery.model.GetObjectCallback;
 import com.cryptaur.lottery.model.Keeper;
+import com.cryptaur.lottery.mytickets.MyTicketsActivity;
 import com.cryptaur.lottery.transport.SessionTransport;
 import com.cryptaur.lottery.transport.Transport;
 import com.cryptaur.lottery.transport.model.CurrentDraws;
@@ -137,7 +138,7 @@ public abstract class ActivityBase extends AppCompatActivity implements Interact
 
                 case Logout:
                     SessionTransport.INSTANCE.logout();
-                    Keeper.getInstance(this).clear();
+                    Keeper.INSTANCE.clear();
                     recreate();
                     break;
 
@@ -175,7 +176,7 @@ public abstract class ActivityBase extends AppCompatActivity implements Interact
     @Override
     protected void onPause() {
         SessionTransport.INSTANCE.onPauseActivity();
-        Keeper.getInstance(this).currentDrawsKeeper.removeListener(this);
+        Keeper.INSTANCE.currentDrawsKeeper.removeListener(this);
         menuHelper.onActivityPause();
         super.onPause();
     }
@@ -184,7 +185,7 @@ public abstract class ActivityBase extends AppCompatActivity implements Interact
     protected void onResume() {
         super.onResume();
         SessionTransport.INSTANCE.onResumeActivity();
-        Keeper.getInstance(this).currentDrawsKeeper.addListener(this);
+        Keeper.INSTANCE.currentDrawsKeeper.addListener(this);
         menuHelper.onActivityResume();
     }
 

@@ -1,6 +1,5 @@
 package com.cryptaur.lottery.mytickets;
 
-import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,8 +8,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.cryptaur.lottery.R;
+import com.cryptaur.lottery.TheApplication;
 import com.cryptaur.lottery.transport.model.Lottery;
 import com.cryptaur.lottery.transport.model.Ticket;
+import com.cryptaur.lottery.transport.model.TransactionBuyTicket;
 import com.cryptaur.lottery.util.PeriodicTask;
 import com.cryptaur.lottery.util.Strings;
 
@@ -23,6 +24,7 @@ import java.math.BigInteger;
 import java.util.Locale;
 
 public class MyTicketViewHolder extends RecyclerView.ViewHolder implements View.OnAttachStateChangeListener {
+    public static final DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern("dd MMM, hh:mm:ss");
     private final ViewGroup view;
     private final ImageView ballsView;
     private final TextView[] ticketNumbers = new TextView[6];
@@ -30,9 +32,10 @@ public class MyTicketViewHolder extends RecyclerView.ViewHolder implements View.
     private final TextView drawWin;
     private final TextView timeLeft;
     private final TextView drawNumber;
+    private final TextView pendingTransactionView;
     private Ticket ticket;
-    public static final DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern("dd MMM, hh:mm:ss");
-    private final PeriodicTask updateTimeTask = new PeriodicTask(new Handler(), 1000, false, this::updateTimer);
+    private final PeriodicTask updateTimeTask = new PeriodicTask(TheApplication.HANDLER, 1000, false, this::updateTimer);
+    private TransactionBuyTicket ticketTransaction;
 
     public MyTicketViewHolder(ViewGroup view) {
         super(view);
@@ -42,6 +45,7 @@ public class MyTicketViewHolder extends RecyclerView.ViewHolder implements View.
         drawNumber = view.findViewById(R.id.drawNumber);
         drawWin = view.findViewById(R.id.drawWin);
         timeLeft = view.findViewById(R.id.timeLeft);
+        pendingTransactionView = view.findViewById(R.id.pendingTransactionView);
         ticketNumbers[0] = view.findViewById(R.id.ticketNumber1);
         ticketNumbers[1] = view.findViewById(R.id.ticketNumber2);
         ticketNumbers[2] = view.findViewById(R.id.ticketNumber3);
@@ -58,8 +62,15 @@ public class MyTicketViewHolder extends RecyclerView.ViewHolder implements View.
         return new MyTicketViewHolder(view);
     }
 
+    public void setTicketTransaction(TransactionBuyTicket ticketTransaction) {
+        setTicket(ticketTransaction.ticket);
+        this.ticketTransaction = ticketTransaction;
+        pendingTransactionView.setVisibility(View.VISIBLE);
+    }
+
     public void setTicket(Ticket ticket) {
         this.ticket = ticket;
+        ticketTransaction = null;
 
         Lottery lottery = ticket.lottery;
         switch (lottery) {
@@ -88,13 +99,13 @@ public class MyTicketViewHolder extends RecyclerView.ViewHolder implements View.
                 view.setBackgroundResource(R.drawable.ic_number_selected);
             }
         }
-        for (int i= lottery.getNumbersAmount(); i < 6; i++){
+        for (int i = lottery.getNumbersAmount(); i < 6; i++) {
             ticketNumbers[i].setVisibility(View.GONE);
         }
 
-        if (ticket.isPlayed()){
-            if (ticket.winAmount != null && ticket.winAmount.compareTo(BigInteger.ZERO) > 0){
-                String winText = Strings.toDecimalString(ticket.winAmount, 8, 0 , ".", ",");
+        if (ticket.isPlayed()) {
+            if (ticket.winAmount != null && ticket.winAmount.compareTo(BigInteger.ZERO) > 0) {
+                String winText = Strings.toDecimalString(ticket.winAmount, 8, 0, ".", ",");
                 winText = view.getResources().getString(R.string.won_cpt, winText);
                 drawWin.setText(winText);
                 drawWin.setVisibility(View.VISIBLE);
@@ -114,6 +125,7 @@ public class MyTicketViewHolder extends RecyclerView.ViewHolder implements View.
             updateTimer();
             updateTimeTask.updateRunState();
         }
+        pendingTransactionView.setVisibility(View.GONE);
     }
 
     private void updateTimer() {
@@ -138,6 +150,7 @@ public class MyTicketViewHolder extends RecyclerView.ViewHolder implements View.
     @Override
     public void onViewAttachedToWindow(View v) {
         updateTimeTask.setCanRun(true);
+        updateTimeTask.updateRunState();
     }
 
     @Override

@@ -33,7 +33,7 @@ public class MainActivity extends ActivityBase {
         float density = getResources().getDisplayMetrics().density;
         lotteryPager.setPageMargin((int) (density * 8));
 
-        Keeper.getInstance(this).getCurrentDraws(this, false);
+        Keeper.INSTANCE.getCurrentDraws(this, false);
     }
 
     @Override

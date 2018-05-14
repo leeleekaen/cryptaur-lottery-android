@@ -1,6 +1,5 @@
 package com.cryptaur.lottery.model;
 
-import android.content.Context;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
 
@@ -20,38 +19,25 @@ public class Keeper {
     public static final long BALANCE_UPDATE_TIMEOUT = 600_000; // 10 mins
     public static final long WIN_AMOUNT_UPDATE_TIMEOUT = 600_000; // 10 mins
 
-    private static volatile Keeper keeper;
+    public static final Keeper INSTANCE = new Keeper();
 
     public final CurrentDrawsKeeper currentDrawsKeeper = new CurrentDrawsKeeper();
     private final SimpleItemKeeper<BigInteger> balanceKeeper = new SimpleItemKeeper<>(BALANCE_UPDATE_TIMEOUT, Transport.INSTANCE::getBalance);
     private final SimpleItemKeeper<Money> winAmountKeeper = new SimpleItemKeeper<>(WIN_AMOUNT_UPDATE_TIMEOUT, Transport.INSTANCE::getWinAmount);
 
-    private final TicketsKeeper ticketsKeeper = new TicketsKeeper(this);
+    final TicketsKeeper ticketsKeeper = new TicketsKeeper(this);
     public final DrawTicketsKeeper drawTicketsKeeper = new DrawTicketsKeeper(this, ticketsKeeper);
 
-    private Keeper(Context context) {
+    private Keeper() {
         currentDrawsKeeper.addOnPlayedDrawsChangedListener((oldPlayedDrawIds, newPlayedDrawIds, currentDraws) -> {
-            ticketsKeeper.reset();
+            refreshTickets(true);
             updateTickets(TicketsType.Played, GET_TICKETS_STEP, null);
         });
         SessionTransport.INSTANCE.addOnAddressChangedListener(newAddress -> {
-            ticketsKeeper.reset();
+            refreshTickets(true);
             if (newAddress != null)
                 updateTickets(TicketsType.Played, GET_TICKETS_STEP, null);
         });
-    }
-
-    public static Keeper getInstance(Context context) {
-        Keeper local = keeper;
-        if (local == null) {
-            synchronized (Keeper.class) {
-                local = keeper;
-                if (local == null) {
-                    local = keeper = new Keeper(context);
-                }
-            }
-        }
-        return local;
     }
 
     @UiThread
@@ -76,8 +62,11 @@ public class Keeper {
         ticketsKeeper.requestTicketStorage(type, minAmount, listener);
     }
 
-    public void refreshTickets() {
+    public void refreshTickets(boolean refreshTransactions) {
         ticketsKeeper.reset();
+        if (refreshTransactions) {
+            TransactionKeeper.INSTANCE.doUpdateTransactions();
+        }
     }
 
     public void updateTicketFee(Draw currentDraw, @Nullable GetObjectCallback<Money> listener) {
@@ -100,6 +89,6 @@ public class Keeper {
         currentDrawsKeeper.clear();
         balanceKeeper.clear();
         winAmountKeeper.clear();
-        ticketsKeeper.reset();
+        refreshTickets(true);
     }
 }

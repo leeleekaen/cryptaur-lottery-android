@@ -1,11 +1,13 @@
-package com.cryptaur.lottery;
+package com.cryptaur.lottery.mytickets;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 
-import com.cryptaur.lottery.mytickets.MyTicketsPagerAdapter;
+import com.cryptaur.lottery.ActivityBase;
+import com.cryptaur.lottery.MenuHelper;
+import com.cryptaur.lottery.R;
 
 public class MyTicketsActivity extends ActivityBase {
 

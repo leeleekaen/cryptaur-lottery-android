@@ -92,7 +92,7 @@ public class LotteryViewMainViewHolder implements GetObjectCallback<CurrentDraws
     }
 
     private void update(boolean force) {
-        Keeper.getInstance(view.getContext()).getCurrentDraws(this, force);
+        Keeper.INSTANCE.getCurrentDraws(this, force);
     }
 
     @Override
@@ -157,13 +157,13 @@ public class LotteryViewMainViewHolder implements GetObjectCallback<CurrentDraws
     public void onViewAttachedToWindow(View v) {
         handler.post(updateTimerRunnable);
         attached = true;
-        Keeper.getInstance(view.getContext()).currentDrawsKeeper.addListener(this);
+        Keeper.INSTANCE.currentDrawsKeeper.addListener(this);
     }
 
     @Override
     public void onViewDetachedFromWindow(View v) {
         attached = false;
-        Keeper.getInstance(view.getContext()).currentDrawsKeeper.removeListener(this);
+        Keeper.INSTANCE.currentDrawsKeeper.removeListener(this);
     }
 
     @Override

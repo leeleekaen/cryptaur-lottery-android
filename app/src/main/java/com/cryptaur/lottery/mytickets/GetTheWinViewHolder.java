@@ -63,7 +63,7 @@ public class GetTheWinViewHolder extends RecyclerView.ViewHolder implements View
             listener.doAction(InteractionListener.Action.Login, null);
         } else {
             Toast.makeText(v.getContext(), R.string.updatingAmountAndFee, Toast.LENGTH_SHORT).show();
-            Keeper.getInstance(v.getContext()).getWinAmount(new GetObjectCallback<Money>() {
+            Keeper.INSTANCE.getWinAmount(new GetObjectCallback<Money>() {
                 @Override
                 public void onRequestResult(Money responce) {
                     winAmount = responce;
@@ -102,7 +102,7 @@ public class GetTheWinViewHolder extends RecyclerView.ViewHolder implements View
 
     @Override
     public void onViewAttachedToWindow(View v) {
-        Keeper.getInstance(view.getContext()).getWinAmount(this, false);
+        Keeper.INSTANCE.getWinAmount(this, false);
     }
 
     @Override
