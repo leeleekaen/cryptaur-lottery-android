@@ -113,5 +113,12 @@
     <string name="transactionfailed">Transaction failed</string>
     <string name="pending_transaction">PENDING\nTRANSACTION</string>
 
+    <plurals name="d_days">
+        <item quantity="one">%d day</item>
+        <item quantity="two">%d days</item>
+        <item quantity="few">%d days</item>
+        <item quantity="many">%d days</item>
+        <item quantity="zero">%d days</item>
+    </plurals>
 
 </resources>

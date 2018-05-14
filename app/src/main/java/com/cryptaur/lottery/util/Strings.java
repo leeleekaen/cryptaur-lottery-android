@@ -1,5 +1,9 @@
 package com.cryptaur.lottery.util;
 
+import android.content.Context;
+
+import com.cryptaur.lottery.R;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -8,6 +12,7 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.Vector;
 
 /**
@@ -331,6 +336,22 @@ public final class Strings {
 
 
         return result.toString();
+    }
+
+    public static String formatInterval(long seconds, Context context) {
+        int secsToDraw = (int) (Math.abs(seconds) % 60);
+        int minutesToDraw = (int) ((Math.abs(seconds) / 60) % 60);
+        int hoursToDraw = (int) Math.abs(seconds / 60 / 60);
+
+        int days = hoursToDraw / 24;
+        hoursToDraw = hoursToDraw % 24;
+
+        if (days == 0)
+            return String.format(Locale.US, "%02d:%02d:%02d", hoursToDraw, minutesToDraw, secsToDraw);
+        else {
+            String str = context.getResources().getQuantityString(R.plurals.d_days, days, days);
+            return String.format(Locale.US, "%s %02d:%02d:%02d", str, hoursToDraw, minutesToDraw, secsToDraw);
+        }
     }
 
     private static class StringListImpl

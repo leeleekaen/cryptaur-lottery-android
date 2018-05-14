@@ -20,6 +20,7 @@ import com.cryptaur.lottery.model.Keeper;
 import com.cryptaur.lottery.transport.model.CurrentDraws;
 import com.cryptaur.lottery.transport.model.Draw;
 import com.cryptaur.lottery.transport.model.Lottery;
+import com.cryptaur.lottery.util.Strings;
 
 import org.threeten.bp.Instant;
 import org.threeten.bp.temporal.ChronoUnit;
@@ -115,11 +116,7 @@ public class LotteryViewMainViewHolder implements GetObjectCallback<CurrentDraws
         if (draw != null) {
             long secondsToDraw = Instant.now().until(draw.startTime, ChronoUnit.SECONDS);
             if (secondsToDraw > 0) {
-                int hourstoDraw = (int) Math.abs(secondsToDraw / 60 / 60);
-                int minutesToDraw = (int) ((Math.abs(secondsToDraw) / 60) % 60);
-                int secstoDraw = (int) (Math.abs(secondsToDraw) % 60);
-
-                String time = String.format(Locale.US, "%02d:%02d:%02d", hourstoDraw, minutesToDraw, secstoDraw);
+                String time = Strings.formatInterval(secondsToDraw, view.getContext()).toUpperCase(Locale.getDefault());
                 timeLeftView.setText(view.getResources().getString(R.string.time_left_, time));
             } else {
                 timeLeftView.setText(R.string.draw_in_progress);

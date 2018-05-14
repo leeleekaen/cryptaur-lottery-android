@@ -14,6 +14,7 @@ import com.cryptaur.lottery.transport.model.Lottery;
 import com.cryptaur.lottery.transport.model.Ticket;
 import com.cryptaur.lottery.transport.model.TransactionBuyTicket;
 import com.cryptaur.lottery.util.PeriodicTask;
+import com.cryptaur.lottery.util.Strings;
 
 import org.threeten.bp.Instant;
 import org.threeten.bp.ZoneId;
@@ -135,10 +136,7 @@ public class MyTicketViewHolder extends RecyclerView.ViewHolder implements View.
             long secondsToDraw = Instant.now().until(ticket.drawDate, ChronoUnit.SECONDS);
             if (secondsToDraw > 0) {
                 updateTimeTask.setShouldRun(true);
-                int hourstoDraw = (int) (secondsToDraw / 60 / 60);
-                int minutesToDraw = (int) ((Math.abs(secondsToDraw) / 60) % 60);
-                int secstoDraw = (int) (Math.abs(secondsToDraw) % 60);
-                String time = String.format(Locale.US, "%02d:%02d:%02d", hourstoDraw, minutesToDraw, secstoDraw);
+                String time = Strings.formatInterval(secondsToDraw, view.getContext()).toUpperCase(Locale.getDefault());
                 timeLeft.setText(view.getResources().getString(R.string.time_left_, time));
             } else {
                 updateTimeTask.setShouldRun(false);
