@@ -83,6 +83,7 @@ public class LotteryViewMainViewHolder implements GetObjectCallback<CurrentDraws
 
         view.addOnAttachStateChangeListener(this);
         buyButtonView.setOnClickListener(this);
+        view.setOnClickListener(this);
     }
 
     public static LotteryViewMainViewHolder create(ViewGroup parent, Lottery lottery) {
