@@ -15,9 +15,9 @@ import java.math.BigInteger;
 import static com.cryptaur.lottery.Const.GET_TICKETS_STEP;
 
 public class Keeper {
-    public static final long DRAWS_UPDATE_TIMEOUT = 600_000; // 10 mins
-    public static final long BALANCE_UPDATE_TIMEOUT = 600_000; // 10 mins
-    public static final long WIN_AMOUNT_UPDATE_TIMEOUT = 600_000; // 10 mins
+    static final long DRAWS_UPDATE_TIMEOUT = 600_000; // 10 mins
+    private static final long BALANCE_UPDATE_TIMEOUT = 600_000; // 10 mins
+    private static final long WIN_AMOUNT_UPDATE_TIMEOUT = 600_000; // 10 mins
 
     public static final Keeper INSTANCE = new Keeper();
 
@@ -50,7 +50,7 @@ public class Keeper {
         }
     }
 
-    public void getBalance(GetObjectCallback<BigInteger> listener, boolean force) {
+    public void getBalance(SimpleGetObjectCallback<BigInteger> listener, boolean force) {
         balanceKeeper.requestValue(listener, force);
     }
 
@@ -90,5 +90,13 @@ public class Keeper {
         balanceKeeper.clear();
         winAmountKeeper.clear();
         refreshTickets(true);
+    }
+
+    public void addBalanceListener(SimpleGetObjectCallback<BigInteger> listener) {
+        balanceKeeper.addListener(listener);
+    }
+
+    public void removeBalanceListener(SimpleGetObjectCallback<BigInteger> listener) {
+        balanceKeeper.removeListener(listener);
     }
 }

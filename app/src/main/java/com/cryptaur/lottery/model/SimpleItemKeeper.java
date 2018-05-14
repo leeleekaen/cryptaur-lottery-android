@@ -24,7 +24,7 @@ class SimpleItemKeeper<T> implements NetworkRequest.NetworkRequestListener<T> {
     }
 
     private void addDynamicCallback(SimpleGetObjectCallback<T> callback) {
-        if (!dynamicCallbacks.contains(callback))
+        if (callback != null && !dynamicCallbacks.contains(callback))
             dynamicCallbacks.add(callback);
     }
 
@@ -94,7 +94,7 @@ class SimpleItemKeeper<T> implements NetworkRequest.NetworkRequestListener<T> {
             }
         }
 
-        if (value != null && !forceUpdate) {
+        if (listener != null && value != null && !forceUpdate) {
             listener.onRequestResult(value);
         }
     }
@@ -106,7 +106,7 @@ class SimpleItemKeeper<T> implements NetworkRequest.NetworkRequestListener<T> {
             listener.onRequestResult(value);
     }
 
-    public void removeListener(GetObjectCallback<T> listener) {
+    public void removeListener(SimpleGetObjectCallback<T> listener) {
         updateListeners.remove(listener);
     }
 

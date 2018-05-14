@@ -8,13 +8,13 @@ import android.widget.TextView;
 import com.cryptaur.lottery.InteractionListener;
 import com.cryptaur.lottery.R;
 import com.cryptaur.lottery.model.CPT;
-import com.cryptaur.lottery.model.GetObjectCallback;
 import com.cryptaur.lottery.model.Keeper;
+import com.cryptaur.lottery.model.SimpleGetObjectCallback;
 import com.cryptaur.lottery.transport.SessionTransport;
 
 import java.math.BigInteger;
 
-public class WalletViewHolder implements GetObjectCallback<BigInteger>, View.OnClickListener {
+public class WalletViewHolder implements SimpleGetObjectCallback<BigInteger>, View.OnClickListener, View.OnAttachStateChangeListener {
     private final TextView view;
     private final InteractionListener listener;
 
@@ -34,6 +34,7 @@ public class WalletViewHolder implements GetObjectCallback<BigInteger>, View.OnC
         dr.setTint(color);
 
         refresh(false);
+        view.addOnAttachStateChangeListener(this);
     }
 
     public void refresh(boolean force) {
@@ -48,21 +49,21 @@ public class WalletViewHolder implements GetObjectCallback<BigInteger>, View.OnC
     }
 
     @Override
-    public void onNetworkRequestError(Exception e) {
-
-    }
-
-    @Override
-    public void onCancel() {
-
-    }
-
-    @Override
     public void onClick(View v) {
         if (SessionTransport.INSTANCE.isLoggedIn()) {
             refresh(true);
         } else {
             listener.doAction(InteractionListener.Action.Login, null);
         }
+    }
+
+    @Override
+    public void onViewAttachedToWindow(View v) {
+        Keeper.INSTANCE.addBalanceListener(this);
+    }
+
+    @Override
+    public void onViewDetachedFromWindow(View v) {
+        Keeper.INSTANCE.removeBalanceListener(this);
     }
 }

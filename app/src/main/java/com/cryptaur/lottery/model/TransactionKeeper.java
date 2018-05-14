@@ -35,6 +35,7 @@ public class TransactionKeeper {
 
                 case Success:
                     TransactionStorage.INSTANCE.removeTransaction(responce.transaction);
+                    Keeper.INSTANCE.getBalance(null, true);
                     break;
 
                 case Pending:
