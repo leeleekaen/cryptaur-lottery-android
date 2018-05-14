@@ -1,6 +1,11 @@
 package com.cryptaur.lottery.dialog;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.AppCompatImageView;
 import android.view.LayoutInflater;
@@ -8,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.cryptaur.lottery.InteractionListener;
 import com.cryptaur.lottery.R;
@@ -60,6 +66,11 @@ public class MenuDialogFragment extends FixCloseDialogFragment implements View.O
 
         if (address == null) {
             logoutButton.setText(address == null ? R.string.login : R.string.logout);
+        } else {
+            Drawable drw = VectorDrawableCompat.create(mRoot.getResources(), R.drawable.ic_content_copy, null);
+            drw.setBounds(0, 0, drw.getIntrinsicWidth(), drw.getIntrinsicHeight());
+            addressView.setCompoundDrawables(null, null, drw, null);
+            addressView.setOnClickListener(this);
         }
 
         logoutButton.setOnClickListener(this);
@@ -100,14 +111,25 @@ public class MenuDialogFragment extends FixCloseDialogFragment implements View.O
             case R.id.closeButton:
                 dismiss();
                 break;
+
+            case R.id.address:
+                address = SessionTransport.INSTANCE.getAddress();
+                if (address != null) {
+                    Context context = v.getContext();
+                    ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+                    ClipData clip = ClipData.newPlainText(address, address);
+                    clipboard.setPrimaryClip(clip);
+                    Toast.makeText(context, R.string.addressCopied, Toast.LENGTH_SHORT).show();
+                }
+                break;
         }
     }
 
-    private final String shortAddress(String address) {
+    private String shortAddress(String address) {
         if (address == null)
             return "";
-        if (address.length() < 14)
+        if (address.length() < 18)
             return address;
-        return String.format(Locale.US, "%s...%s", address.substring(0, 6), address.substring(address.length() - 6));
+        return String.format(Locale.US, "%s...%s", address.substring(0, 8), address.substring(address.length() - 8));
     }
 }

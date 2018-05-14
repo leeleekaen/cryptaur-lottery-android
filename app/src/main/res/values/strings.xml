@@ -112,6 +112,7 @@
     <string name="pleaseTryAgain">Please, try again</string>
     <string name="transactionfailed">Transaction failed</string>
     <string name="pending_transaction">PENDING\nTRANSACTION</string>
+    <string name="addressCopied">Address copied to clipboard</string>
 
     <plurals name="d_days">
         <item quantity="one">%d day</item>
