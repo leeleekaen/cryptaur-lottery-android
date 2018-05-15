@@ -17,7 +17,6 @@ import android.widget.TextView;
 
 import com.cryptaur.lottery.InteractionListener;
 import com.cryptaur.lottery.R;
-import com.cryptaur.lottery.util.FixCloseDialogFragment;
 import com.cryptaur.lottery.view.CheckableImageButton;
 
 import java.util.Arrays;

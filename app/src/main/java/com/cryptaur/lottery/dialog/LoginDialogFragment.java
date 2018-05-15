@@ -11,7 +11,6 @@ import android.widget.Button;
 
 import com.cryptaur.lottery.InteractionListener;
 import com.cryptaur.lottery.R;
-import com.cryptaur.lottery.util.FixCloseDialogFragment;
 
 import java.io.Serializable;
 

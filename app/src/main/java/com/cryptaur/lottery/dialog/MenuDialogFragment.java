@@ -18,7 +18,6 @@ import android.widget.Toast;
 import com.cryptaur.lottery.InteractionListener;
 import com.cryptaur.lottery.R;
 import com.cryptaur.lottery.transport.SessionTransport;
-import com.cryptaur.lottery.util.FixCloseDialogFragment;
 import com.cryptaur.lottery.view.WalletViewHolder;
 
 import java.util.Locale;

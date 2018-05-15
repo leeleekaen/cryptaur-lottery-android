@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.cryptaur.lottery.R;
-import com.cryptaur.lottery.util.FixCloseDialogFragment;
 
 /**
  * A simple {@link Fragment} subclass.

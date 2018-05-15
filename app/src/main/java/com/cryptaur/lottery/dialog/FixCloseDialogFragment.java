@@ -1,4 +1,4 @@
-package com.cryptaur.lottery.util;
+package com.cryptaur.lottery.dialog;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -32,15 +32,18 @@ public abstract class FixCloseDialogFragment extends DialogFragment implements D
     protected static <T extends FixCloseDialogFragment> FixCloseDialogFragment showDialog(FragmentManager fm, Class<T> clazz) {
         FragmentTransaction ft = fm.beginTransaction();
         Fragment prev = fm.findFragmentByTag(FRAGMENT_TAG);
-        if (prev != null) {
-            ft.remove(prev);
-        }
+
         //ft.addToBackStack(null);
 
         try {
             T newFragment = clazz.getConstructor().newInstance();
             newFragment.setStyle(STYLE_NO_TITLE, R.style.AppTheme_Dialog);
             //newFragment.setStyle(DialogFragment.STYLE_NO_FRAME, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+
+            if (prev != null) {
+                ft.remove(prev);
+                ft.setReorderingAllowed(true);
+            }
             newFragment.show(ft, FRAGMENT_TAG);
             return newFragment;
         } catch (Exception e) {
@@ -51,15 +54,18 @@ public abstract class FixCloseDialogFragment extends DialogFragment implements D
     protected static <T extends FixCloseDialogFragment> FixCloseDialogFragment showDialog(FragmentManager fm, Bundle arguments, Class<T> clazz) {
         FragmentTransaction ft = fm.beginTransaction();
         Fragment prev = fm.findFragmentByTag(FRAGMENT_TAG);
-        if (prev != null) {
-            ft.remove(prev);
-        }
+
         //ft.addToBackStack(null);
 
         try {
             T newFragment = clazz.getConstructor().newInstance();
             newFragment.setStyle(STYLE_NO_TITLE, R.style.AppTheme_Dialog);
             newFragment.setArguments(arguments);
+
+            if (prev != null) {
+                ft.remove(prev);
+                ft.setReorderingAllowed(true);
+            }
             newFragment.show(ft, FRAGMENT_TAG);
             return newFragment;
         } catch (Exception e) {
