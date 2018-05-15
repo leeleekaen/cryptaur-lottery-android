@@ -21,6 +21,7 @@ public class BuyTicketRecyclerViewAdapter extends RecyclerView.Adapter<BuyTicket
     private final List<Integer> checkedNumbers = new ArrayList<>(6);
 
     public static final String KEY_SELECTED_NUMBERS = "selectedNumbers";
+    private boolean canBuyTicket = true;
 
     public BuyTicketRecyclerViewAdapter(Lottery lottery, NumbersListener listener) {
         this.lottery = lottery;
@@ -38,7 +39,8 @@ public class BuyTicketRecyclerViewAdapter extends RecyclerView.Adapter<BuyTicket
     public void onBindViewHolder(final NumberViewHolder holder, int position) {
         int number = position + 1;
         holder.setNumber(number);
-        holder.mView.setChecked(checkedNumbers.contains(number));
+        holder.mView.setChecked(canBuyTicket && checkedNumbers.contains(number));
+        holder.mView.setEnabled(canBuyTicket);
     }
 
     @Override
@@ -57,6 +59,13 @@ public class BuyTicketRecyclerViewAdapter extends RecyclerView.Adapter<BuyTicket
 
     public boolean isFilled() {
         return checkedNumbers.size() == lottery.getNumbersAmount();
+    }
+
+    public void setCanBuyTicket(boolean canBuyTicket) {
+        if (this.canBuyTicket != canBuyTicket) {
+            this.canBuyTicket = canBuyTicket;
+            notifyDataSetChanged();
+        }
     }
 
     public interface NumbersListener {

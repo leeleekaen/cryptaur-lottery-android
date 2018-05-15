@@ -41,7 +41,7 @@ public class Keeper {
     }
 
     @UiThread
-    public void getCurrentDraws(final GetObjectCallback<CurrentDraws> listener, boolean force) {
+    public void getCurrentDraws(final SimpleGetObjectCallback<CurrentDraws> listener, boolean force) {
         currentDrawsKeeper.requestValue(listener, force);
 
         CurrentDraws draws = currentDrawsKeeper.getValue();

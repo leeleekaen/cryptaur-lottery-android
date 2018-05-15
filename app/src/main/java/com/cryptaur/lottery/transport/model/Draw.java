@@ -3,6 +3,8 @@ package com.cryptaur.lottery.transport.model;
 
 import android.support.annotation.NonNull;
 
+import com.cryptaur.lottery.Const;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.threeten.bp.Instant;
@@ -71,5 +73,9 @@ public class Draw extends DrawId {
 
     public long secondsToDraw() {
         return Instant.now().until(startTime, ChronoUnit.SECONDS);
+    }
+
+    public boolean canBuyTicket() {
+        return secondsToDraw() > Const.STOP_TICKET_SELL_INTERVAL_SEC;
     }
 }

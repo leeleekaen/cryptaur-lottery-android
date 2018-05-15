@@ -13,6 +13,10 @@ import android.util.Log;
 import com.cryptaur.lottery.ActivityBase;
 import com.cryptaur.lottery.Const;
 import com.cryptaur.lottery.R;
+import com.cryptaur.lottery.model.Keeper;
+import com.cryptaur.lottery.model.SimpleGetObjectCallback;
+import com.cryptaur.lottery.transport.model.CurrentDraws;
+import com.cryptaur.lottery.transport.model.Draw;
 import com.cryptaur.lottery.transport.model.Lottery;
 
 public class BuyTicketActivity extends ActivityBase implements TabLayout.OnTabSelectedListener {
@@ -47,6 +51,15 @@ public class BuyTicketActivity extends ActivityBase implements TabLayout.OnTabSe
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
         tabLayout.addOnTabSelectedListener(this);
         setHomeAsUp(true);
+
+        Keeper.INSTANCE.getCurrentDraws(new SimpleGetObjectCallback<CurrentDraws>() {
+            @Override
+            public void onRequestResult(CurrentDraws draws) {
+                Draw draw = draws.getDraw(lottery);
+                if (draw != null && !draw.canBuyTicket())
+                    mViewPager.setCurrentItem(1, false);
+            }
+        }, false);
     }
 
     @Override

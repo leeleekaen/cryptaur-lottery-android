@@ -10,13 +10,13 @@ import com.cryptaur.lottery.ActivityBase;
 import com.cryptaur.lottery.InteractionListener;
 import com.cryptaur.lottery.R;
 import com.cryptaur.lottery.dialog.EnterPinCodeDialogFragment;
+import com.cryptaur.lottery.dialog.FixCloseDialogFragment;
 import com.cryptaur.lottery.dialog.LoginDialogFragment;
 import com.cryptaur.lottery.transport.SessionTransport;
 import com.cryptaur.lottery.transport.base.NetworkRequest;
 import com.cryptaur.lottery.transport.exception.ServerException;
 import com.cryptaur.lottery.transport.model.Login;
 import com.cryptaur.lottery.transport.model.Session;
-import com.cryptaur.lottery.util.FixCloseDialogFragment;
 
 public class InitialLoginController implements WorkflowController, NetworkRequest.NetworkRequestListener<Session> {
 

@@ -12,7 +12,7 @@ public interface Const {
     String KEY_ADDRESS = "address";
     String KEY_LATEST_PLAYED_VIEWED_INDICES = "viewedIndices";
 
-    long STOP_TICKET_SELL_INTERVAL_SEC = USE_TEST_SERVER ? 20 * 60 : 60 * 60;
+    long STOP_TICKET_SELL_INTERVAL_SEC = USE_TEST_SERVER ? 40 * 60 : 60 * 60;
 
     int GET_TICKETS_STEP = 10;
 
