@@ -3,7 +3,6 @@ package com.cryptaur.lottery.view;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Handler;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -117,33 +116,32 @@ public class LotteryViewMainViewHolder implements GetObjectCallback<CurrentDraws
                 String time = Strings.formatInterval(secondsToDraw, view.getContext()).toUpperCase(Locale.getDefault());
                 timeLeftView.setText(view.getResources().getString(R.string.time_left_, time));
             } else {
-                timeLeftView.setText(R.string.draw_in_progress);
+                timeLeftView.setText("");
                 long overtime = secondsToDraw * -1000;
                 if (overtime > _1_min_interval) {
                     long age = System.currentTimeMillis() - draw.timestamp;
                     if (age > overtime) {
-                        Log.d(Const.TAG, String.format("lottery %d, update 1, age: %d, overtime: %d", draw.lottery.getServerId(), age, overtime));
                         update(true);
                     } else if (overtime > _5_min_interval && overtime - age < 200_000) {
-                        Log.d(Const.TAG, String.format("lottery %d, update 2, age: %d, overtime: %d", draw.lottery.getServerId(), age, overtime));
                         update(true);
                     } else if (overtime > _10_min_interval && overtime - age < 400_000) {
-                        Log.d(Const.TAG, String.format("lottery %d, update 3, age: %d, overtime: %d", draw.lottery.getServerId(), age, overtime));
                         update(true);
                     } else if (age > _10_min_interval) {
-                        Log.d(Const.TAG, String.format("lottery %d, update 4, age: %d, overtime: %d", draw.lottery.getServerId(), age, overtime));
                         update(true);
                     }
                 }
             }
 
             Resources res = view.getResources();
-            if (secondsToDraw < Const.STOP_TICKET_SELL_INTERVAL_SEC) {
+            if (secondsToDraw >= Const.STOP_TICKET_SELL_INTERVAL_SEC) {
+                String ticketPrice = CPT.toDecimalString(draw.getTicketPrice().amount);
+                buyButtonView.setText(res.getString(R.string.buy_ticket_for, ticketPrice));
+                buyButtonView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
+            } else if (secondsToDraw > 0) {
                 buyButtonView.setText(res.getString(R.string.ticketSaleIsOver, draw.number));
                 buyButtonView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
             } else {
-                String ticketPrice = CPT.toDecimalString(draw.getTicketPrice().amount);
-                buyButtonView.setText(res.getString(R.string.buy_ticket_for, ticketPrice));
+                buyButtonView.setText(R.string.playing);
                 buyButtonView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
             }
         }

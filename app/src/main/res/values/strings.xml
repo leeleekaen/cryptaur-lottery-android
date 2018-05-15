@@ -115,6 +115,7 @@
     <string name="addressCopied">Address copied to clipboard</string>
 
     <string name="ticketSaleIsOver">Ticket sale of draw %d is over</string>
+    <string name="playing">Playing</string>
 
 
     <plurals name="d_days">
