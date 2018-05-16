@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.cryptaur.lottery.InteractionListener;
 import com.cryptaur.lottery.R;
 import com.cryptaur.lottery.view.CheckableImageButton;
+import com.cryptaur.lottery.view.LoadingViewHolder;
 
 import java.util.Arrays;
 
@@ -35,6 +36,7 @@ public class EnterPinCodeDialogFragment extends FixCloseDialogFragment implement
     private TextView messageView;
     private CheckableImageButton[] digitImageButtons = new CheckableImageButton[4];
     private View progress;
+    private LoadingViewHolder loadingViewHolder;
 
     public EnterPinCodeDialogFragment() {
     }
@@ -63,6 +65,7 @@ public class EnterPinCodeDialogFragment extends FixCloseDialogFragment implement
         mRoot = (ViewGroup) inflater.inflate(R.layout.dialog_enter_pin_code, container, false);
         messageView = mRoot.findViewById(R.id.enterAccountLabel);
         progress = mRoot.findViewById(R.id.progressLayout);
+        loadingViewHolder = new LoadingViewHolder(mRoot.findViewById(R.id.viewLoading));
         digitImageButtons[0] = mRoot.findViewById(R.id.pinDigit1);
         digitImageButtons[1] = mRoot.findViewById(R.id.pinDigit2);
         digitImageButtons[2] = mRoot.findViewById(R.id.pinDigit3);

@@ -74,5 +74,16 @@
 
     </FrameLayout>
 
+    <FrameLayout
+        android:id="@+id/progressLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#80000000"
+        android:visibility="gone">
+
+        <include
+            android:id="@+id/viewLoading"
+            layout="@layout/view_loading" />
+    </FrameLayout>
 
 </android.support.constraint.ConstraintLayout>

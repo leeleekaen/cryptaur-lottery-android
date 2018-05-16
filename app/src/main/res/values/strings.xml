@@ -35,8 +35,8 @@
     <string name="updatingAmountAndFee">Updating amount and fee</string>
     <string name="errorUpdatingTicketFee">Error updating ticket fee</string>
     <string name="boughtTicket">Buy ticket transaction in progress. It will take some time.</string>
-    <string name="requestError">request error</string>
-    <string name="requestCancelled">request cancelled</string>
+    <string name="requestError">Request error</string>
+    <string name="requestCancelled">Request cancelled</string>
     <string name="executingGetTheWinRequest">Executing Get the win request. It will take some time to process.</string>
     <string name="ticket">Ticket</string>
     <string name="draw_archive">Draw Archive</string>
@@ -125,5 +125,7 @@
         <item quantity="many">%d days</item>
         <item quantity="zero">%d days</item>
     </plurals>
+    <string name="title_activity_splash">SplashActivity</string>
+    <string name="retry">Retry</string>
 
 </resources>

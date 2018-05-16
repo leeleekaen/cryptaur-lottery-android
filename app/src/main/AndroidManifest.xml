@@ -14,6 +14,7 @@
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="e828e102371d5b2c13b24042d9c543fb0dcce000" />
+
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -29,6 +30,15 @@
             android:name=".buytickets.BuyTicketActivity"
             android:label="@string/title_activity_buy_ticket"
             android:theme="@style/AppTheme.Light" />
+        <activity
+            android:name=".SplashActivity"
+            android:label="@string/title_activity_splash">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

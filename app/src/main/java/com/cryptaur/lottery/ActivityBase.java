@@ -10,6 +10,7 @@ import android.support.v7.graphics.drawable.DrawerArrowDrawable;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.TextView;
 
@@ -31,6 +32,7 @@ import com.cryptaur.lottery.transport.model.Ticket;
 import com.cryptaur.lottery.transport.model.Transaction;
 import com.cryptaur.lottery.transport.model.TransactionBuyTicket;
 import com.cryptaur.lottery.transport.model.TransactionGetTheWin;
+import com.cryptaur.lottery.view.LoadingViewHolder;
 import com.cryptaur.lottery.view.WalletViewHolder;
 
 public abstract class ActivityBase extends AppCompatActivity implements InteractionListener, GetObjectCallback<CurrentDraws> {
@@ -42,10 +44,17 @@ public abstract class ActivityBase extends AppCompatActivity implements Interact
     private WorkflowController workflowController;
     private Toolbar toolbar;
     private boolean isBackPressed;
+    private View progress;
+    private LoadingViewHolder loadingViewHolder;
 
     @Override
     public void setContentView(int layoutResID) {
         super.setContentView(layoutResID);
+
+        progress = findViewById(R.id.progressLayout);
+        if (progress != null) {
+            loadingViewHolder = new LoadingViewHolder(findViewById(R.id.viewLoading));
+        }
 
         toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("");
@@ -154,6 +163,17 @@ public abstract class ActivityBase extends AppCompatActivity implements Interact
                 case InvalidateOptionsMenu:
                     invalidateOptionsMenu();
                     break;
+
+                case ShowProgress:
+                    if (progress != null)
+                        progress.setVisibility(View.VISIBLE);
+                    break;
+
+                case HideProgress:
+                    if (progress != null)
+                        progress.setVisibility(View.GONE);
+                    break;
+
             }
         } else if (action instanceof ActionShowTransactionFailed) {
             showTransactionFailed(((ActionShowTransactionFailed) action).transaction);
